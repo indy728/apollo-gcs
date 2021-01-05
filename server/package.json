@@ -1,0 +1,17 @@
+{
+  "name": "apollo-gcs",
+  "version": "1.0.0",
+  "description": "uploading files to apollo server and then to cloud storage",
+  "main": "src/index.js",
+  "repository": "https://github.com/indy728/apollo-gcs.git",
+  "author": "indy728 <kdevlinmurray@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "apollo-server-express": "^2.19.1",
+    "express": "^4.17.1",
+    "graphql": "^15.4.0"
+  }
+}
