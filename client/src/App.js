@@ -1,7 +1,7 @@
 
 import React from "react";
 // import { Upload } from "./Upload";
-// import { Files } from "./Files";
+import Files from "./components/Files/Files";
 
 const App = () => {
   return (
@@ -9,8 +9,8 @@ const App = () => {
       <div>
         <h2>My first Apollo app 🚀</h2>
       </div>
-      {/* <Upload />
-      <Files /> */}
+      {/* <Upload /> */}
+      <Files />
     </div>
   );
 }

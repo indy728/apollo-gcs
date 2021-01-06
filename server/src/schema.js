@@ -2,6 +2,9 @@ const {gql} = require('apollo-server-express');
 const {createWriteStream, existsSync, mkdirSync} = require('fs');
 const path = require('path');
 
+// const files = [];
+const files = ['my-code-face.jpg'];
+
 const typeDefs = gql`
  type Query {
    files: [String]
