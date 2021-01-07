@@ -7,11 +7,15 @@
   "author": "indy728 <kdevlinmurray@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
   "dependencies": {
     "apollo-server-express": "^2.19.1",
     "express": "^4.17.1",
     "graphql": "^15.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }

@@ -1,9 +1,12 @@
 const {gql} = require('apollo-server-express');
-const {createWriteStream, existsSync, mkdirSync} = require('fs');
+const {createWriteStream, readdirSync, unlinkSync} = require('fs');
+const { __Directive } = require('graphql');
+
 const path = require('path');
 
-// const files = [];
-const files = ['my-code-face.jpg'];
+// let files = [];
+// const files = 
+// console.log(files)
 
 const typeDefs = gql`
  type Query {
@@ -11,13 +14,15 @@ const typeDefs = gql`
  }
 
  type Mutation {
-   uploadFile(file: Upload!): Boolean
+   uploadFile(file: Upload!): Boolean,
+   deleteFile(file: String!): Boolean
  }
 `
 
 const resolvers = {
   Query: {
-    files: () => files
+    // could do await new Promise with readdir (async)
+    files: () => readdirSync(path.join(__dirname, 'img'))
   },
   Mutation: {
     uploadFile: async(_, { file }) => {
@@ -29,9 +34,16 @@ const resolvers = {
           .on('close', resolve)  
       )
 
-      files.push(filename);
+      // files.push(filename);
 
       return true;
+    },
+    deleteFile: (_, {file}) => {
+      console.log(file)
+      const url = path.join(__dirname, 'img', file)
+      console.log('[schema] url: ', url)
+      unlinkSync(url)
+      return true
     }
   }
 
