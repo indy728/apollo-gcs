@@ -13,6 +13,8 @@ const Upload = () => {
     const selected = e.target.files;
     console.log('[Upload] selected: ', selected)
     if (!selected.length) return 
+    console.log(selected[0])
+    console.log(typeof selected[0])
     uploadFiles({variables: {file: selected[0]}})
   }
 

@@ -5,5 +5,9 @@ const link = createUploadLink({ uri: "http://localhost:4000/graphql" });
 
 export const client = new ApolloClient({
   link,
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
+  onError: ({ networkError, graphQLErrors }) => {
+    console.log('graphQLErrors', graphQLErrors)
+    console.log('networkError', networkError)
+  }
 });
