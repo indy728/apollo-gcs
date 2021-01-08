@@ -1,3 +1,5 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const {ApolloServer, gql} = require('apollo-server-express');
 const {existsSync, mkdirSync} = require('fs');
 const path = require('path');

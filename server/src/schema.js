@@ -1,12 +1,20 @@
 const {gql} = require('apollo-server-express');
 const {createWriteStream, readdirSync, unlinkSync} = require('fs');
-const { __Directive } = require('graphql');
+const {Storage} = require('@google-cloud/storage');
 
 const path = require('path');
+
+const gcsClient = new Storage({
+  keyFile: path.join(__dirname, '..', 'key.json'),
+  // Below is questionably needed
+  // projectId: 'music-bucket-test',
+})
 
 // let files = [];
 // const files = 
 // console.log(files)
+const musicBucket = gcsClient.bucket('music-storage-test')
+
 
 const typeDefs = gql`
  type Query {
@@ -30,9 +38,19 @@ const resolvers = {
 
       await new Promise(resolve => 
         createReadStream()
-          .pipe(createWriteStream(path.join(__dirname, 'img', filename)))
-          .on('close', resolve)  
+          .pipe(
+            musicBucket.file(filename).createWriteStream({
+              gzip: true
+            })
+          )
+          .on('finish', resolve)  
       )
+
+      // await new Promise(resolve => 
+      //   createReadStream()
+      //     .pipe(createWriteStream(path.join(__dirname, 'img', filename)))
+      //     .on('close', resolve)  
+      // )
 
       // files.push(filename);
 

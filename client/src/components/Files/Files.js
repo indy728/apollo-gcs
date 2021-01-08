@@ -65,7 +65,10 @@ const Files = () => {
       <Table>
         <tbody>
 
-      {data.files && data.files.map((x, i) => (
+      {data.files && data.files.map((x, i) => {
+        const audio = new Audio(`http://localhost:4000/img/${x}`)
+
+        return (
           <TableRow key={i} index={i}>
             <TableCell># {i}</TableCell>
             <TableCell className="path-name">
@@ -73,6 +76,11 @@ const Files = () => {
                 {x}
               </div>
               </TableCell>
+            {/* <TableCell className="play">
+              <div onClick={() => audio.play()}>
+                Play
+              </div>
+              </TableCell> */}
             <TableCell>
               <a href={`http://localhost:4000/img/${x}`} download={x}>
                 Download  
@@ -90,7 +98,7 @@ const Files = () => {
         //   src={`http://localhost:4000/img/${x}`}
         //   alt={x}
         // />
-      ))}
+      )})}
         </tbody>
 
       </Table>

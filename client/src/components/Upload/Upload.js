@@ -18,7 +18,7 @@ const Upload = () => {
 
   return (
     <div>
-      <input type="file" onChange={handleFileChange} />
+      <input type="file" onChange={handleFileChange} multiple />
     </div>
     )
 }
