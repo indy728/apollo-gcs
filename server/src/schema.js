@@ -1,6 +1,7 @@
 const {gql} = require('apollo-server-express');
 const {createWriteStream, readdirSync, unlinkSync} = require('fs');
 const mm = require('music-metadata');
+// const util = require('util')
 const {Storage} = require('@google-cloud/storage');
 
 const path = require('path');
@@ -19,7 +20,7 @@ const musicBucket = gcsClient.bucket('music-storage-test')
 
 const typeDefs = gql`
  type Query {
-   files: [String]
+   files: [MetaData]
  }
 
   type MetaData {
@@ -32,12 +33,13 @@ const typeDefs = gql`
     key: String,
     bpm: String,
     # save album art for another time
-    # involves converting hex octets to img
+    # involves converting hex octets to tmp-music
     # picture: []
   }
 
  type Mutation {
-   uploadFile(files: [Upload!]): [MetaData],
+   uploadToBucket(files: [Upload!]): Boolean,
+   uploadToServer(files: [Upload!]): Boolean,
    deleteFile(file: String!): Boolean
  }
 `
@@ -45,82 +47,83 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     // could do await new Promise with readdir (async)
-    files: () => readdirSync(path.join(__dirname, 'img'))
-  },
-  Mutation: {
-    uploadFile: async(_, { files }) => {
-      const mds = [];
+    files: async () => {
+      const files = readdirSync(path.join(__dirname, 'tmp-music'))
 
-      await Promise.all(files.map(async(file) => {
-        const { createReadStream, filename } = await file;
+      const mds = await Promise.all(files.map(async(file) => {
         const metaData = {
           format: '',
           title: '',
           duration: -1,
           artist: '',
-          artists: [''],
           key: '',
-          filename
+          filename: file
         }
+
         try {
-          const metadata = await mm.parseStream(createReadStream());
+          const metadata = await mm.parseFile(path.join(__dirname, 'tmp-music', file));
+          // console.log(util.inspect(metadata, { showHidden: false, depth: null }));
+          // const metadata = await mm.parseStream(createReadStream());
           const {format: {
             container, duration
           }, common: {
-            title, bpm, key, artist, artists 
+            title, bpm, key, artist 
           }} = metadata;
           
-          const seconds = Math.trunc(duration)
-  
           Object.assign(metaData, {
             format: container,
             title,
-            duration: seconds,
+            duration: Math.trunc(duration),
             artist,
-            artists,
             key,
             bpm,
           })
-          mds.push(metaData)
+  
+          return metaData
         } catch (error) {
           console.err(err.message);
         }
       }))
 
-
-      
-
-
-      // await new Promise(resolve => 
-      //   createReadStream()
-      //     .pipe(
-      //       musicBucket.file(filename).createWriteStream({
-      //         gzip: true
-      //       })
-      //     )
-      //     .on('finish', resolve)  
-      // )
-
-      // await new Promise(resolve => 
-      //   createReadStream()
-      //     .pipe(createWriteStream(path.join(__dirname, 'img', filename)))
-      //     .on('close', resolve)  
-      // )
-
-      // files.push(filename);
-      console.log('[schema] mds: ', mds)
       return mds;
+    }
+  },
+  Mutation: {
+    uploadToServer: async(_, { files }) => {
+      await Promise.all(files.map(async(file) => {
+        const { createReadStream, filename } = await file;
+        await new Promise(resolve => 
+          createReadStream()
+            .pipe(createWriteStream(path.join(__dirname, 'tmp-music', filename)))
+            .on('close', resolve)  
+        )
+      }))
+
+      return true
     },
+    // figure out how to get an Upload type out of the file address
+    // uploadToBucket: async(_, { files }) => {
+    //   await Promise.all(files.map(async({createReadStream, filename}) => {
+    //     await new Promise(resolve => 
+    //       createReadStream()
+    //         .pipe(
+    //           musicBucket.file(filename).createWriteStream({
+    //             gzip: true
+    //           })
+    //         )
+    //         .on('finish', resolve)  
+    //     )
+    //   }))
+    //   return true;
+    // },
     deleteFile: (_, {file}) => {
       console.log(file)
-      const url = path.join(__dirname, 'img', file)
+      const url = path.join(__dirname, 'tmp-music', file)
       console.log('[schema] url: ', url)
       unlinkSync(url)
       return true
     }
   }
-
 }
-
 exports.typeDefs = typeDefs;
 exports.resolvers = resolvers;

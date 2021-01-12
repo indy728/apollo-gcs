@@ -1,15 +1,13 @@
 
 import React from "react";
-// import { Upload } from "./Upload";
-import Files from "./components/Files/Files";
-import Upload from "./components/Upload/Upload";
+import {FileFormList, FileSelector} from './components/Upload';
 
 const App = () => {
   return (
-    <div>
-      <Upload />
-      <Files />
-    </div>
+    <>
+      <FileFormList />
+      <FileSelector />
+    </>
   );
 }
 

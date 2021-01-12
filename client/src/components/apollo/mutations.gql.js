@@ -1,17 +1,14 @@
 import {gql} from '@apollo/client';
 
-export const UPLOAD_FILE = gql`
-  mutation UploadFile($files: [Upload!]) {
-    uploadFile(files: $files) {
-      format
-      title
-      duration
-      artist
-      artists
-      key
-      bpm
-      filename
-    }
+export const UPLOAD_BUCKET = gql`
+  mutation UploadToBucket($files: [Upload!]) {
+    uploadToBucket(files: $files)
+  }
+`;
+
+export const UPLOAD_SERVER = gql`
+  mutation UploadToServer($files: [Upload!]) {
+    uploadToServer(files: $files)
   }
 `;
 

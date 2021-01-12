@@ -2,6 +2,8 @@ import { useQuery, useMutation } from "@apollo/client";
 import React from "react";
 import {FILES_QUERY, DELETE_FILE} from '../apollo'
 import styled from 'styled-components';
+import {UploadForm} from './components';
+
 
 const Table = styled.table`
   border: 2px solid black;
@@ -36,7 +38,7 @@ const TableCell = styled.td`
 
 console.log(FILES_QUERY)
 
-const Files = () => {
+const FileFormList = () => {
   const { data, loading, error } = useQuery(FILES_QUERY);
   const [deleteFiles] = useMutation(DELETE_FILE, {
     refetchQueries: [{ query: FILES_QUERY}],
@@ -62,49 +64,14 @@ const Files = () => {
 
   return (
     <div>
-      <Table>
-        <tbody>
 
-      {data.files && data.files.map((x, i) => {
-        const audio = new Audio(`http://localhost:4000/img/${x}`)
+      {data.files && data.files.map((metadata, i) => {
 
         return (
-          <TableRow key={i} index={i}>
-            <TableCell># {i}</TableCell>
-            <TableCell className="path-name">
-              <div>
-                {x}
-              </div>
-              </TableCell>
-            {/* <TableCell className="play">
-              <div onClick={() => audio.play()}>
-                Play
-              </div>
-              </TableCell> */}
-            <TableCell>
-              <a href={`http://localhost:4000/img/${x}`} download={x}>
-                Download  
-              </a>
-            </TableCell>
-            <TableCell>
-              <div onClick={() => handleDelete(x)}>
-                Delete
-              </div>
-              </TableCell>
-          </TableRow>
-        // <img
-        //   style={{ width: 200 }}
-        //   key={x}
-        //   src={`http://localhost:4000/img/${x}`}
-        //   alt={x}
-        // />
+          <UploadForm metadata={metadata} idx={i}/>
       )})}
-        </tbody>
-
-      </Table>
-
     </div>
   );
 };
 
-export default Files;
+export default FileFormList;

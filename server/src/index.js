@@ -6,12 +6,12 @@ const path = require('path');
 const express = require('express');
 const {typeDefs, resolvers} = require('./schema');
 
-existsSync(path.join(__dirname, "img")) || mkdirSync(path.join(__dirname, "images"));
+existsSync(path.join(__dirname, "tmp-music")) || mkdirSync(path.join(__dirname, "tmp-music"));
 
 const server = new ApolloServer({typeDefs, resolvers});
 const app = express();
 
-app.use('/img', express.static(path.join(__dirname, 'img')));
+app.use('/tmp-music', express.static(path.join(__dirname, 'tmp-music')));
 server.applyMiddleware({app});
 
 app.listen(4000, () => {
