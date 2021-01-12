@@ -25,6 +25,7 @@ const typeDefs = gql`
   type MetaData {
     format: String,
     title: String,
+    filename: String,
     duration: Int,
     artist: String,
     artists: [String],
@@ -36,7 +37,7 @@ const typeDefs = gql`
   }
 
  type Mutation {
-   uploadFile(file: Upload!): String,
+   uploadFile(files: [Upload!]): [MetaData],
    deleteFile(file: String!): Boolean
  }
 `
@@ -47,42 +48,47 @@ const resolvers = {
     files: () => readdirSync(path.join(__dirname, 'img'))
   },
   Mutation: {
-    uploadFile: async(_, { file }) => {
-      console.log('hello')
-      const { createReadStream, filename } = await file;
-      const metaData = {
-        format: 'String',
-        title: 'String',
-        duration: -1,
-        artist: 'String',
-        artists: ['String'],
-        key: 'String',
-      }
+    uploadFile: async(_, { files }) => {
+      const mds = [];
+
+      await Promise.all(files.map(async(file) => {
+        const { createReadStream, filename } = await file;
+        const metaData = {
+          format: '',
+          title: '',
+          duration: -1,
+          artist: '',
+          artists: [''],
+          key: '',
+          filename
+        }
+        try {
+          const metadata = await mm.parseStream(createReadStream());
+          const {format: {
+            container, duration
+          }, common: {
+            title, bpm, key, artist, artists 
+          }} = metadata;
+          
+          const seconds = Math.trunc(duration)
+  
+          Object.assign(metaData, {
+            format: container,
+            title,
+            duration: seconds,
+            artist,
+            artists,
+            key,
+            bpm,
+          })
+          mds.push(metaData)
+        } catch (error) {
+          console.err(err.message);
+        }
+      }))
 
 
-      try {
-        const metadata = await mm.parseStream(createReadStream());
-        const {format: {
-          container, duration
-        }, common: {
-          title, bpm, key, artist, artists 
-        }} = metadata;
-        
-        const seconds = Math.trunc(duration)
-
-        Object.assign(metaData, {
-          format: container,
-          title,
-          duration: seconds,
-          artist,
-          artists,
-          key,
-          bpm,
-        })
-        console.log('[schema] metaData: ', metaData)
-      } catch (error) {
-        console.err(err.message);
-      }
+      
 
 
       // await new Promise(resolve => 
@@ -102,8 +108,8 @@ const resolvers = {
       // )
 
       // files.push(filename);
-
-      return metaData;
+      console.log('[schema] mds: ', mds)
+      return mds;
     },
     deleteFile: (_, {file}) => {
       console.log(file)
