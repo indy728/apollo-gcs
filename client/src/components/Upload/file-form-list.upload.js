@@ -3,40 +3,27 @@ import React from "react";
 import {FILES_QUERY, DELETE_FILE} from '../apollo'
 import styled from 'styled-components';
 import {UploadForm} from './components';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 
+import Container from '@material-ui/core/Container'
 
-const Table = styled.table`
-  border: 2px solid black;
-  border-radius: 3px;
-  border-collapse: collapse;
-`
+const FileUploadContainer = styled.main`
+  background-color: teal;
+  width: auto;
+  margin: 32px auto;
 
-const TableRow = styled.tr`
-  &:nth-child(even) {
-    background-color: #dddddd;
+  @media (min-width: 600px) {
+    width: 600px;
   }
 `
 
-const TableCell = styled.td`
-  padding-left: 10px;
-
-  &:not(:first-child) {
-    padding-left: 20px;
-  }
-
-  &.path-name {
-    > div {
-      width: 200px;
-      /* width: auto; */
-      /* display: inline-block; */
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+const FileUploadPaper = styled(Paper)`
+  && {
+    background-color: #bbb;
+    padding-bottom: 20px;
   }
 `
-
-console.log(FILES_QUERY)
 
 const FileFormList = () => {
   const { data, loading, error } = useQuery(FILES_QUERY);
@@ -63,14 +50,32 @@ const FileFormList = () => {
   }
 
   return (
-    <div>
+    // <FileUploadContainer className="file-upload-container">
 
-      {data.files && data.files.map((metadata, i) => {
-
-        return (
-          <UploadForm metadata={metadata} idx={i}/>
-      )})}
-    </div>
+    // </FileUploadContainer>
+    <FileUploadContainer>
+    <FileUploadPaper className={'file-upload-paper'}>
+      <Typography component="h1" variant="h4" align="center">
+        Songs Upload
+      </Typography>
+      {/* <Stepper activeStep={activeStep} className={classes.stepper}>
+        {steps.map((label) => (
+          <Step key={label}>
+          <StepLabel>{label}</StepLabel>
+          </Step>
+          ))}
+        </Stepper> */}
+      <>
+           {data.files && data.files.map((metadata, i) => {
+    
+            return (
+              <UploadForm metadata={metadata} idx={i}/>
+          )})}
+        
+      </>
+    </FileUploadPaper>
+    {/* <Copyright /> */}
+  </FileUploadContainer>
   );
 };
 
