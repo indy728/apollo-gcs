@@ -1,12 +1,11 @@
 import { useQuery, useMutation } from "@apollo/client";
 import React from "react";
-import {FILES_QUERY, DELETE_FILE} from '../apollo'
+import {FILES_QUERY, DELETE_FILE, FIREBASE_WRITE} from '../apollo'
 import styled from 'styled-components';
 import {UploadForm} from './components';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
-import Container from '@material-ui/core/Container'
 
 const FileUploadContainer = styled.main`
   background-color: teal;
@@ -31,6 +30,9 @@ const FileFormList = () => {
     refetchQueries: [{ query: FILES_QUERY}],
     // onCompleted: data => console.log('[Files] del_data: ', del_data)
   })
+  const [fbWrite] = useMutation(FIREBASE_WRITE, {
+    onCompleted: () => console.log('Check the db')
+  })
 
   if (loading) {
     return <div>loading...</div>;
@@ -42,12 +44,12 @@ const FileFormList = () => {
 
   console.log('[Files] data: ', data)
 
-  const handleDelete = (file) => {
-    console.log('[Files] file: ', file)
-    if (file) {
-      deleteFiles({variables: {file}})
-    }
-  }
+  // const handleDelete = (file) => {
+  //   console.log('[Files] file: ', file)
+  //   if (file) {
+  //     deleteFiles({variables: {file}})
+  //   }
+  // }
 
   return (
     // <FileUploadContainer className="file-upload-container">
@@ -69,11 +71,12 @@ const FileFormList = () => {
            {data.files && data.files.map((metadata, i) => {
     
             return (
-              <UploadForm metadata={metadata} idx={i}/>
+              <UploadForm metadata={metadata} key={metadata.filename + i} idx={i}/>
           )})}
         
       </>
     </FileUploadPaper>
+    <button onClick={() => fbWrite({variables: {entry: 'show me 69'}})}>FB TEST</button>
     {/* <Copyright /> */}
   </FileUploadContainer>
   );

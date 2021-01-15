@@ -6,6 +6,12 @@ export const UPLOAD_BUCKET = gql`
   }
 `;
 
+export const FIREBASE_WRITE = gql`
+  mutation FbWrite($entry: SongInput) {
+    fbWrite(entry: $entry)
+  }
+`;
+
 export const UPLOAD_SERVER = gql`
   mutation UploadToServer($files: [Upload!]) {
     uploadToServer(files: $files)

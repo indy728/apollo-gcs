@@ -1,10 +1,8 @@
-import React from 'react'
-import {useForm} from 'react-hook-form'
+import { useMutation } from "@apollo/client";
+import React from "react";
+import {FIREBASE_WRITE} from '../../apollo'
+import {useForm, Controller} from 'react-hook-form'
 import styled from 'styled-components'
-import FormControl from '@material-ui/core/FormControl'
-import FormHelperText from '@material-ui/core/FormHelperText'
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
@@ -26,11 +24,26 @@ const UploadCard = styled(Card)`
 export const UploadForm = ({metadata: {
   title, filename, format, artist, duration, bpm, key
 }}) => {
-
+  duration = duration || 0
   const songLength = `${Math.floor(duration / 60)}:${Math.floor(duration % 60).toString().padStart(2, "0")}`
-
-  const {register, errors, handleSubmit} = useForm();
-  const onSubmit = values => console.log(values)
+  const [fbWrite] = useMutation(FIREBASE_WRITE, {
+    onCompleted: () => console.log('Check the db')
+  })
+  const {register, errors, handleSubmit, control} = useForm({
+    defaultValues: {
+      title: title || '',
+      filename,
+      format: format || '',
+      artist: artist || '',
+      duration: songLength,
+      bpm: bpm || '',
+      key: key || ''
+    }
+  });
+  const onSubmit = values => {
+    console.log(values)
+    fbWrite({variables: {entry: {...values}}})
+  }
   
   return (
     <UploadCard>
@@ -39,68 +52,135 @@ export const UploadForm = ({metadata: {
           Track information
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <TextField
-              id="file-name-read-only"
-              label="File name (Read Only)"
-              defaultValue={filename}
-              fullWidth
-              InputProps={{
-                readOnly: true,
-              }}
+          <Grid item xs={8}>
+            <Controller
+              control={control}
+              name="filename"
+              render={(
+                {value, name},
+              ) => (
+                <TextField
+                  name={name}
+                  label="File name"
+                  value={value}
+                  fullWidth
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              )}
             />
           </Grid>
-          <Grid item xs={5}>
-            <TextField
-              id="format-read-only"
-              label="File format (Read Only)"
-              defaultValue={format}
-              fullWidth
-              InputProps={{
-                readOnly: true,
-              }}
+          <Grid item xs={4}>
+            <Controller
+                control={control}
+                name="format"
+                render={(
+                  {value, name},
+                ) => (
+                <TextField
+                  name={name}
+                  label="File format"
+                  value={value}
+                  fullWidth
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              )}
+              />
+          </Grid>
+          <Grid item xs={12}>
+            <Controller
+              control={control}
+              name="title"
+              rules={{required: true}}
+              render={(
+                {onChange, value, name},
+              ) => (
+                <TextField
+                  name={name}
+                  label="Song title"
+                  value={value}
+                  onChange={onChange}
+                  fullWidth
+                />
+              )}
             />
           </Grid>
           <Grid item xs={12}>
-            <FormControl fullWidth>
-              <TextField
-                id="title"
-                name="title"
-                label="Song title"
-                defaultValue={title}
-                fullWidth
-                ref={register({ required: true })}
-              />
-            </FormControl>
+          <Controller
+              control={control}
+              name="artist"
+              rules={{required: true}}
+              render={(
+                {onChange, value, name},
+              ) => (
+                <TextField
+                  name={name}
+                  label="Artist"
+                  value={value}
+                  onChange={onChange}
+                  fullWidth
+                />
+              )}
+            />
           </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth>
-              <TextField
-                id="artist"
-                name="artist"
-                label="Artist"
-                defaultValue={artist}
-                fullWidth
-                ref={register({ required: true })}
-              />
-            </FormControl>
+          <Grid item xs={4}>
+          <Controller
+              control={control}
+              name="duration"
+              rules={{required: true}}
+              render={(
+                {value, name},
+              ) => (
+                <TextField
+                  name={name}
+                  label="Length"
+                  value={value}
+                  fullWidth
+                  inputProps={{
+                    readOnly: true
+                  }}
+                />
+              )}
+            />
           </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth>
+          <Grid item xs={4}>
+            <Controller
+              control={control}
+              name="bpm"
+              render={(
+                {onChange, value, name},
+              ) => (
               <TextField
-                id="duration"
-                name="duration"
-                label="Length"
-                defaultValue={songLength}
+                name={name}
+                label="BPM"
+                value={value}
+                onChange={onChange}
                 fullWidth
-                ref={register}
-                inputProps={{
-                  readOnly: true
-                }}
               />
-            </FormControl>
+              )}
+            />
           </Grid>
-          <Button type="submit">Submit</Button>
+          <Grid item xs={4}>
+            <Controller
+              control={control}
+              name="key"
+              render={(
+                {onChange, value, name},
+              ) => (
+                <TextField
+                  name={name}
+                  label="key"
+                  value={value}
+                  fullWidth
+                  ref={register}
+                />
+              )}
+            />
+          </Grid>
+          <Button type="submit" onClick={handleSubmit(onSubmit)}>Submit</Button>
       </Grid>
       </CardContent>
     </UploadCard>
