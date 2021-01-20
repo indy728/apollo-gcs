@@ -21,6 +21,21 @@ const UploadCard = styled(Card)`
   }
 `
 
+const getKeywords = ({title, artist, key, tags}) => {
+  const keywords = [];
+  
+  // @TODO: remove parens, etc from keywords... this is OK
+  const alnum = new RegExp('[^a-zA-Z0-9 -]')
+  title.split(' ').forEach((x) => {
+    keywords.push(x.toLowerCase().replace(alnum, ''))
+  })
+  artist.split(', ').map(y => y.split(' ')).flat().forEach(z => {keywords.push(z.toLowerCase())})
+  if (key && key.length) {
+    keywords.push(key)
+  }
+  return keywords
+}
+
 export const UploadForm = ({metadata: {
   title, filename, format, artist, duration, bpm, key
 }, deleteFiles}) => {
@@ -40,12 +55,17 @@ export const UploadForm = ({metadata: {
       artist: artist || '',
       duration: songLength,
       bpm: bpm || '',
-      key: key || ''
+      key: key || '',
+      keywords: [],
     }
   });
+
   const onSubmit = values => {
+    const keywords = getKeywords(values)
+    console.log(keywords)
+
     console.log(values)
-    if (fbWrite({variables: {entry: {...values}}})) {
+    if (fbWrite({variables: {entry: {...values, keywords}}})) {
       console.log('[upload-form.component] values.filename: ', values.filename)
       deleteFiles({variables: {file: filename}})
     }

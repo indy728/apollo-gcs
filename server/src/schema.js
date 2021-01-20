@@ -3,20 +3,22 @@ const {createWriteStream, readdirSync, unlinkSync, truncate} = require('fs');
 const mm = require('music-metadata');
 // const util = require('util')
 const {Storage} = require('@google-cloud/storage');
-const firebase = require('firebase');
-var firebaseConfig = {
-  apiKey: process.env.FIREBASE_CONFIG_APIKEY,
-  authDomain: process.env.FIREBASE_CONFIG_AUTHDOMAIN,
-  projectId: process.env.FIREBASE_CONFIG_PROJECTID,
-  storageBucket: process.env.FIREBASE_CONFIG_STORAGEBUCKET,
-  messagingSenderId: process.env.FIREBASE_CONFIG_MESSAGINGSENDERID,
-  appId: process.env.FIREBASE_CONFIG_APPID,
-  measurementId: process.env.FIREBASE_CONFIG_MEASUREMENTID,
-};
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-database.ref('test').once('value').then(s => console.log('[schema] s.val(): ', s.val()))
+const {fbWrite} = require('./mutations')
+// const firebase = require('firebase');
+// var firebaseConfig = {
+//   apiKey: process.env.FIREBASE_CONFIG_APIKEY,
+//   authDomain: process.env.FIREBASE_CONFIG_AUTHDOMAIN,
+//   projectId: process.env.FIREBASE_CONFIG_PROJECTID,
+//   storageBucket: process.env.FIREBASE_CONFIG_STORAGEBUCKET,
+//   messagingSenderId: process.env.FIREBASE_CONFIG_MESSAGINGSENDERID,
+//   appId: process.env.FIREBASE_CONFIG_APPID,
+//   measurementId: process.env.FIREBASE_CONFIG_MEASUREMENTID,
+// };
+// // Initialize Firebase
+// firebase.initializeApp(firebaseConfig);
+// const database = firebase.database();
+// database.ref('test').once('value').then(s => console.log('[schema] s.val(): ', s.val()))
+const {database} = require('./firebase-config')
 const path = require('path');
 
 const gcsClient = new Storage({
@@ -60,6 +62,7 @@ const typeDefs = gql`
     artist: String,
     key: String,
     bpm: String,
+    keywords: [String],
     # save album art for another time
     # involves converting hex octets to tmp-music
     # picture: []
@@ -127,39 +130,7 @@ const resolvers = {
     }
   },
   Mutation: {
-    fbWrite: async (_, {entry}) => {
-      const errors = []
-
-      try {
-        const {key: id} = await database.ref(`songs`).push(
-          entry
-        )
-        const pushSongToCategory = catPath => {
-          database.ref(catPath).update({[id]: true});
-        }
-        const {artist, format, bpm, key} = entry;
-        const artists = artist.split(", ");
-        
-        // @TODO: clean up paths. cannot include . # $ [ ]
-        for (let a in artists) {
-             pushSongToCategory(`artist/${artists[a]}`)
-        }
-
-        // pushSongToCategory(`artist/${artist}`)
-        pushSongToCategory(`format/${format}`)
-        if (bpm.length){
-          pushSongToCategory(`bpm/${bpm}`)
-        }
-        if (key.length){
-          pushSongToCategory(`key/${key.replace('#', '&sharp;')}`)
-        }
-      } catch(err) {
-        errors.push(err)
-        return false
-      }
-
-      return true
-    },
+    fbWrite,
     uploadToServer: async(_, { files }) => {
       await Promise.all(files.map(async(file) => {
         const { createReadStream, filename } = await file;
