@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client";
 import React from "react";
-import {FIREBASE_WRITE} from '../../apollo'
+import {FIREBASE_WRITE, DELETE_FILE} from '../../apollo'
 import {useForm, Controller} from 'react-hook-form'
 import styled from 'styled-components'
 import Button from '@material-ui/core/Button';
@@ -23,11 +23,14 @@ const UploadCard = styled(Card)`
 
 export const UploadForm = ({metadata: {
   title, filename, format, artist, duration, bpm, key
-}}) => {
+}, deleteFiles}) => {
   duration = duration || 0
   const songLength = `${Math.floor(duration / 60)}:${Math.floor(duration % 60).toString().padStart(2, "0")}`
   const [fbWrite] = useMutation(FIREBASE_WRITE, {
-    onCompleted: () => console.log('Check the db')
+    onCompleted: (x) => {
+
+      console.log(x)
+    }
   })
   const {register, errors, handleSubmit, control} = useForm({
     defaultValues: {
@@ -42,9 +45,11 @@ export const UploadForm = ({metadata: {
   });
   const onSubmit = values => {
     console.log(values)
-    fbWrite({variables: {entry: {...values}}})
+    if (fbWrite({variables: {entry: {...values}}})) {
+      console.log('[upload-form.component] values.filename: ', values.filename)
+      deleteFiles({variables: {file: filename}})
+    }
   }
-  
   return (
     <UploadCard>
       <CardContent>
@@ -181,6 +186,7 @@ export const UploadForm = ({metadata: {
             />
           </Grid>
           <Button type="submit" onClick={handleSubmit(onSubmit)}>Submit</Button>
+          <Button type="submit" onClick={() => deleteFiles({variables: {file: filename}})}>Remove</Button>
       </Grid>
       </CardContent>
     </UploadCard>

@@ -1,13 +1,26 @@
 const {gql} = require('apollo-server-express');
-const {createWriteStream, readdirSync, unlinkSync} = require('fs');
+const {createWriteStream, readdirSync, unlinkSync, truncate} = require('fs');
 const mm = require('music-metadata');
 // const util = require('util')
 const {Storage} = require('@google-cloud/storage');
-
+const firebase = require('firebase');
+var firebaseConfig = {
+  apiKey: process.env.FIREBASE_CONFIG_APIKEY,
+  authDomain: process.env.FIREBASE_CONFIG_AUTHDOMAIN,
+  projectId: process.env.FIREBASE_CONFIG_PROJECTID,
+  storageBucket: process.env.FIREBASE_CONFIG_STORAGEBUCKET,
+  messagingSenderId: process.env.FIREBASE_CONFIG_MESSAGINGSENDERID,
+  appId: process.env.FIREBASE_CONFIG_APPID,
+  measurementId: process.env.FIREBASE_CONFIG_MEASUREMENTID,
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+database.ref('test').once('value').then(s => console.log('[schema] s.val(): ', s.val()))
 const path = require('path');
 
 const gcsClient = new Storage({
-  keyFile: path.join(__dirname, '..', 'key.json'),
+  keyFile: path.join(__dirname, '..', 'gcs-music-bucket-key.json'),
   // Below is questionably needed
   // projectId: 'music-bucket-test',
 })
@@ -20,7 +33,8 @@ const musicBucket = gcsClient.bucket('music-storage-test')
 
 const typeDefs = gql`
  type Query {
-   files: [MetaData]
+   files: [MetaData],
+   songs: [MetaData],
  }
 
   type MetaData {
@@ -32,6 +46,20 @@ const typeDefs = gql`
     artists: [String],
     key: String,
     bpm: String,
+    id: String,
+    # save album art for another time
+    # involves converting hex octets to tmp-music
+    # picture: []
+  }
+
+  input SongInput {
+    format: String,
+    title: String,
+    filename: String,
+    duration: String,
+    artist: String,
+    key: String,
+    bpm: String,
     # save album art for another time
     # involves converting hex octets to tmp-music
     # picture: []
@@ -40,6 +68,7 @@ const typeDefs = gql`
  type Mutation {
    uploadToBucket(files: [Upload!]): Boolean,
    uploadToServer(files: [Upload!]): Boolean,
+   fbWrite(entry: SongInput): Boolean,
    deleteFile(file: String!): Boolean
  }
 `
@@ -86,9 +115,51 @@ const resolvers = {
       }))
 
       return mds;
+    },
+    songs: async () => {
+
+      return await database.ref('songs').once('value').then((snap) => {
+        return Object.entries(snap.val())
+          .map(([id, info]) => {
+            return {...info, id}
+          })
+      })
     }
   },
   Mutation: {
+    fbWrite: async (_, {entry}) => {
+      const errors = []
+
+      try {
+        const {key: id} = await database.ref(`songs`).push(
+          entry
+        )
+        const pushSongToCategory = catPath => {
+          database.ref(catPath).update({[id]: true});
+        }
+        const {artist, format, bpm, key} = entry;
+        const artists = artist.split(", ");
+        
+        // @TODO: clean up paths. cannot include . # $ [ ]
+        for (let a in artists) {
+             pushSongToCategory(`artist/${artists[a]}`)
+        }
+
+        // pushSongToCategory(`artist/${artist}`)
+        pushSongToCategory(`format/${format}`)
+        if (bpm.length){
+          pushSongToCategory(`bpm/${bpm}`)
+        }
+        if (key.length){
+          pushSongToCategory(`key/${key.replace('#', '&sharp;')}`)
+        }
+      } catch(err) {
+        errors.push(err)
+        return false
+      }
+
+      return true
+    },
     uploadToServer: async(_, { files }) => {
       await Promise.all(files.map(async(file) => {
         const { createReadStream, filename } = await file;
@@ -117,9 +188,7 @@ const resolvers = {
     //   return true;
     // },
     deleteFile: (_, {file}) => {
-      console.log(file)
       const url = path.join(__dirname, 'tmp-music', file)
-      console.log('[schema] url: ', url)
       unlinkSync(url)
       return true
     }

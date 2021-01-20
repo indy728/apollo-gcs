@@ -13,3 +13,16 @@ export const FILES_QUERY = gql`
     }
   }
 `;
+
+export const SONGS_QUERY = gql`
+  {
+    songs {
+      title
+      artist
+      bpm
+      key
+      # duration
+      id
+    }
+  }
+`

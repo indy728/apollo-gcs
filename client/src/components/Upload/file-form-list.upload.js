@@ -30,9 +30,6 @@ const FileFormList = () => {
     refetchQueries: [{ query: FILES_QUERY}],
     // onCompleted: data => console.log('[Files] del_data: ', del_data)
   })
-  const [fbWrite] = useMutation(FIREBASE_WRITE, {
-    onCompleted: () => console.log('Check the db')
-  })
 
   if (loading) {
     return <div>loading...</div>;
@@ -71,12 +68,12 @@ const FileFormList = () => {
            {data.files && data.files.map((metadata, i) => {
     
             return (
-              <UploadForm metadata={metadata} key={metadata.filename + i} idx={i}/>
+              <UploadForm metadata={metadata} key={metadata.filename + i} deleteFiles={deleteFiles} idx={i}/>
           )})}
         
       </>
     </FileUploadPaper>
-    <button onClick={() => fbWrite({variables: {entry: 'show me 69'}})}>FB TEST</button>
+    {/* <button onClick={() => fbWrite({variables: {entry: 'show me 69'}})}>FB TEST</button> */}
     {/* <Copyright /> */}
   </FileUploadContainer>
   );
