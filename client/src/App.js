@@ -1,12 +1,12 @@
 
 import React from "react";
 import {FileFormList, FileSelector} from './components/Upload';
-import {SongsList} from './components/Download';
+import {Download} from './components/Download'
 
 const App = () => {
   return (
     <>
-      <SongsList />
+      <Download />
       <FileFormList />
       <FileSelector />
     </>

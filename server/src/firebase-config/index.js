@@ -12,6 +12,16 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 database.ref('test').once('value').then(s => console.log('[schema] s.val(): ', s.val()))
-const path = require('path');
-
 exports.database = database;
+
+const admin = require('firebase-admin')
+const path = require('path');
+const serviceAccount = require('../../firebase-music-key.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const db = admin.firestore();
+
+exports.firestore_db = db

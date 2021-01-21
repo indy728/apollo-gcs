@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLazyQuery, useQuery, useMutation } from "@apollo/client";
-import {SONGS_QUERY} from '../apollo';
+import {SONGS_QUERY} from '../../apollo';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -21,14 +21,19 @@ import Paper from '@material-ui/core/Paper';
 //   createData('Gingerbread', 356, 16.0, 49, 3.9),
 // ];
 
-const SongsList = () => {
-  const [getSongs, {data, error, loading}] = useLazyQuery(SONGS_QUERY)
+const SongsList = ({query = '', queryType = 'artist'}) => {
+  const {data, error, loading} = useQuery(SONGS_QUERY, {
+    variables: {query, queryType}
+  })
   console.log(data)
 
   let rows = undefined
   if (data) {
-    rows = data.songs
+    rows = data.searchTracks
   }
+
+  if (loading) return <div>...searching...</div>
+  if (error) return <div>...error...</div>
 
   return (
     <main>
@@ -57,7 +62,6 @@ const SongsList = () => {
         </TableBody>
       </Table>
     </TableContainer>)}
-    <div onClick={getSongs}><span>GET SONGS</span></div>
     </main>
   )
 }

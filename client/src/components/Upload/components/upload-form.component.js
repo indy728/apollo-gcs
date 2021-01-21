@@ -23,16 +23,24 @@ const UploadCard = styled(Card)`
 
 const getKeywords = ({title, artist, key, tags}) => {
   const keywords = [];
-  
-  // @TODO: remove parens, etc from keywords... this is OK
-  const alnum = new RegExp('[^a-zA-Z0-9 -]')
-  title.split(' ').forEach((x) => {
-    keywords.push(x.toLowerCase().replace(alnum, ''))
-  })
-  artist.split(', ').map(y => y.split(' ')).flat().forEach(z => {keywords.push(z.toLowerCase())})
+
+  // Split title by word, remove parentheses
+  title.split(' ')
+    .forEach((x) => {
+      keywords.push(x.toLowerCase().replace(/\W+/g, ''))
+    });
+  // Split artists and split artist names by whitespace
+  artist.split(', ')
+    .map(y => y.split(' ')).flat()
+    .forEach(z => {
+      keywords.push(z.toLowerCase())
+    });
+  // Include key in keywords
   if (key && key.length) {
     keywords.push(key)
   }
+  // @TODO: Include tags (ie deep house, techno, etc..)
+
   return keywords
 }
 
@@ -47,6 +55,7 @@ export const UploadForm = ({metadata: {
       console.log(x)
     }
   })
+
   const {register, errors, handleSubmit, control} = useForm({
     defaultValues: {
       title: title || '',
@@ -62,14 +71,17 @@ export const UploadForm = ({metadata: {
 
   const onSubmit = values => {
     const keywords = getKeywords(values)
-    console.log(keywords)
+    const _artist = values.artist.toLowerCase();
+    const _title = values.title.toLowerCase();
+    console.log('[upload-form.component] _artist, _title: ', _artist, _title)
 
     console.log(values)
-    if (fbWrite({variables: {entry: {...values, keywords}}})) {
+    if (fbWrite({variables: {entry: {...values, keywords, _artist, _title}}})) {
       console.log('[upload-form.component] values.filename: ', values.filename)
       deleteFiles({variables: {file: filename}})
     }
   }
+
   return (
     <UploadCard>
       <CardContent>

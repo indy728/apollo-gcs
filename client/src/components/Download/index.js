@@ -1,1 +1,1 @@
-export {default as SongsList} from './songs-list.download';
+export {default as Download} from './Download.js'

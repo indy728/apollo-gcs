@@ -1,25 +1,21 @@
 const {gql} = require('apollo-server-express');
 const {createWriteStream, readdirSync, unlinkSync, truncate} = require('fs');
 const mm = require('music-metadata');
-// const util = require('util')
 const {Storage} = require('@google-cloud/storage');
-const {fbWrite} = require('./mutations')
-// const firebase = require('firebase');
-// var firebaseConfig = {
-//   apiKey: process.env.FIREBASE_CONFIG_APIKEY,
-//   authDomain: process.env.FIREBASE_CONFIG_AUTHDOMAIN,
-//   projectId: process.env.FIREBASE_CONFIG_PROJECTID,
-//   storageBucket: process.env.FIREBASE_CONFIG_STORAGEBUCKET,
-//   messagingSenderId: process.env.FIREBASE_CONFIG_MESSAGINGSENDERID,
-//   appId: process.env.FIREBASE_CONFIG_APPID,
-//   measurementId: process.env.FIREBASE_CONFIG_MEASUREMENTID,
-// };
+const {fbWrite, fsAdd} = require('./mutations')
+
 // // Initialize Firebase
 // firebase.initializeApp(firebaseConfig);
 // const database = firebase.database();
 // database.ref('test').once('value').then(s => console.log('[schema] s.val(): ', s.val()))
-const {database} = require('./firebase-config')
+const {database, firestore_db} = require('./firebase-config')
 const path = require('path');
+
+firestore_db.collection('test').get().then(snapshot => {
+  snapshot.forEach((doc) => {
+    console.log(doc.id, '=>', doc.data());
+  });
+});
 
 const gcsClient = new Storage({
   keyFile: path.join(__dirname, '..', 'gcs-music-bucket-key.json'),
@@ -32,11 +28,10 @@ const gcsClient = new Storage({
 // console.log(files)
 const musicBucket = gcsClient.bucket('music-storage-test')
 
-
 const typeDefs = gql`
  type Query {
    files: [MetaData],
-   songs: [MetaData],
+   searchTracks(query: String!, queryType: String!): [MetaData],
  }
 
   type MetaData {
@@ -56,10 +51,12 @@ const typeDefs = gql`
 
   input SongInput {
     format: String,
-    title: String,
+    title: String!,
+    _title: String,
     filename: String,
     duration: String,
     artist: String,
+    _artist: String!,
     key: String,
     bpm: String,
     keywords: [String],
@@ -119,18 +116,37 @@ const resolvers = {
 
       return mds;
     },
-    songs: async () => {
-
-      return await database.ref('songs').once('value').then((snap) => {
-        return Object.entries(snap.val())
-          .map(([id, info]) => {
-            return {...info, id}
-          })
+    searchTracks: async (_, {query, queryType}) => {
+      if (!query.length) return 
+      let tracksRef
+      if (queryType == 'keywords') {
+        tracksRef = firestore_db.collection('tracks')
+          .where(queryType, 'array-contains-any' , query.split(' '))
+      } else {
+        tracksRef = firestore_db.collection('tracks')
+          .where(queryType, '>=' , query)
+          .where(queryType, '<', query + '~');
+      }
+      const docs = await tracksRef.get()
+      const tracks = [];
+      docs.forEach(snapshot => {
+        const data = snapshot.data()
+        console.log('[schema] data: ', data)
+        tracks.push(data)
       })
+      console.log('[schema] tracks: ', tracks)
+      return tracks
+
+      // return await database.ref('songs').orderByValue('keywords').startAt('M').endAt('M'+'\uf8ff').once('value').then((snap) => {
+      //   return Object.entries(snap.val())
+      //     .map(([id, info]) => {
+      //       return {...info, id}
+      //     })
+      // })
     }
   },
   Mutation: {
-    fbWrite,
+    fbWrite: fsAdd,
     uploadToServer: async(_, { files }) => {
       await Promise.all(files.map(async(file) => {
         const { createReadStream, filename } = await file;

@@ -15,14 +15,12 @@ export const FILES_QUERY = gql`
 `;
 
 export const SONGS_QUERY = gql`
-  {
-    songs {
+  query SearchTracks($query: String!, $queryType: String!){
+    searchTracks(query: $query, queryType: $queryType) {
       title
       artist
       bpm
       key
-      # duration
-      id
     }
   }
 `
