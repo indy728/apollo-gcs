@@ -6,9 +6,9 @@ export const UPLOAD_BUCKET = gql`
   }
 `;
 
-export const FIREBASE_WRITE = gql`
-  mutation FbWrite($entry: SongInput) {
-    fbWrite(entry: $entry)
+export const FIRESTORE_ADD = gql`
+  mutation FsAdd($entry: SongInput) {
+    fsAdd(entry: $entry)
   }
 `;
 

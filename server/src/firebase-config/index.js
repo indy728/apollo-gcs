@@ -1,3 +1,6 @@
+const path = require('path');
+
+// INITIALIZE FIREBASE
 const firebase = require('firebase');
 var firebaseConfig = {
   apiKey: process.env.FIREBASE_CONFIG_APIKEY,
@@ -8,20 +11,25 @@ var firebaseConfig = {
   appId: process.env.FIREBASE_CONFIG_APPID,
   measurementId: process.env.FIREBASE_CONFIG_MEASUREMENTID,
 };
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-database.ref('test').once('value').then(s => console.log('[schema] s.val(): ', s.val()))
-exports.database = database;
+exports.database = firebase.database();;
 
+// INCLUDE SERVICE ACCOUNT CREDENTIALS, INITIALIZE CLOUD FIRESTORE
 const admin = require('firebase-admin')
-const path = require('path');
 const serviceAccount = require('../../firebase-music-key.json');
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-const db = admin.firestore();
+exports.firestore_db = admin.firestore();;
 
-exports.firestore_db = db
+// INITIALIZE CLOUD STORAGE, CONNECT TO BUCKET
+const {Storage} = require('@google-cloud/storage');
+const bucketName = process.env.CLOUD_STORAGE_BUCKET_NAME
+const gcsClient = new Storage({
+  keyFile: path.join(__dirname, '..', 'gcs-music-bucket-key.json'),
+  // Below is questionably needed
+  // projectId: 'music-bucket-test',
+})
+
+exports.musicBucket = gcsClient.bucket(bucketName)

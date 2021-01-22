@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@apollo/client";
 import React from "react";
-import {FILES_QUERY, DELETE_FILE, FIREBASE_WRITE} from '../apollo'
+import {FILES_QUERY, DELETE_FILE, FIRESTORE_ADD} from '../apollo'
 import styled from 'styled-components';
 import {UploadForm} from './components';
 import Paper from '@material-ui/core/Paper';
@@ -73,7 +73,7 @@ const FileFormList = () => {
         
       </>
     </FileUploadPaper>
-    {/* <button onClick={() => fbWrite({variables: {entry: 'show me 69'}})}>FB TEST</button> */}
+    {/* <button onClick={() => fsAdd({variables: {entry: 'show me 69'}})}>FB TEST</button> */}
     {/* <Copyright /> */}
   </FileUploadContainer>
   );

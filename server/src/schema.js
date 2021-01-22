@@ -1,38 +1,15 @@
 const {gql} = require('apollo-server-express');
-const {createWriteStream, readdirSync, unlinkSync, truncate} = require('fs');
+const {readdirSync} = require('fs');
 const mm = require('music-metadata');
-const {Storage} = require('@google-cloud/storage');
-const {fbWrite, fsAdd} = require('./mutations')
-
-// // Initialize Firebase
-// firebase.initializeApp(firebaseConfig);
-// const database = firebase.database();
-// database.ref('test').once('value').then(s => console.log('[schema] s.val(): ', s.val()))
-const {database, firestore_db} = require('./firebase-config')
+const {fsAdd, uploadToServer, deleteFile} = require('./mutations')
+const {firestore_db} = require('./firebase-config')
 const path = require('path');
 
-firestore_db.collection('test').get().then(snapshot => {
-  snapshot.forEach((doc) => {
-    console.log(doc.id, '=>', doc.data());
-  });
-});
-
-const gcsClient = new Storage({
-  keyFile: path.join(__dirname, '..', 'gcs-music-bucket-key.json'),
-  // Below is questionably needed
-  // projectId: 'music-bucket-test',
-})
-
-// let files = [];
-// const files = 
-// console.log(files)
-const musicBucket = gcsClient.bucket('music-storage-test')
-
 const typeDefs = gql`
- type Query {
-   files: [MetaData],
-   searchTracks(query: String!, queryType: String!): [MetaData],
- }
+  type Query {
+    files: [MetaData],
+    searchTracks(query: String!, queryType: String!): [MetaData],
+  }
 
   type MetaData {
     format: String,
@@ -66,9 +43,9 @@ const typeDefs = gql`
   }
 
  type Mutation {
-   uploadToBucket(files: [Upload!]): Boolean,
+   uploadToBucket(files: [String!]): Boolean,
    uploadToServer(files: [Upload!]): Boolean,
-   fbWrite(entry: SongInput): Boolean,
+   fsAdd(entry: SongInput): [String],
    deleteFile(file: String!): Boolean
  }
 `
@@ -131,10 +108,8 @@ const resolvers = {
       const tracks = [];
       docs.forEach(snapshot => {
         const data = snapshot.data()
-        console.log('[schema] data: ', data)
         tracks.push(data)
       })
-      console.log('[schema] tracks: ', tracks)
       return tracks
 
       // return await database.ref('songs').orderByValue('keywords').startAt('M').endAt('M'+'\uf8ff').once('value').then((snap) => {
@@ -146,39 +121,9 @@ const resolvers = {
     }
   },
   Mutation: {
-    fbWrite: fsAdd,
-    uploadToServer: async(_, { files }) => {
-      await Promise.all(files.map(async(file) => {
-        const { createReadStream, filename } = await file;
-        await new Promise(resolve => 
-          createReadStream()
-            .pipe(createWriteStream(path.join(__dirname, 'tmp-music', filename)))
-            .on('close', resolve)  
-        )
-      }))
-
-      return true
-    },
-    // figure out how to get an Upload type out of the file address
-    // uploadToBucket: async(_, { files }) => {
-    //   await Promise.all(files.map(async({createReadStream, filename}) => {
-    //     await new Promise(resolve => 
-    //       createReadStream()
-    //         .pipe(
-    //           musicBucket.file(filename).createWriteStream({
-    //             gzip: true
-    //           })
-    //         )
-    //         .on('finish', resolve)  
-    //     )
-    //   }))
-    //   return true;
-    // },
-    deleteFile: (_, {file}) => {
-      const url = path.join(__dirname, 'tmp-music', file)
-      unlinkSync(url)
-      return true
-    }
+    fsAdd,
+    uploadToServer,
+    deleteFile,
   }
 }
 exports.typeDefs = typeDefs;

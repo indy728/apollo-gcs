@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client";
 import React from "react";
-import {FIREBASE_WRITE, DELETE_FILE} from '../../apollo'
+import {FIRESTORE_ADD, DELETE_FILE} from '../../apollo'
 import {useForm, Controller} from 'react-hook-form'
 import styled from 'styled-components'
 import Button from '@material-ui/core/Button';
@@ -49,7 +49,7 @@ export const UploadForm = ({metadata: {
 }, deleteFiles}) => {
   duration = duration || 0
   const songLength = `${Math.floor(duration / 60)}:${Math.floor(duration % 60).toString().padStart(2, "0")}`
-  const [fbWrite] = useMutation(FIREBASE_WRITE, {
+  const [fsAdd, {loading, data, error}] = useMutation(FIRESTORE_ADD, {
     onCompleted: (x) => {
 
       console.log(x)
@@ -73,13 +73,21 @@ export const UploadForm = ({metadata: {
     const keywords = getKeywords(values)
     const _artist = values.artist.toLowerCase();
     const _title = values.title.toLowerCase();
-    console.log('[upload-form.component] _artist, _title: ', _artist, _title)
 
-    console.log(values)
-    if (fbWrite({variables: {entry: {...values, keywords, _artist, _title}}})) {
-      console.log('[upload-form.component] values.filename: ', values.filename)
-      deleteFiles({variables: {file: filename}})
-    }
+    fsAdd({variables: {entry: {...values, keywords, _artist, _title}}}).then(({data: {fsAdd: res}}) => {
+      if (!res.length) {
+        console.log('[upload-form.component] values.filename: ', values.filename)
+        deleteFiles({variables: {file: filename}})
+      }
+    })
+  }
+
+  if (loading) {
+    return <div>...Uploading...</div>
+  }
+
+  if (error) {
+    return <div>...Error...</div>
   }
 
   return (

@@ -1,6 +1,7 @@
 import React from 'react';
-import { useLazyQuery, useQuery, useMutation } from "@apollo/client";
-import {SONGS_QUERY} from '../../apollo';
+import { useQuery, } from "@apollo/client";
+import styled from 'styled-components';
+import {SONGS_QUERY} from '../../../../apollo';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -8,20 +9,23 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Container from '@material-ui/core/Container'
+import Typography from '@material-ui/core/Typography'
 
-// function createData(name, calories, fat, carbs, protein) {
-//   return { name, calories, fat, carbs, protein };
-// }
+const QuerySection = styled(Container)`
+  && {
+    padding: 40px 0;
 
-// const rows = [
-//   createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-//   createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-//   createData('Eclair', 262, 16.0, 24, 6.0),
-//   createData('Cupcake', 305, 3.7, 67, 4.3),
-//   createData('Gingerbread', 356, 16.0, 49, 3.9),
-// ];
+    &:first-of-type {
+      border-top: 1px solid grey;
+    }
+    &:not(:first-of-type) {
+      border-bottom: 1px solid grey;
+    }
+  }
+`
 
-const SongsList = ({query = '', queryType = 'artist'}) => {
+const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
   const {data, error, loading} = useQuery(SONGS_QUERY, {
     variables: {query, queryType}
   })
@@ -30,14 +34,21 @@ const SongsList = ({query = '', queryType = 'artist'}) => {
   let rows = undefined
   if (data) {
     rows = data.searchTracks
+  } 
+
+  if (!rows || !rows.length) {
+    return null
   }
 
-  if (loading) return <div>...searching...</div>
+  // if (loading) return <div>...searching...</div>
   if (error) return <div>...error...</div>
 
   return (
-    <main>
-      {rows && (
+    <QuerySection key={key}>
+      <Typography variant="h5">
+        {text}
+      </Typography>
+      {rows && loading ? <div>...searching...</div> : (
       <TableContainer component={Paper}>
       <Table aria-label="simple table">
         <TableHead>
@@ -62,8 +73,8 @@ const SongsList = ({query = '', queryType = 'artist'}) => {
         </TableBody>
       </Table>
     </TableContainer>)}
-    </main>
+    </QuerySection>
   )
 }
 
-export default SongsList;
+export default TrackList;

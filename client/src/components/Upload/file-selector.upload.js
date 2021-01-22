@@ -14,12 +14,11 @@ const FileSelector = () => {
     uploadToServer({variables: {files: selected}})
   }
 
-
   return (
     <div>
       <input type="file" accept=".mp3,.wav,.aif,.aiff" onChange={handleFileChange} multiple />
     </div>
-    )
+  )
 }
 
 export default FileSelector;
