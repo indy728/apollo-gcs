@@ -1,9 +1,95 @@
 
 import React from "react";
-import {BrowserRouter, Switch, Route, Redirect, Link} from 'react-router-dom';
+import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom';
+import {createGlobalStyle, ThemeProvider} from 'styled-components'
 import {FileFormList, FileSelector} from './components/Upload';
 import Search from './components/Search'
 import {TopNav} from './components/navigation';
+
+const theme = {
+  background: {
+    black: '#000000',
+    dark: '#0c0032',
+    subDark: '#190061',
+    medium: '#240090',
+    subLight: '#3500d3',
+    grey: '#282828',
+  },
+  text: {
+    white: '#fffaff',
+    grey: 'c8c8c8',
+  }
+}
+
+const GlobalStyle = createGlobalStyle`
+    * { 
+        margin: 0;
+        padding: 0;
+        color: ${theme.text.white};
+    }
+    *,
+    *::after,
+    *::before {
+        box-sizing: inherit;
+        -moz-box-sizing: inherit; 
+        -webkit-box-sizing: inherit;
+    }
+    html {
+        box-sizing: border-box;
+        font-size: 62.5%;
+    }
+    body {
+        @import url('https://fonts.googleapis.com/css?family=Lobster|Lora|Montserrat:700|Swanky+and+Moo+Moo|Ubuntu&display=swap');
+        background: ${theme.background.black};
+        min-height: 100vh;
+    }
+
+    @media (min-width: 760px) {
+      html {
+        font-size: 100%;
+      }
+    }
+`;
+
+ /* font-family: ${({ theme }) => theme.fonts.primary};
+        font-size: ${({ theme }) => theme.mobile.base};
+        
+        h1 {
+            font-size: ${({ theme }) => theme.mobile.header};
+            text-align: center;
+        }
+        h2 {
+            font-size: ${({ theme }) => theme.mobile.subheader}
+        }
+        @media (min-width: ${({ theme }) => theme.media.tablet}) {
+            font-size: ${({ theme }) => theme.tablet.base};
+        
+            h1 {
+                font-size: ${({ theme }) => theme.tablet.header};
+                text-align: center;
+            }
+            h2 {
+                font-size: ${({ theme }) => theme.tablet.subheader}
+            }
+        }
+        @media (min-width: ${({ theme }) => theme.media.desktop}) {
+            font-size: ${({ theme }) => theme.desktop.base};
+        
+            h1 {
+                font-size: ${({ theme }) => theme.desktop.header};
+                text-align: center;
+            }
+            h2 {
+                font-size: ${({ theme }) => theme.desktop.subheader}
+            }
+        }
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: ${({ theme }) => theme.fonts.header};
+        font-weight: 300;
+        text-transform: uppercase;
+    } */
+
 
 const App = () => {
   const Upload = () => (
@@ -23,9 +109,12 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <TopNav />
-        {routes}
-      {/* Bottom Nav */}
+      <ThemeProvider theme={theme}>
+        <GlobalStyle />
+        <TopNav />
+          {routes}
+        {/* Bottom Nav */}
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

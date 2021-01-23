@@ -12,24 +12,52 @@ import Paper from '@material-ui/core/Paper';
 import Container from '@material-ui/core/Container'
 import Typography from '@material-ui/core/Typography'
 
+const theme = {
+  darkPurple: '#190b28ff',
+  deepSpaceSparkle: '#4f6367ff',
+  cadetBlue: '#7a9e9fff',
+  pastelPink: '#efa9aeff',
+  beige: '#eef5dbff',
+}
+
 const QuerySection = styled(Container)`
   && {
     padding: 40px 0;
+    background-color: ${theme.darkPurple};
 
-    &:first-of-type {
+    /* &:first-of-type {
       border-top: 1px solid grey;
-    }
-    &:not(:first-of-type) {
-      border-bottom: 1px solid grey;
+    } */
+    &:not(:last-of-type) {
+      border-bottom: 1px solid ${theme.cadetBlue};
     }
   }
+`
+
+const DataRow = styled(TableRow)`
+  && {
+    background-color: ${theme.deepSpaceSparkle};
+
+    &:nth-of-type(odd) {
+      background-color: ${theme.cadetBlue};
+    }
+  }
+`
+
+const DataCell = styled(TableCell)`
+  && {
+    color: ${theme.beige};
+  }
+`
+
+const TracksTable = styled(Table)`
+  background-color: ${theme.deepSpaceSparkle};
 `
 
 const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
   const {data, error, loading} = useQuery(SONGS_QUERY, {
     variables: {query, queryType}
   })
-  console.log(data)
 
   let rows = undefined
   if (data) {
@@ -50,7 +78,7 @@ const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
       </Typography>
       {rows && loading ? <div>...searching...</div> : (
       <TableContainer component={Paper}>
-      <Table aria-label="simple table">
+      <TracksTable aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>Song Title</TableCell>
@@ -61,17 +89,17 @@ const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
         </TableHead>
         <TableBody>
           {rows.map((row, idx) => (
-            <TableRow key={row.title + idx}>
-              <TableCell component="th" scope="row">
+            <DataRow key={row.title + idx}>
+              <DataCell component="th" scope="row">
                 {row.title}
-              </TableCell>
-              <TableCell align="right">{row.artist}</TableCell>
-              <TableCell align="right">{row.bpm}</TableCell>
-              <TableCell align="right">{row.key}</TableCell>
-            </TableRow>
+              </DataCell>
+              <DataCell align="right">{row.artist}</DataCell>
+              <DataCell align="right">{row.bpm}</DataCell>
+              <DataCell align="right">{row.key}</DataCell>
+            </DataRow>
           ))}
         </TableBody>
-      </Table>
+      </TracksTable>
     </TableContainer>)}
     </QuerySection>
   )

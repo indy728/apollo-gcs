@@ -1,4 +1,5 @@
-import React, {useState} from 'react'
+import React, {useState} from 'react';
+import styled from 'styled-components';
 import Container from '@material-ui/core/Container';
 import {SearchField, TrackList} from './components';
 
@@ -6,7 +7,7 @@ const searchLists = [
   {
     key: 'artists',
     text: 'Artists',
-    queryType: '_artists'
+    queryType: '_artist'
   },
   {
     key: 'titles',
@@ -20,18 +21,24 @@ const searchLists = [
   },
 ]
 
+const TracksPageContainer = styled(Container)`
+  && {
+    background-color: ${({theme: {background}}) => background.dark}
+  }
+`
+
 const SearchTracks = () => {
   const [query, setQuery] = useState('')
   const onChange = e => setQuery(e.target.value);
 
   return (
-    <Container>
+    <TracksPageContainer>
       <SearchField onChange={onChange} />
 
       {searchLists.map((list) => (
         <TrackList query={query} list={list} />
       ))}
-    </Container>
+    </TracksPageContainer>
   )
 }
 

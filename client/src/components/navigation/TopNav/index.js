@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import styled from 'styled-components';
 import {Link, withRouter} from 'react-router-dom';
 import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -21,9 +22,19 @@ const links = [
   },
 ]
 
-const TopNav = ({location}) => {
+const StyledToolbar = styled(Toolbar)`
+  background-color: ${({theme: {background}}) => background.dark};
+  height: 100px;
+  
+  && {
+    * {
+      font-size: 2rem;
+    }
+  }
+`
+
+const TopNav = () => {
   const [menuAnchor, setMenuAnchor] = useState()
-  console.log(location)
 
   const handleMenuToggle = (e) => {
     setMenuAnchor(menuAnchor ? null : e.currentTarget)
@@ -55,7 +66,7 @@ const TopNav = ({location}) => {
 
   return (
     <AppBar position="static">
-      <Toolbar>
+      <StyledToolbar>
         <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleMenuToggle}>
           <MenuIcon />
           {menu}
@@ -64,7 +75,7 @@ const TopNav = ({location}) => {
           Indy's DJ Track Database
         </Typography>
         {/* @TODO: User / Logout */}
-      </Toolbar>
+      </StyledToolbar>
     </AppBar>
   )
 }

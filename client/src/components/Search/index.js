@@ -5,7 +5,7 @@ import SearchTracks from './components/Search'
 const LookupTracks = () => {
   return (
     <>
-      <main>
+      <main style={{margin: '2rem'}}>
         {/* Switch: search or browse */}
         {/* browsed selection */}
         <SearchTracks />
