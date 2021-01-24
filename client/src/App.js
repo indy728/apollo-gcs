@@ -9,10 +9,10 @@ import {TopNav} from './components/navigation';
 const theme = {
   background: {
     black: '#000000',
-    dark: '#0c0032',
-    subDark: '#190061',
-    medium: '#240090',
-    subLight: '#3500d3',
+    dark0: '#0c0032',
+    dark1: '#190061',
+    dark2: '#240090',
+    dark3: '#3500d3',
     grey: '#282828',
   },
   text: {
@@ -39,7 +39,7 @@ const GlobalStyle = createGlobalStyle`
         font-size: 62.5%;
     }
     body {
-        @import url('https://fonts.googleapis.com/css?family=Lobster|Lora|Montserrat:700|Swanky+and+Moo+Moo|Ubuntu&display=swap');
+        @import url('https://fonts.googleapis.com/css?family=Lobster|Lora|Montserrat:700|Swanky+and+Moo+Moo|Ubuntu|Barlow+Condensed:wght@300&display=swap');
         background: ${theme.background.black};
         min-height: 100vh;
     }

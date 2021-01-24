@@ -12,46 +12,42 @@ import Paper from '@material-ui/core/Paper';
 import Container from '@material-ui/core/Container'
 import Typography from '@material-ui/core/Typography'
 
-const theme = {
-  darkPurple: '#190b28ff',
-  deepSpaceSparkle: '#4f6367ff',
-  cadetBlue: '#7a9e9fff',
-  pastelPink: '#efa9aeff',
-  beige: '#eef5dbff',
-}
-
 const QuerySection = styled(Container)`
   && {
     padding: 40px 0;
-    background-color: ${theme.darkPurple};
+    background-color: ${({theme: {background}}) => background.dark0};
 
     /* &:first-of-type {
       border-top: 1px solid grey;
     } */
     &:not(:last-of-type) {
-      border-bottom: 1px solid ${theme.cadetBlue};
+      border-bottom: 1px solid ${({theme: {background}}) => background.dark2};
     }
   }
 `
 
 const DataRow = styled(TableRow)`
-  && {
-    background-color: ${theme.deepSpaceSparkle};
+  background-color: ${({theme: {background}}) => background.dark1};
 
-    &:nth-of-type(odd) {
-      background-color: ${theme.cadetBlue};
-    }
+  &:nth-of-type(odd) {
+    background-color: ${({theme: {background}}) => background.dark2};
+  }
+
+  :hover {
+    background-color: ${({theme: {background}}) => background.dark3};
   }
 `
 
 const DataCell = styled(TableCell)`
-  && {
-    color: ${theme.beige};
-  }
 `
 
 const TracksTable = styled(Table)`
-  background-color: ${theme.deepSpaceSparkle};
+  background-color: ${({theme: {background}}) => background.black};
+  
+  & th, td {
+    color: ${({theme: {text}}) => text.white};
+    font-family: 'Barlow Condensed', sans-serif;
+  }
 `
 
 const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {

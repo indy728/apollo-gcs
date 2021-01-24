@@ -23,13 +23,13 @@ const searchLists = [
 
 const TracksPageContainer = styled(Container)`
   && {
-    background-color: ${({theme: {background}}) => background.dark}
+    background-color: ${({theme: {background}}) => background.dark0}
   }
 `
 
 const SearchTracks = () => {
   const [query, setQuery] = useState('')
-  const onChange = e => setQuery(e.target.value);
+  const onChange = e => setQuery(e.target.value.toLowerCase());
 
   return (
     <TracksPageContainer>

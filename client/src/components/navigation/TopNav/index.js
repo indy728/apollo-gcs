@@ -23,7 +23,7 @@ const links = [
 ]
 
 const StyledToolbar = styled(Toolbar)`
-  background-color: ${({theme: {background}}) => background.dark};
+  background-color: ${({theme: {background}}) => background.dark0};
   height: 100px;
   
   && {
