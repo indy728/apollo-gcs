@@ -21,6 +21,14 @@ export const SONGS_QUERY = gql`
       artist
       bpm
       key
+      signedUrl
+      filename
     }
+  }
+`
+
+export const DOWNLOAD_TRACKS = gql`
+  query DownloadTracks($filename: String!){
+    downloadTracks(filename: $filename)
   }
 `

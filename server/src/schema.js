@@ -2,13 +2,14 @@ const {gql} = require('apollo-server-express');
 const {readdirSync} = require('fs');
 const mm = require('music-metadata');
 const {fsAdd, uploadToServer, deleteFile} = require('./mutations')
-const {firestore_db} = require('./firebase-config')
+const {firestore_db, musicBucket} = require('./firebase-config')
 const path = require('path');
 
 const typeDefs = gql`
   type Query {
     files: [MetaData],
     searchTracks(query: String!, queryType: String!): [MetaData],
+    downloadTracks(filename: String): String,
   }
 
   type MetaData {
@@ -21,6 +22,8 @@ const typeDefs = gql`
     key: String,
     bpm: String,
     id: String,
+    directUrl: String,
+    signedUrl: String,
     # save album art for another time
     # involves converting hex octets to tmp-music
     # picture: []
@@ -118,6 +121,16 @@ const resolvers = {
       //       return {...info, id}
       //     })
       // })
+    },
+    downloadTracks: async (_, {filename}) => {
+      const destination = path.join(__dirname, 'new-music', )
+      const options = {
+        destination: __dirname + '/new-music/' + filename
+      }
+      const res = await musicBucket.file(filename).download(options)
+
+      if (res) return 'Success'
+      return 'Fail'
     }
   },
   Mutation: {

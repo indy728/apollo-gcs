@@ -1,7 +1,7 @@
 import React from 'react';
-import { useQuery, } from "@apollo/client";
+import { useQuery, useLazyQuery} from "@apollo/client";
 import styled from 'styled-components';
-import {SONGS_QUERY} from '../../../../apollo';
+import {SONGS_QUERY, DOWNLOAD_TRACKS} from '../../../../apollo';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -11,6 +11,24 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Container from '@material-ui/core/Container'
 import Typography from '@material-ui/core/Typography'
+import axios from 'axios';
+
+export const localAPI = ({url, ...props}) => {
+  const body = JSON.stringify({
+    ...props
+  });
+  let options = {
+    url,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+  };
+  console.log('[track-list.search] body: ', body)
+
+  return axios(options).then(res => console.log('[track-list.search] res: ', res))
+}
 
 const QuerySection = styled(Container)`
   && {
@@ -54,11 +72,22 @@ const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
   const {data, error, loading} = useQuery(SONGS_QUERY, {
     variables: {query, queryType}
   })
+  const [
+    downloadTracks,
+    { 
+      data: download_data,
+      error: download_error,
+      loading: download_loading
+    }
+  ] = useLazyQuery(DOWNLOAD_TRACKS, {
+    fetchPolicy: "network-only"
+  })
 
   let rows = undefined
   if (data) {
     rows = data.searchTracks
-  } 
+  }
+  
 
   if (!rows || !rows.length) {
     return null
@@ -80,7 +109,9 @@ const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
             <TableCell>Song Title</TableCell>
             <TableCell align="right">Artist</TableCell>
             <TableCell align="right">BPM</TableCell>
-            <TableCell align="right">key</TableCell>
+            <TableCell align="right">Key</TableCell>
+            <TableCell align="right">Filename</TableCell>
+            <TableCell align="right">Download</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -92,6 +123,15 @@ const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
               <DataCell align="right">{row.artist}</DataCell>
               <DataCell align="right">{row.bpm}</DataCell>
               <DataCell align="right">{row.key}</DataCell>
+              <DataCell align="right">{row.filename}</DataCell>
+              <DataCell align="right">
+                {download_loading ? <div>...downloading...</div> : (
+                  <div onClick={() => downloadTracks({variables: {filename: row.filename}})}>
+                    Download
+                  </div>
+                )
+                }
+              </DataCell>
             </DataRow>
           ))}
         </TableBody>
