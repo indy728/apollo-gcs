@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useQuery, useLazyQuery} from "@apollo/client";
 import styled from 'styled-components';
 import {SONGS_QUERY, DOWNLOAD_TRACKS} from '../../../../apollo';
@@ -12,23 +12,8 @@ import Paper from '@material-ui/core/Paper';
 import Container from '@material-ui/core/Container'
 import Typography from '@material-ui/core/Typography'
 import axios from 'axios';
+import fileDownload from 'js-file-download'
 
-export const localAPI = ({url, ...props}) => {
-  const body = JSON.stringify({
-    ...props
-  });
-  let options = {
-    url,
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-  };
-  console.log('[track-list.search] body: ', body)
-
-  return axios(options).then(res => console.log('[track-list.search] res: ', res))
-}
 
 const QuerySection = styled(Container)`
   && {
@@ -44,7 +29,7 @@ const QuerySection = styled(Container)`
   }
 `
 
-const DataRow = styled(TableRow)`
+const StyledTableRow = styled(TableRow)`
   background-color: ${({theme: {background}}) => background.dark1};
 
   &:nth-of-type(odd) {
@@ -56,7 +41,7 @@ const DataRow = styled(TableRow)`
   }
 `
 
-const DataCell = styled(TableCell)`
+const StyledTableCell = styled(TableCell)`
 `
 
 const TracksTable = styled(Table)`
@@ -68,19 +53,74 @@ const TracksTable = styled(Table)`
   }
 `
 
+export const localAPI = ({url, ...props}) => {
+  const body = JSON.stringify({
+    ...props
+  });
+  let options = {
+    url,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    responseType: 'blob',
+  };
+
+  return axios(options)
+}
+
+const downloadTrack = async({filename}) => {
+  try {
+    const res = await localAPI({url: 'http://localhost:4000/download', filename});
+    fileDownload(new Blob([res.data]), filename)
+  } catch (err) {
+    console.log('[track-list.search] err.message: ', err.message)
+  }
+}
+
+const DataRow = ({data: {title, artist, bpm, key, filename}, idx}) => {
+  const [
+    downloadTracks,
+    { loading }
+  ] = useLazyQuery(DOWNLOAD_TRACKS, {
+    fetchPolicy: "network-only",
+    onCompleted: () => downloadTrack({filename}),
+    // onError: err => null, display error popup,
+  })
+
+  return (
+    <StyledTableRow key={idx}>
+      <StyledTableCell component="th" scope="row">
+        {title}
+      </StyledTableCell>
+      <StyledTableCell align="right">{artist}</StyledTableCell>
+      <StyledTableCell align="right">{bpm}</StyledTableCell>
+      <StyledTableCell align="right">{key}</StyledTableCell>
+      <StyledTableCell align="right">{filename}</StyledTableCell>
+      <StyledTableCell align="right">
+        {loading ? <div>...retrieving...</div> : (
+          <>
+          <div onClick={() => downloadTracks({variables: {filename}})}>
+            Select
+            
+          </div>
+          {/* {data && data.downloadTracks === 'Success' && (
+            <div onClick={() => localAPI({url: 'http://localhost:4000/download', filename})}>
+              Download
+            </div>
+          )} */}
+          </>
+        )
+        }
+      </StyledTableCell>
+    </StyledTableRow>
+  )
+}
+
 const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
   const {data, error, loading} = useQuery(SONGS_QUERY, {
     variables: {query, queryType}
-  })
-  const [
-    downloadTracks,
-    { 
-      data: download_data,
-      error: download_error,
-      loading: download_loading
-    }
-  ] = useLazyQuery(DOWNLOAD_TRACKS, {
-    fetchPolicy: "network-only"
   })
 
   let rows = undefined
@@ -111,28 +151,14 @@ const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
             <TableCell align="right">BPM</TableCell>
             <TableCell align="right">Key</TableCell>
             <TableCell align="right">Filename</TableCell>
-            <TableCell align="right">Download</TableCell>
+            <TableCell align="right">
+              Download
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row, idx) => (
-            <DataRow key={row.title + idx}>
-              <DataCell component="th" scope="row">
-                {row.title}
-              </DataCell>
-              <DataCell align="right">{row.artist}</DataCell>
-              <DataCell align="right">{row.bpm}</DataCell>
-              <DataCell align="right">{row.key}</DataCell>
-              <DataCell align="right">{row.filename}</DataCell>
-              <DataCell align="right">
-                {download_loading ? <div>...downloading...</div> : (
-                  <div onClick={() => downloadTracks({variables: {filename: row.filename}})}>
-                    Download
-                  </div>
-                )
-                }
-              </DataCell>
-            </DataRow>
+            <DataRow key={idx} idx={idx} data={row} />
           ))}
         </TableBody>
       </TracksTable>

@@ -123,14 +123,17 @@ const resolvers = {
       // })
     },
     downloadTracks: async (_, {filename}) => {
-      const destination = path.join(__dirname, 'new-music', )
+      const destination = path.join(__dirname, 'new-music', filename)
       const options = {
-        destination: __dirname + '/new-music/' + filename
+        destination,
       }
-      const res = await musicBucket.file(filename).download(options)
 
-      if (res) return 'Success'
-      return 'Fail'
+      try {
+        await musicBucket.file(filename).download(options)
+        return `Success`
+      } catch(err) {
+        return 'Fail'
+      }
     }
   },
   Mutation: {

@@ -22,10 +22,12 @@ const theme = {
 }
 
 const GlobalStyle = createGlobalStyle`
+
     * { 
         margin: 0;
         padding: 0;
         color: ${theme.text.white};
+        font-family: 'Source Sans Pro', sans-serif !important;
     }
     *,
     *::after,
@@ -39,7 +41,6 @@ const GlobalStyle = createGlobalStyle`
         font-size: 62.5%;
     }
     body {
-        @import url('https://fonts.googleapis.com/css?family=Lobster|Lora|Montserrat:700|Swanky+and+Moo+Moo|Ubuntu|Barlow+Condensed:wght@300&display=swap');
         background: ${theme.background.black};
         min-height: 100vh;
     }
