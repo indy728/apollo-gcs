@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const FILES_QUERY = gql`
   {
-    files {
+    stagedTracks {
       format
       title
       duration
@@ -14,14 +14,13 @@ export const FILES_QUERY = gql`
   }
 `;
 
-export const SONGS_QUERY = gql`
+export const TRACKS_QUERY = gql`
   query SearchTracks($query: String!, $queryType: String!){
     searchTracks(query: $query, queryType: $queryType) {
       title
       artist
       bpm
       key
-      signedUrl
       filename
     }
   }
@@ -29,6 +28,6 @@ export const SONGS_QUERY = gql`
 
 export const DOWNLOAD_TRACKS = gql`
   query DownloadTracks($filename: String!){
-    downloadTracks(filename: $filename)
+    retrieveTrackFromStorage(filename: $filename)
   }
 `

@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@apollo/client";
 import React from "react";
-import {FILES_QUERY, DELETE_FILE, FIRESTORE_ADD} from '../apollo'
+import {FILES_QUERY, UNSTAGE_TRACKS, TRACK_UPLOAD} from '../apollo'
 import styled from 'styled-components';
 import {UploadForm} from './components';
 import Paper from '@material-ui/core/Paper';
@@ -26,7 +26,7 @@ const FileUploadPaper = styled(Paper)`
 
 const FileFormList = () => {
   const { data, loading, error } = useQuery(FILES_QUERY);
-  const [deleteFiles] = useMutation(DELETE_FILE, {
+  const [unstageTracks] = useMutation(UNSTAGE_TRACKS, {
     refetchQueries: [{ query: FILES_QUERY}],
     // onCompleted: data => console.log('[Files] del_data: ', del_data)
   })
@@ -36,7 +36,7 @@ const FileFormList = () => {
   }
   if (error) {
     console.log(error.message)
-    return <div>error importing files</div>
+    return <div>error importing stagedTracks</div>
   }
 
   console.log('[Files] data: ', data)
@@ -44,7 +44,7 @@ const FileFormList = () => {
   // const handleDelete = (file) => {
   //   console.log('[Files] file: ', file)
   //   if (file) {
-  //     deleteFiles({variables: {file}})
+  //     unstageTracks({variables: {files: [file]}})
   //   }
   // }
 
@@ -65,15 +65,15 @@ const FileFormList = () => {
           ))}
         </Stepper> */}
       <>
-           {data.files && data.files.map((metadata, i) => {
+           {data.stagedTracks && data.stagedTracks.map((metadata, i) => {
     
             return (
-              <UploadForm metadata={metadata} key={metadata.filename + i} deleteFiles={deleteFiles} idx={i}/>
+              <UploadForm metadata={metadata} key={metadata.filename + i} unstageTracks={unstageTracks} idx={i}/>
           )})}
         
       </>
     </FileUploadPaper>
-    {/* <button onClick={() => fsAdd({variables: {entry: 'show me 69'}})}>FB TEST</button> */}
+    {/* <button onClick={() => trackUpload({variables: {entry: 'show me 69'}})}>FB TEST</button> */}
     {/* <Copyright /> */}
   </FileUploadContainer>
   );

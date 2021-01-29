@@ -4,6 +4,7 @@ import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom';
 import {createGlobalStyle, ThemeProvider} from 'styled-components'
 import {FileFormList, FileSelector} from './components/Upload';
 import Search from './components/Search'
+import AuthPage from './components/Auth'
 import {TopNav} from './components/navigation';
 
 const theme = {
@@ -100,19 +101,30 @@ const App = () => {
     </>
   )
 
-  const routes = (
+  let routes = (
     <Switch>
-      <Route path="/search" component={Search} /> 
-      <Route path="/upload" component={Upload} />
-      <Redirect to="/search" />
+      <Route path="/auth" component={AuthPage} />
+      <Redirect to="/auth" />
     </Switch>
   )
+
+  if (1 === 1) {
+    routes = (
+      <>
+      <TopNav />
+      <Switch>
+        <Route path="/search" component={Search} /> 
+        <Route path="/upload" component={Upload} />
+        <Redirect to="/search" />
+      </Switch>
+    </>
+  )
+}
 
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-        <TopNav />
           {routes}
         {/* Bottom Nav */}
       </ThemeProvider>

@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import { useQuery, useLazyQuery} from "@apollo/client";
 import styled from 'styled-components';
-import {SONGS_QUERY, DOWNLOAD_TRACKS} from '../../../../apollo';
+import {TRACKS_QUERY, DOWNLOAD_TRACKS} from '../../../../apollo';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -81,7 +81,7 @@ const downloadTrack = async({filename}) => {
 
 const DataRow = ({data: {title, artist, bpm, key, filename}, idx}) => {
   const [
-    downloadTracks,
+    retrieveTrackFromStorage,
     { loading }
   ] = useLazyQuery(DOWNLOAD_TRACKS, {
     fetchPolicy: "network-only",
@@ -101,11 +101,11 @@ const DataRow = ({data: {title, artist, bpm, key, filename}, idx}) => {
       <StyledTableCell align="right">
         {loading ? <div>...retrieving...</div> : (
           <>
-          <div onClick={() => downloadTracks({variables: {filename}})}>
+          <div onClick={() => retrieveTrackFromStorage({variables: {filename}})}>
             Select
             
           </div>
-          {/* {data && data.downloadTracks === 'Success' && (
+          {/* {data && data.retrieveTrackFromStorage === 'Success' && (
             <div onClick={() => localAPI({url: 'http://localhost:4000/download', filename})}>
               Download
             </div>
@@ -119,7 +119,7 @@ const DataRow = ({data: {title, artist, bpm, key, filename}, idx}) => {
 }
 
 const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
-  const {data, error, loading} = useQuery(SONGS_QUERY, {
+  const {data, error, loading} = useQuery(TRACKS_QUERY, {
     variables: {query, queryType}
   })
 

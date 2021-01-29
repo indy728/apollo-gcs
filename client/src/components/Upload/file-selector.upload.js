@@ -1,9 +1,9 @@
 import React from 'react';
 import {useMutation} from '@apollo/client';
-import {FILES_QUERY, UPLOAD_SERVER} from '../apollo'
+import {FILES_QUERY, STAGE_TRACKS} from '../apollo'
 
 const FileSelector = () => {
-  const [uploadToServer] = useMutation(UPLOAD_SERVER, {
+  const [stageTracks] = useMutation(STAGE_TRACKS, {
     refetchQueries: [{ query: FILES_QUERY}],
     onCompleted: () => console.log('Successfully uploaded to server')
   })
@@ -11,7 +11,7 @@ const FileSelector = () => {
   const handleFileChange = e => {
     const selected = e.target.files;
     if (!selected.length) return 
-    uploadToServer({variables: {files: selected}})
+    stageTracks({variables: {files: selected}})
   }
 
   return (

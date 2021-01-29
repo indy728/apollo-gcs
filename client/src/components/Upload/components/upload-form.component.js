@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client";
 import React from "react";
-import {FIRESTORE_ADD, DELETE_FILE} from '../../apollo'
+import {TRACK_UPLOAD, UNSTAGE_TRACKS} from '../../apollo'
 import {useForm, Controller} from 'react-hook-form'
 import styled from 'styled-components'
 import Button from '@material-ui/core/Button';
@@ -46,10 +46,10 @@ const getKeywords = ({title, artist, key, tags}) => {
 
 export const UploadForm = ({metadata: {
   title, filename, format, artist, duration, bpm, key
-}, deleteFiles}) => {
+}, unstageTracks}) => {
   duration = duration || 0
   const songLength = `${Math.floor(duration / 60)}:${Math.floor(duration % 60).toString().padStart(2, "0")}`
-  const [fsAdd, {loading, data, error}] = useMutation(FIRESTORE_ADD, {
+  const [trackUpload, {loading, data, error}] = useMutation(TRACK_UPLOAD, {
     onCompleted: (x) => {
 
       console.log(x)
@@ -73,11 +73,26 @@ export const UploadForm = ({metadata: {
     const keywords = getKeywords(values)
     const _artist = values.artist.toLowerCase();
     const _title = values.title.toLowerCase();
+    // @TODO: sux
+    const [min, sec] = values.duration.split(':');
+    const intDuration = +min * 60 + +sec;
+    console.log('[upload-form.component] intDuration: ', intDuration)
+    const entry = {
+      ...values,
+      duration: intDuration,
+      //  @TODO: grab from auth
+      uploader: 'indy',
+      keywords,
+      _artist,
+      _title
+    }
 
-    fsAdd({variables: {entry: {...values, keywords, _artist, _title}}}).then(({data: {fsAdd: res}}) => {
+    console.log(entry)
+
+    trackUpload({variables: {entry}}).then(({data: {trackUpload: res}}) => {
       if (!res.length) {
         console.log('[upload-form.component] values.filename: ', values.filename)
-        deleteFiles({variables: {file: filename}})
+        // unstageTracks({variables: {files: [filename]}})
       }
     })
   }
@@ -226,7 +241,7 @@ export const UploadForm = ({metadata: {
             />
           </Grid>
           <Button type="submit" onClick={handleSubmit(onSubmit)}>Submit</Button>
-          <Button type="submit" onClick={() => deleteFiles({variables: {file: filename}})}>Remove</Button>
+          <Button type="submit" onClick={() => unstageTracks({variables: {files: [filename]}})}>Remove</Button>
       </Grid>
       </CardContent>
     </UploadCard>
