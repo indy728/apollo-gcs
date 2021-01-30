@@ -2,7 +2,7 @@
 import React from "react";
 import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom';
 import {createGlobalStyle, ThemeProvider} from 'styled-components'
-import {FileFormList, FileSelector} from './components/Upload';
+import Upload from './components/Upload';
 import Search from './components/Search'
 import AuthPage from './components/Auth'
 import {TopNav} from './components/navigation';
@@ -28,7 +28,9 @@ const GlobalStyle = createGlobalStyle`
         margin: 0;
         padding: 0;
         color: ${theme.text.white};
-        font-family: 'Source Sans Pro', sans-serif !important;
+        font-family: 'Source Sans Pro', sans-serif;
+        font-weight: 400;
+        letter-spacing: .7px;
     }
     *,
     *::after,
@@ -44,6 +46,10 @@ const GlobalStyle = createGlobalStyle`
     body {
         background: ${theme.background.black};
         min-height: 100vh;
+    }
+
+    .brand-text {
+      font-family: 'Gugi', serif;
     }
 
     @media (min-width: 760px) {
@@ -94,12 +100,6 @@ const GlobalStyle = createGlobalStyle`
 
 
 const App = () => {
-  const Upload = () => (
-    <>
-      <FileFormList />
-      <FileSelector />
-    </>
-  )
 
   let routes = (
     <Switch>

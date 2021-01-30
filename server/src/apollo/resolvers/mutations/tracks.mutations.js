@@ -1,18 +1,23 @@
 const { firestore_db, admin, musicBucket } = require("../../firebase-config");
-const {createWriteStream} = require('fs');
+const {createWriteStream, readdirSync} = require('fs');
 const {deleteFiles} = require('../util/index');
 
 const path = require('path')
+const pathToMusicFolder = path.join(__dirname, '..', '..', '..', 'tmp-music');
 
-exports.unstageTracks = deleteFiles;
+exports.unstageTracks = (_, {files}) => {
+  deleteFiles(files);
+}
 
 // UPLOADS FILE OBJECTS TO SERVER FOR ANALYSIS
 exports.stageTracks = async (_, { files }) => {
+  const len = readdirSync(pathToMusicFolder).length;
+  files = files.slice(0, 10 - len);
   await Promise.all(files.map(async(file) => {
     const { createReadStream, filename } = await file;
     await new Promise(resolve => 
       createReadStream()
-        .pipe(createWriteStream(path.join(__dirname, '..', '..', '..', 'tmp-music', filename)))
+        .pipe(createWriteStream(path.join(pathToMusicFolder, filename)))
         .on('close', resolve)  
     )
   }))
@@ -25,7 +30,6 @@ const uploadTrackToBucket = async (filename = '') => {
   if (!filename.length) return {
     err: ['No filename received for upload']
   }
-  const pathToMusicFolder = path.join(__dirname, '..', '..', '..', 'tmp-music');
   const result = {
     errors: [],
   }

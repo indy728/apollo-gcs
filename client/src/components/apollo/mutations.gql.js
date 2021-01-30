@@ -20,6 +20,6 @@ export const STAGE_TRACKS = gql`
 
 export const UNSTAGE_TRACKS = gql`
   mutation UnstageTracks($files: [String!]) {
-    unstageTracks(files: $file)s
+    unstageTracks(files: $files)
   }
 `;

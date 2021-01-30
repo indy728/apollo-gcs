@@ -43,10 +43,3 @@ const SearchTracks = () => {
 }
 
 export default SearchTracks;
-
-//   <div key={key}>
-      //     <div style={{height: '40px', backgroundColor: 'grey'}} />
-      //     <div><span>{text}</span></div>
-      //       <TrackList query={query} queryType={queryType} />
-      //   </div>
-      // ))}

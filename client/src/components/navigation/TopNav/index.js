@@ -29,6 +29,7 @@ const StyledToolbar = styled(Toolbar)`
   && {
     * {
       font-size: 2rem;
+      font-family: 'Gugi', serif !important;
     }
   }
 `
@@ -72,7 +73,7 @@ const TopNav = () => {
           {menu}
         </IconButton>
         <Typography variant="h6">
-          Indy's DJ Track Database
+          meatport
         </Typography>
         {/* @TODO: User / Logout */}
       </StyledToolbar>
