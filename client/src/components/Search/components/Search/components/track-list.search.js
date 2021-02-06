@@ -18,26 +18,26 @@ import fileDownload from 'js-file-download'
 const QuerySection = styled(Container)`
   && {
     padding: 40px 0;
-    background-color: ${({theme: {background}}) => background.dark0};
+    background-color: ${({theme: {primary}}) => primary[0]};
 
     /* &:first-of-type {
       border-top: 1px solid grey;
     } */
     &:not(:last-of-type) {
-      border-bottom: 1px solid ${({theme: {background}}) => background.dark2};
+      border-bottom: 1px solid ${({theme: {primary}}) => primary[2]};
     }
   }
 `
 
 const StyledTableRow = styled(TableRow)`
-  background-color: ${({theme: {background}}) => background.dark1};
+  background-color: ${({theme: {primary}}) => primary[1]};
 
   &:nth-of-type(odd) {
-    background-color: ${({theme: {background}}) => background.dark2};
+    background-color: ${({theme: {primary}}) => primary[2]};
   }
 
   :hover {
-    background-color: ${({theme: {background}}) => background.dark3};
+    background-color: ${({theme: {primary}}) => primary[3]};
   }
 `
 
@@ -45,7 +45,7 @@ const StyledTableCell = styled(TableCell)`
 `
 
 const TracksTable = styled(Table)`
-  background-color: ${({theme: {background}}) => background.black};
+  background-color: ${({theme: {black}}) => black};
   
   & th, td {
     color: ${({theme: {text}}) => text.white};

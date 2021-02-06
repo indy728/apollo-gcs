@@ -16,7 +16,7 @@ const StyledHeaderWrapper = styled.div`
 
 const StyledInputLabel = styled.label`
   &.file-upload__label {
-    background-color: ${({theme: {background}}) => background.dark3};
+    background-color: ${({theme: {primary}}) => primary[3]};
     box-shadow: 0 1px 5px 1px rgba(255,255,255,.4);
     border-radius: 3px;
     font-size: 1.4rem;

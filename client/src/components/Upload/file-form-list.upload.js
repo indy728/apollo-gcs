@@ -1,7 +1,6 @@
 import React from "react";
 import styled from 'styled-components';
 import {UploadForm} from './components';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
 const FileUploadContainer = styled.div`
@@ -9,13 +8,12 @@ const FileUploadContainer = styled.div`
   align-items: center;
   justify-content: center;
   flex-flow: column;
+  background-color: ${({theme: {primary}}) => primary[0]};
+  padding: 2rem 4rem;
 `
 
-const FileUploadPaper = styled(Paper)`
-  && {
-    background-color: #bbb;
-    padding-bottom: 20px;
-  }
+const FileUploadPaper = styled.div`
+  width: 100%;
 `
 
 
@@ -38,9 +36,6 @@ const FileFormList = ({queryResult: { data, loading, error}, unstageTracks}) => 
       {error && <div>error importing stagedTracks: {error.message}</div>}
       {data && data.stagedTracks.length ? (
         <FileUploadPaper className={'file-upload-paper'}>
-          <Typography component="h1" variant="h4" align="center">
-            Songs Upload
-          </Typography>
           <>
               {data.stagedTracks && data.stagedTracks.map((metadata, i) => {
         

@@ -8,18 +8,18 @@ import AuthPage from './components/Auth'
 import {TopNav} from './components/navigation';
 
 const theme = {
-  background: {
-    black: '#000000',
-    dark0: '#0c0032',
-    dark1: '#190061',
-    dark2: '#240090',
-    dark3: '#3500d3',
-    grey: '#282828',
-  },
+  primary: ['#0c0032', '#190061', '#240090', '#3500d3', '#282828'],
+  secondary: ['#0c0032', '#190061', '#240090', '#3500d3', '#282828'],
+  compliment: ['#0c0032', '#190061', '#240090', '#3500d3', '#282828'],
+  black: '#000000',
+  white: '#fffaff',
   text: {
-    white: '#fffaff',
-    grey: 'c8c8c8',
-  }
+    primary: '#fffaff',
+    secondary: '#000000',
+    compliment: '#000',
+    alert: '#000',
+    error: '#000'
+  },
 }
 
 const GlobalStyle = createGlobalStyle`
@@ -27,7 +27,7 @@ const GlobalStyle = createGlobalStyle`
     * { 
         margin: 0;
         padding: 0;
-        color: ${theme.text.white};
+        color: ${theme.text.primary};
         font-family: 'Source Sans Pro', sans-serif;
         font-weight: 400;
         letter-spacing: .7px;
@@ -44,7 +44,7 @@ const GlobalStyle = createGlobalStyle`
         font-size: 62.5%;
     }
     body {
-        background: ${theme.background.black};
+        background: ${theme.black};
         min-height: 100vh;
     }
 

@@ -23,7 +23,7 @@ const searchLists = [
 
 const TracksPageContainer = styled(Container)`
   && {
-    background-color: ${({theme: {background}}) => background.dark0}
+    background-color: ${({theme: {primary}}) => primary[0]}
   }
 `
 

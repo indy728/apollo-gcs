@@ -47,6 +47,7 @@ exports.Track = gql`
     keywords: [String],
     storageBucket: String,
     filename: String!,
+    _filename: String!,
     format: String,
     # save album art for another time
     # involves converting hex octets to tmp-music
