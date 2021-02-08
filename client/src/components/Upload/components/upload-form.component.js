@@ -1,18 +1,23 @@
 import { useMutation } from "@apollo/client";
-import React from "react";
+import React, {useState} from "react";
 import {TRACK_UPLOAD, UNSTAGE_TRACKS} from '../../apollo'
 import {useForm, Controller} from 'react-hook-form'
 import styled from 'styled-components'
 import Button from '@material-ui/core/Button';
 import Select from 'react-select';
-import Typography from '@material-ui/core/Typography';
+import TagList from './tag-list';
 
 const UploadCard = styled.div`
-  /* background-color: ghostwhite; */
   width: 100%;
 
   &:not(:first-of-type){
     margin-top: 20px;
+  }
+
+  div, input {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `
 
@@ -40,7 +45,7 @@ const getKeywords = ({title, artist, key, tags}) => {
 }
 
 const Wrapper = styled.div`
-  border-bottom: 1px solid ${({theme: {primary}}) => primary[1]};
+  border-bottom: 1px solid ${({theme: {primary}}) => primary[3]};
 
   .flex {
     display: flex;
@@ -50,6 +55,7 @@ const Wrapper = styled.div`
       flex: 1 0 auto;
     }
   }
+  
 
   input {
     background-color: transparent;
@@ -106,14 +112,14 @@ const MyInputField = ({label, inputProps = {}, prefix = null, suffix = null, ren
     <Wrapper>
       <label>
         {label}
-        <div class="flex">
-        {prefix}
-        {render || (
-          <MyInput {...inputProps} />
-          )}
-          {suffix}
-        </div>
       </label>
+      <div class="flex">
+      {prefix}
+      {render || (
+        <MyInput {...inputProps} />
+        )}
+        {suffix}
+      </div>
     </Wrapper>
   )
 }
@@ -133,11 +139,32 @@ const FlexRow = styled.div`
 
 const FlexGridItem = styled.div`
   flex: ${({xs}) => xs || 1};
+
+  label {
+    font-size: 80%;
+    font-style: italic;
+  }
+
+  .immutable {
+    background-color: transparent;
+    border: 0;
+    height: 3rem;
+    line-height: 3rem;
+    width: ${({width}) => width || '100%'};
+    padding: 0 .5rem;
+
+    :focus {
+      outline: none;
+      background-color: rgba(0,0,0,.2);
+      font-size: 150%;
+    }
+  }
 `;
 
 const FormItemImmutable = styled.div`
   label {
-    font-size: 66%;
+    font-size: 80%;
+    font-style: italic;
   }
 `
 
@@ -152,6 +179,7 @@ export const UploadForm = ({metadata: {
       console.log(x)
     }
   })
+  const [keywords, setKeywords] = useState(getKeywords({title, artist}))
   const filetypeRe = /\.[0-9a-z]+$/i
   const [_format] = _filename.match(filetypeRe);
   const filename = _filename.replace(filetypeRe, '');
@@ -170,7 +198,6 @@ export const UploadForm = ({metadata: {
   });
 
   const onSubmit = values => {
-    const keywords = getKeywords(values)
     const _artist = values.artist.toLowerCase();
     const _title = values.title.toLowerCase();
     console.log('[upload-form.component] values.duration: ', values.duration)
@@ -251,21 +278,15 @@ export const UploadForm = ({metadata: {
           Track information
         </h6>
       <FlexRow>
-        <FlexGridItem>
-          <FormItemImmutable>
-            <label>Filename:</label>
-            <div>{_filename}</div>
-          </FormItemImmutable>
+        <FlexGridItem xs={5}>
+          <label>Filename:</label>
+          <div className="immutable">{_filename}</div>
         </FlexGridItem>
-        <FlexGridItem>
-          <FormItemImmutable>
-            <label>Format:</label>
-            <div>{format}</div>
-          </FormItemImmutable>
+        <FlexGridItem xs={1}>
+          <label>Format:</label>
+          <div className="immutable">{format}</div>
         </FlexGridItem>
-      </FlexRow>
-      <FlexRow>
-        <FlexGridItem>
+        <FlexGridItem xs={6}>
           <Controller
             control={control}
             name="filename"
@@ -286,76 +307,111 @@ export const UploadForm = ({metadata: {
           />
         </FlexGridItem>
       </FlexRow>
-            <Controller
-              control={control}
-              name="title"
-              rules={{required: true}}
-              render={(
-                {onChange, value, name},
-              ) => (
-                <MyInputField
-                  label = "Song title"
-                  inputProps = {{
-                    name,
-                    value,
-                    onChange,
-                  }}
-                />
-              )}
-            />
+      <FlexRow>
+        <FlexGridItem>
           <Controller
-              control={control}
-              name="artist"
-              rules={{required: true}}
-              render={(
-                {onChange, value, name},
-              ) => (
-                <MyInputField
-                  label = "Artist"
-                  inputProps = {{
-                    name,
-                    value,
-                    onChange,
-                  }}
-                />
-              )}
-            />
-            {lengthController}
-            <Controller
-              control={control}
-              name="bpm"
-              render={(
-                {onChange, value, name},
-              ) => (
-                <MyInputField
-                  label = "BPM"
-                  inputProps = {{
-                    name,
-                    value,
-                    onChange,
-                  }}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="key"
-              render={(
-                {onChange, value, name},
-              ) => (
-                <MyInputField
-                  label = "Key"
-                  // inputProps = {{
-                  //   name,
-                  //   value,
-                  //   onChange,
-                  // }}
-                  render = {
-                    <Select name={name} onChange={({value}) => onChange(value)} options={keyTableOptions} />
-                  }
-                />
-              )}
-            />
+            control={control}
+            name="title"
+            rules={{required: true}}
+            render={(
+              {onChange, value, name},
+            ) => (
+              <MyInputField
+                label = "Song title"
+                inputProps = {{
+                  name,
+                  value,
+                  onChange,
+                }}
+              />
+            )}
+          />
+        </FlexGridItem>
+        <FlexGridItem>
+          <Controller
+            control={control}
+            name="artist"
+            rules={{required: true}}
+            render={(
+              {onChange, value, name},
+            ) => (
+              <MyInputField
+                label = "Artist"
+                inputProps = {{
+                  name,
+                  value,
+                  onChange,
+                }}
+              />
+            )}
+          />
+        </FlexGridItem>
+      </FlexRow>
+      <FlexRow>
+        <FlexGridItem xs={2}>
+          {lengthController}
+        </FlexGridItem>
+        <FlexGridItem xs={2}>
+          <Controller
+            control={control}
+            name="bpm"
+            render={(
+              {onChange, value, name},
+            ) => (
+              <MyInputField
+                label = "BPM"
+                inputProps = {{
+                  name,
+                  value,
+                  onChange,
+                }}
+              />
+            )}
+              />
+        </FlexGridItem>
+        <FlexGridItem xs={4}>
+          <Controller
+                control={control}
+                name="key"
+                render={(
+                  {onChange, value, name},
+                ) => (
+                  <MyInputField
+                    label = "Key"
+                    // inputProps = {{
+                    //   name,
+                    //   value,
+                    //   onChange,
+                    // }}
+                    render = {
+                      <Select name={name} onChange={({value}) => onChange(value)} options={keyTableOptions} />
+                    }
+                  />
+                )}
+              />
+        </FlexGridItem>
+        <FlexGridItem xs={4}>
+          <Controller
+                control={control}
+                name="genre"
+                render={(
+                  {onChange, value, name},
+                ) => (
+                  <MyInputField
+                    label = "Genre"
+                    inputProps = {{
+                      name,
+                      value,
+                      onChange,
+                    }}
+                  />
+                )}
+              />
+        </FlexGridItem>
+      </FlexRow>
+      <FlexRow>
+        <TagList keywords={keywords} />
+      </FlexRow>
           <Button type="submit" onClick={handleSubmit(onSubmit)}>Submit</Button>
           <Button type="submit" onClick={() => unstageTracks({variables: {files: [filename]}})}>Remove</Button>
     </UploadCard>
