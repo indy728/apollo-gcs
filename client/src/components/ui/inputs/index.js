@@ -17,8 +17,8 @@ const Wrapper = styled.div`
   input {
     background-color: transparent;
     border: 0;
-    height: 3rem;
-    line-height: 3rem;
+    height: 2.4rem;
+    line-height: 2.4rem;
     width: ${({width}) => width || '100%'};
     padding: 0 .5rem;
 
@@ -39,9 +39,11 @@ export const MyInputField = ({label, inputProps = {}, prefix = null, suffix = nu
 
   return (
     <Wrapper>
-      <label>
-        {label}
-      </label>
+      {label && (
+        <label>
+          {label}
+        </label>
+      )}
       <div class="flex">
       {prefix}
       {render || (

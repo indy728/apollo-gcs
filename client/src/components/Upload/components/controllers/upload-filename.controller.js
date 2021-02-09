@@ -1,7 +1,7 @@
 import {Controller} from 'react-hook-form'
 import {MyInputField} from '../../../ui'
 
-const UploadFilenameController = ({control, ...props}) => (
+const uploadFilenameController = ({control, ...props}) => (
   <Controller
     control={control}
     name="filename"
@@ -22,4 +22,4 @@ const UploadFilenameController = ({control, ...props}) => (
   />
 );
 
-export default UploadFilenameController;
+export default uploadFilenameController;

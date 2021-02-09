@@ -4,11 +4,16 @@ import {TRACK_UPLOAD, UNSTAGE_TRACKS} from '../../apollo'
 import {useForm, Controller} from 'react-hook-form'
 import styled from 'styled-components'
 import Button from '@material-ui/core/Button';
-import Select from 'react-select';
 import TagList from './tag-list';
 import {MyInputField} from '../../ui'
 import {
-  UploadFilenameController
+  uploadFilenameController,
+  trackTitleController,
+  artistController,
+  bpmController,
+  genreController,
+  trackDurationController,
+  trackKeyController,
 } from './controllers';
 
 const UploadCard = styled.div`
@@ -48,85 +53,6 @@ const getKeywords = ({title, artist, key, tags}) => {
   return keywords
 }
 
-// const Wrapper = styled.div`
-//   border-bottom: 1px solid ${({theme: {primary}}) => primary[3]};
-
-//   .flex {
-//     display: flex;
-//     align-items: flex-end;
-    
-//     > div {
-//       flex: 1 0 auto;
-//     }
-//   }
-  
-
-//   input {
-//     background-color: transparent;
-//     border: 0;
-//     height: 3rem;
-//     line-height: 3rem;
-//     width: ${({width}) => width || '100%'};
-//     padding: 0 .5rem;
-
-//     :focus {
-//       outline: none;
-//       background-color: rgba(0,0,0,.2);
-//       font-size: 103%;
-//     }
-//   }
-// `
-// const MyInput = styled.input`
-  
-// `
-
-const keyTable = {
-  '1a': ['Abmin', '6m'],
-  '2a': ['Ebmin', '7m'],
-  '3a': ['Bbmin', '8m'],
-  '4a': ['Fmin', '9m'],
-  '5a': ['Cmin', '10m'],
-  '6a': ['Gmin', '11m'],
-  '7a': ['Dmin', '12m'],
-  '8a': ['Amin', '1m'],
-  '9a': ['Emin', '2m'],
-  '10a': ['Bmin', '3m'],
-  '11a': ['F#min', '4m'],
-  '12a': ['Dbmin', '5m'],
-  '1b': ['Bmaj', '6d'],
-  '2b': ['F#maj', '7d'],
-  '3b': ['Dbmaj', '8d'],
-  '4b': ['Abaj', '9d'],
-  '5b': ['Ebaj', '10d'],
-  '6b': ['Bbmaj', '11d'],
-  '7b': ['Fmaj', '12d'],
-  '8b': ['Cmaj', '1d'],
-  '9b': ['Gmaj', '2d'],
-  '10b': ['Dmaj', '3d'],
-  '11b': ['Amaj', '4d'],
-  '12b': ['Emaj', '5d'],
-}
-
-const keyTableOptions = Object.entries(keyTable).map(([camelot, [fifth, openKey]]) => ({value: camelot, label: `${camelot} - ${fifth} - ${openKey}`}))
-
-// const MyInputField = ({label, inputProps = {}, prefix = null, suffix = null, render, select, selectProps}) => {
-//   const {value = '', placeholder = '', name = '', onChange = null} = inputProps;
-
-//   return (
-//     <Wrapper>
-//       <label>
-//         {label}
-//       </label>
-//       <div class="flex">
-//       {prefix}
-//       {render || (
-//         <MyInput {...inputProps} />
-//         )}
-//         {suffix}
-//       </div>
-//     </Wrapper>
-//   )
-// }
 
 const FlexRow = styled.div`
   display: flex;
@@ -235,40 +161,8 @@ export const UploadForm = ({metadata: {
     return <div>...Error...</div>
   }
 
-  const handleLengthChange = (idx, subValue, value) => {
-    if (!idx && subValue > 99) return value;
-    if (idx && subValue > 59) return value;
-    console.log('[upload-form.component] subValue: ', subValue)
-    const lengthArray = value.split(':');
-    lengthArray[idx] = subValue.slice(-2);
-    return lengthArray.join(':');
-  }
+  
 
-  const lengthController = (
-    <Controller
-      control={control}
-      name="duration"
-      rules={{required: true}}
-      render={(
-        {value, name, onChange},
-      ) => (
-        <MyInputField
-          label = "Length"
-          inputProps = {{
-            name,
-            value,
-          }}
-          render = {(
-            <>
-              <input value={value.split(':')[0]} type="number" min="0" onChange={({target: {value: subValue}}) => onChange(handleLengthChange(0, subValue, value))} />
-                <span>:</span>
-              <input value={value.split(':')[1].padStart(2, '0')} type="number" min="0" onChange={({target: {value: subValue}}) => onChange(handleLengthChange(1, subValue, value))}/>
-            </>
-          )}
-        />
-      )}
-    />)
-    const uploadFilenameController = <UploadFilenameController control={control} _format={_format} />
 
   return (
     <UploadCard>
@@ -285,109 +179,29 @@ export const UploadForm = ({metadata: {
           <div className="immutable">{format}</div>
         </FlexGridItem>
         <FlexGridItem xs={6}>
-          {uploadFilenameController}
+          {uploadFilenameController({control, _format})}
         </FlexGridItem>
       </FlexRow>
       <FlexRow>
         <FlexGridItem>
-          <Controller
-            control={control}
-            name="title"
-            rules={{required: true}}
-            render={(
-              {onChange, value, name},
-            ) => (
-              <MyInputField
-                label = "Song title"
-                inputProps = {{
-                  name,
-                  value,
-                  onChange,
-                }}
-              />
-            )}
-          />
+          {trackTitleController({control})}
         </FlexGridItem>
         <FlexGridItem>
-          <Controller
-            control={control}
-            name="artist"
-            rules={{required: true}}
-            render={(
-              {onChange, value, name},
-            ) => (
-              <MyInputField
-                label = "Artist"
-                inputProps = {{
-                  name,
-                  value,
-                  onChange,
-                }}
-              />
-            )}
-          />
+          {artistController({control})}
         </FlexGridItem>
       </FlexRow>
       <FlexRow>
         <FlexGridItem xs={2}>
-          {lengthController}
+          {trackDurationController({control})}
         </FlexGridItem>
         <FlexGridItem xs={2}>
-          <Controller
-            control={control}
-            name="bpm"
-            render={(
-              {onChange, value, name},
-            ) => (
-              <MyInputField
-                label = "BPM"
-                inputProps = {{
-                  name,
-                  value,
-                  onChange,
-                }}
-              />
-            )}
-              />
+          {bpmController({control})}
         </FlexGridItem>
         <FlexGridItem xs={4}>
-          <Controller
-                control={control}
-                name="key"
-                render={(
-                  {onChange, value, name},
-                ) => (
-                  <MyInputField
-                    label = "Key"
-                    // inputProps = {{
-                    //   name,
-                    //   value,
-                    //   onChange,
-                    // }}
-                    render = {
-                      <Select name={name} onChange={({value}) => onChange(value)} options={keyTableOptions} />
-                    }
-                  />
-                )}
-              />
+          {trackKeyController({control})}
         </FlexGridItem>
         <FlexGridItem xs={4}>
-          <Controller
-                control={control}
-                name="genre"
-                render={(
-                  {onChange, value, name},
-                ) => (
-                  <MyInputField
-                    label = "Genre"
-                    inputProps = {{
-                      name,
-                      value,
-                      onChange,
-                    }}
-                  />
-                )}
-              />
+          {genreController({control})}
         </FlexGridItem>
       </FlexRow>
       <FlexRow>
