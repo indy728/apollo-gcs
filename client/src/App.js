@@ -9,8 +9,8 @@ import {TopNav} from './components/navigation';
 
 const theme = {
   primary: ['#0c0032', '#190061', '#240090', '#3500d3', '#282828'],
-  secondary: ['#0c0032', '#190061', '#240090', '#3500d3', '#282828'],
-  compliment: ['#0c0032', '#190061', '#240090', '#3500d3', '#282828'],
+  secondary: ['#2E7358', '#11AB70', '#13BF7D', '#19F7A2', '#62F4BC'],
+  compliment: ['#F2EDBD', '#F3E973', '#F2E768', '#E3D133', '#A8A040'],
   black: '#000000',
   white: '#fffaff',
   text: {

@@ -1,13 +1,46 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 
-const Wrapper = styled.div``;
-const TagWrapper = styled.div`
+const Wrapper = styled.div`
   display: flex;
-  border-radius: .5rem;
+  flex: 1;
   padding: 1rem;
+
+  flex-wrap: wrap;
 `;
-const TagClose = styled.div``;
+const TagsWrapper = styled.ul`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin: 0 -.5rem;
+  /* margin-top: -.5rem; */
+`;
+const TagWrapper = styled.li`
+  list-style-type: none;
+  display: flex;
+  border-radius: .2rem;
+  padding: .8rem 1rem;
+  background: ${({theme: {secondary}, clearable}) => clearable ? secondary[1] : secondary[0]};
+  margin: .5rem;
+
+  .tag-label:not(:first-child) {
+    margin-left: .8rem;
+  }
+`;
+const TagClose = styled.div`
+  cursor: pointer;
+
+  > * {
+    transition: .1s all linear;
+
+    :hover {
+      transform: scale(1.1);
+    }
+  }
+`;
 const TagLabel = styled.div``;
 
 
@@ -39,18 +72,20 @@ const TagList = ({keywords = []}) => {
 
   const _makeTags = (list, clearable = false) => (
     list.map((x, idx) => (
-        <TagWrapper key={x + idx}>
-          {clearable && (<TagClose onClick={() => removeTag(idx)}>X</TagClose>)}
-          <TagLabel>{x}</TagLabel>
+        <TagWrapper key={x + idx} clearable={clearable}>
+          {clearable && (<TagClose onClick={() => removeTag(idx)}><FontAwesomeIcon icon={faTimesCircle} /></TagClose>)}
+          <TagLabel className="tag-label">{x}</TagLabel>
         </TagWrapper>
       ))
     );
 
   return (
     <Wrapper> 
-      {[ _makeTags(keywords), _makeTags(tags, true)]}
-      <input onChange={handleChange} value={newTag} />
-      <div onClick={addTag}>Add</div>
+      <TagsWrapper>
+        {[ _makeTags(keywords), _makeTags(tags, true)]}
+      </TagsWrapper>
+      <input onChange={handleChange} value={newTag} style={{height: '10px'}}/>
+      <div onClick={addTag}>Add Tag</div>
     </Wrapper>
   )
 }

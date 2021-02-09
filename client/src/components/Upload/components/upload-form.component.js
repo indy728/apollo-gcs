@@ -1,11 +1,15 @@
-import { useMutation } from "@apollo/client";
 import React, {useState} from "react";
+import { useMutation } from "@apollo/client";
 import {TRACK_UPLOAD, UNSTAGE_TRACKS} from '../../apollo'
 import {useForm, Controller} from 'react-hook-form'
 import styled from 'styled-components'
 import Button from '@material-ui/core/Button';
 import Select from 'react-select';
 import TagList from './tag-list';
+import {MyInputField} from '../../ui'
+import {
+  UploadFilenameController
+} from './controllers';
 
 const UploadCard = styled.div`
   width: 100%;
@@ -44,37 +48,37 @@ const getKeywords = ({title, artist, key, tags}) => {
   return keywords
 }
 
-const Wrapper = styled.div`
-  border-bottom: 1px solid ${({theme: {primary}}) => primary[3]};
+// const Wrapper = styled.div`
+//   border-bottom: 1px solid ${({theme: {primary}}) => primary[3]};
 
-  .flex {
-    display: flex;
-    align-items: flex-end;
+//   .flex {
+//     display: flex;
+//     align-items: flex-end;
     
-    > div {
-      flex: 1 0 auto;
-    }
-  }
+//     > div {
+//       flex: 1 0 auto;
+//     }
+//   }
   
 
-  input {
-    background-color: transparent;
-    border: 0;
-    height: 3rem;
-    line-height: 3rem;
-    width: ${({width}) => width || '100%'};
-    padding: 0 .5rem;
+//   input {
+//     background-color: transparent;
+//     border: 0;
+//     height: 3rem;
+//     line-height: 3rem;
+//     width: ${({width}) => width || '100%'};
+//     padding: 0 .5rem;
 
-    :focus {
-      outline: none;
-      background-color: rgba(0,0,0,.2);
-      font-size: 103%;
-    }
-  }
-`
-const MyInput = styled.input`
+//     :focus {
+//       outline: none;
+//       background-color: rgba(0,0,0,.2);
+//       font-size: 103%;
+//     }
+//   }
+// `
+// const MyInput = styled.input`
   
-`
+// `
 
 const keyTable = {
   '1a': ['Abmin', '6m'],
@@ -105,24 +109,24 @@ const keyTable = {
 
 const keyTableOptions = Object.entries(keyTable).map(([camelot, [fifth, openKey]]) => ({value: camelot, label: `${camelot} - ${fifth} - ${openKey}`}))
 
-const MyInputField = ({label, inputProps = {}, prefix = null, suffix = null, render, select, selectProps}) => {
-  const {value = '', placeholder = '', name = '', onChange = null} = inputProps;
+// const MyInputField = ({label, inputProps = {}, prefix = null, suffix = null, render, select, selectProps}) => {
+//   const {value = '', placeholder = '', name = '', onChange = null} = inputProps;
 
-  return (
-    <Wrapper>
-      <label>
-        {label}
-      </label>
-      <div class="flex">
-      {prefix}
-      {render || (
-        <MyInput {...inputProps} />
-        )}
-        {suffix}
-      </div>
-    </Wrapper>
-  )
-}
+//   return (
+//     <Wrapper>
+//       <label>
+//         {label}
+//       </label>
+//       <div class="flex">
+//       {prefix}
+//       {render || (
+//         <MyInput {...inputProps} />
+//         )}
+//         {suffix}
+//       </div>
+//     </Wrapper>
+//   )
+// }
 
 const FlexRow = styled.div`
   display: flex;
@@ -160,13 +164,6 @@ const FlexGridItem = styled.div`
     }
   }
 `;
-
-const FormItemImmutable = styled.div`
-  label {
-    font-size: 80%;
-    font-style: italic;
-  }
-`
 
 export const UploadForm = ({metadata: {
   title, filename: _filename, format, artist, duration, bpm, key
@@ -271,6 +268,7 @@ export const UploadForm = ({metadata: {
         />
       )}
     />)
+    const uploadFilenameController = <UploadFilenameController control={control} _format={_format} />
 
   return (
     <UploadCard>
@@ -287,24 +285,7 @@ export const UploadForm = ({metadata: {
           <div className="immutable">{format}</div>
         </FlexGridItem>
         <FlexGridItem xs={6}>
-          <Controller
-            control={control}
-            name="filename"
-            render={(
-              {value, name, onChange},
-            ) => {
-              return(
-                <MyInputField
-                  label = "New filename (optional)"
-                  suffix={_format}
-                  inputProps = {{
-                    name,
-                    value,
-                    onChange,
-                  }}
-                />
-            )}}
-          />
+          {uploadFilenameController}
         </FlexGridItem>
       </FlexRow>
       <FlexRow>
