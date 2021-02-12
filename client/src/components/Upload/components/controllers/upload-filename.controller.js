@@ -10,7 +10,6 @@ const uploadFilenameController = ({control, ...props}) => (
     ) => {
       return(
         <MyInputField
-          label = "New filename (optional)"
           suffix={props._format}
           inputProps = {{
             name,

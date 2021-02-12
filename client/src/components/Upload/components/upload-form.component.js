@@ -90,7 +90,6 @@ const FUFWrapper = styled.div`
 `;
 const FUFLabelWrapper = styled.div`
   display: flex;
-
   font-size: 80%;
   font-style: italic;
 
@@ -135,23 +134,85 @@ const FileUploadField = ({
   metadata = '',
   inputField = null,
   children,
+  prefill,
   required
 }) => {
   return (
     <FUFWrapper>
       <FUFLabelWrapper>
         <FUFLabel>{required && '*'}{label}:</FUFLabel>
-        {!!metadata.length && <FUFMetadata>{metadata}</FUFMetadata>}
+        {!!metadata.length && <FUFMetadata>({metadata})</FUFMetadata>}
       </FUFLabelWrapper>
-      {/* Input Field */}
-      {isEditing ? inputField : (
+      {isEditing || (required && !prefill.length) ? inputField : (
         <FUFValue>
-          {children}
+          {prefill}
           {!!onClickEdit && <FUFEdit onClick={onClickEdit} />}
         </FUFValue>
 
       )}
     </FUFWrapper>
+  )
+}
+
+const keyTable = {
+  '1a': ['Abmin', '6m'],
+  '2a': ['Ebmin', '7m'],
+  '3a': ['Bbmin', '8m'],
+  '4a': ['Fmin', '9m'],
+  '5a': ['Cmin', '10m'],
+  '6a': ['Gmin', '11m'],
+  '7a': ['Dmin', '12m'],
+  '8a': ['Amin', '1m'],
+  '9a': ['Emin', '2m'],
+  '10a': ['Bmin', '3m'],
+  '11a': ['F#min', '4m'],
+  '12a': ['Dbmin', '5m'],
+  '1b': ['Bmaj', '6d'],
+  '2b': ['F#maj', '7d'],
+  '3b': ['Dbmaj', '8d'],
+  '4b': ['Abaj', '9d'],
+  '5b': ['Ebaj', '10d'],
+  '6b': ['Bbmaj', '11d'],
+  '7b': ['Fmaj', '12d'],
+  '8b': ['Cmaj', '1d'],
+  '9b': ['Gmaj', '2d'],
+  '10b': ['Dmaj', '3d'],
+  '11b': ['Amaj', '4d'],
+  '12b': ['Emaj', '5d'],
+}
+
+const keyTableOptions = Object.entries(keyTable).map(([camelot, [fifth, openKey]]) => ({value: camelot, label: `${camelot} - ${fifth} - ${openKey}`}));
+
+const findKey = (key) => {
+  console.log('[upload-form.component] key: ', key)
+  if (key.toLowerCase() in keyTable) return key.toLowerCase();
+
+  return Object.keys(keyTable).find(k => keyTable[k].find(x => {
+    console.log('[upload-form.component] x, key: ', x, key)
+    return x.toLowerCase() === key.toLowerCase()
+  })) 
+}
+
+const KeyDisplay = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  padding-right: 1rem;
+`
+
+const getKeyString = (key) => {
+  if (!key) return '--'
+
+  const [fifth, openKey] = keyTable[key]
+
+  return (
+    <KeyDisplay>
+      <span>{key}</span>
+      <span>--</span>
+      <span>{fifth}</span>
+      <span>--</span>
+      <span>{openKey}</span>
+    </KeyDisplay>
   )
 }
 
@@ -240,55 +301,151 @@ export const UploadForm = ({metadata: {
   
   const onClickEdit = (key) => setEditInputs({...editInputs, [key]: true});
 
+  const formInputRows = [
+    [
+      {
+        id: "_filename",
+        gridItem: {xs: 5},
+        uploadField: {
+          label: "Filename",
+          prefill: _filename,
+        },
+      },
+      {
+        id: "format",
+        gridItem: {xs: 1},
+        uploadField: {
+          label: "Format",
+          prefill: format,
+        },
+      },
+      {
+        id: "filename",
+        gridItem: {xs: 6},
+        uploadField: {
+          label: "New filename (optional)",
+          onClickEdit: () => onClickEdit('filename'),
+          isEditing: editInputs.filename,
+          inputField: uploadFilenameController({control, _format}),
+          prefill: _filename,
+        },
+      },
+    ],
+    [
+      {
+        id: "track-title",
+        gridItem: {},
+        uploadField: {
+          label: "Track title",
+          onClickEdit: () => onClickEdit('trackTitle'),
+          isEditing: editInputs.trackTitle,
+          inputField: trackTitleController({control}),
+          required: true,
+          prefill: title,
+        },
+      },
+      {
+        id: "artist",
+        gridItem: {},
+        uploadField: {
+          label: "Artist",
+          onClickEdit: () => onClickEdit('artist'),
+          isEditing: editInputs.artist,
+          inputField: artistController({control}),
+          required: true,
+          prefill: artist,
+        },
+      },
+    ],
+    [
+      {
+        id: "length",
+        gridItem: {xs: 2},
+        uploadField: {
+          label: "Length",
+          onClickEdit: () => onClickEdit('trackDuration'),
+          isEditing: editInputs.trackDuration,
+          inputField: trackDurationController({control}),
+          metadata: `${duration}s`,
+          prefill: songLength,
+        },
+      },
+      {
+        id: "bpm",
+        gridItem: {xs: 2},
+        uploadField: {
+          label: "BPM",
+          onClickEdit: () => onClickEdit('bpm'),
+          isEditing: editInputs.bpm,
+          inputField: bpmController({control}),
+          metadata: bpm,
+          prefill: bpm,
+        },
+      },
+      {
+        id: "track-key",
+        gridItem: {xs: 4},
+        uploadField: {
+          label: "Key",
+          onClickEdit: () => onClickEdit('trackKey'),
+          isEditing: editInputs.trackKey,
+          inputField: trackKeyController({control}),
+          metadata: key,
+          prefill: getKeyString(findKey(key)),
+        },
+      },
+      {
+        id: "genre",
+        gridItem: {xs: 4},
+        uploadField: {
+          label: "Genre",
+          onClickEdit: () => onClickEdit('genre'),
+          isEditing: editInputs.genre,
+          inputField: genreController({control}),
+          // metadata: genre,
+          required: true,
+          prefill: /*genre ||*/ '--',
+        },
+      },
+    ]
+  ]
+
+  // <FlexRow>
+  //       <FlexGridItem xs={2}>
+  //         {trackDurationController({control})}
+  //       </FlexGridItem>
+  //       <FlexGridItem xs={2}>
+  //         <FileUploadField
+  //           label="BPM"
+  //           onClickEdit={() => onClickEdit('bpm')}
+  //           isEditing={editInputs.bpm}
+  //           metadata={bpm}
+  //           inputField={bpmController({control})}
+  //           required
+  //         >
+  //           {bpm}
+  //         </FileUploadField>
+  //       </FlexGridItem>
+  //       <FlexGridItem xs={4}>
+  //         {trackKeyController({control})}
+  //       </FlexGridItem>
+  //       <FlexGridItem xs={4}>
+  //         {genreController({control})}
+  //       </FlexGridItem>
+  //     </FlexRow>
+
   return (
     <UploadCard>
       <TrackInfoHeader />
-      <FlexRow>
-        <FlexGridItem xs={5}>
-          <FileUploadField label="Filename">
-            {_filename}
-          </FileUploadField>
-        </FlexGridItem>
-        <FlexGridItem xs={1}>
-          <FileUploadField label="Format">
-            {format}
-          </FileUploadField>
-        </FlexGridItem>
-        <FlexGridItem xs={6}>
-          {uploadFilenameController({control, _format})}
-        </FlexGridItem>
-      </FlexRow>
-      <FlexRow>
-        <FlexGridItem>
-          {trackTitleController({control})}
-        </FlexGridItem>
-        <FlexGridItem>
-          {artistController({control})}
-        </FlexGridItem>
-      </FlexRow>
-      <FlexRow>
-        <FlexGridItem xs={2}>
-          {trackDurationController({control})}
-        </FlexGridItem>
-        <FlexGridItem xs={2}>
-          <FileUploadField
-            label="BPM"
-            onClickEdit={() => onClickEdit('bpm')}
-            isEditing={editInputs.bpm}
-            metadata={bpm}
-            inputField={bpmController({control})}
-            required
-          >
-            {bpm}
-          </FileUploadField>
-        </FlexGridItem>
-        <FlexGridItem xs={4}>
-          {trackKeyController({control})}
-        </FlexGridItem>
-        <FlexGridItem xs={4}>
-          {genreController({control})}
-        </FlexGridItem>
-      </FlexRow>
+      {formInputRows.map((row, i) => (
+        <FlexRow key={`row-${i}`}>
+          {row.map((item) => (
+            <FlexGridItem key={item.id} {...item.gridItem}>
+              <FileUploadField {...item.uploadField} />
+            </FlexGridItem>
+          ))}
+        </FlexRow>
+      ))}
       <FlexRow>
         <TagList keywords={keywords} />
       </FlexRow>
