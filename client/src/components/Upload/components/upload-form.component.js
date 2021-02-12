@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import { useMutation } from "@apollo/client";
-import {TRACK_UPLOAD, UNSTAGE_TRACKS} from '../../apollo'
+import {TRACK_UPLOAD, UNSTAGE_TRACKS} from 'components/apollo'
 import {useForm, Controller} from 'react-hook-form'
 import styled from 'styled-components'
 import TagList from './tag-list';
@@ -14,7 +14,7 @@ import {
   trackDurationController,
   trackKeyController,
 } from './controllers';
-import {MyInputField} from '../../ui'
+import {MyInputField} from 'components/ui'
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons'
@@ -222,6 +222,7 @@ const AddTagWrapper = styled.div`
   display: flex;
   align-items: center;
   height: 100%;
+  margin-left: .5rem;
 `
 
 const AddTagSubmit = styled.div`
@@ -388,35 +389,7 @@ export const UploadForm = ({metadata: {
   const onClickEdit = (key) => setEditInputs({...editInputs, [key]: true});
 
   const formInputRows = [
-    [
-      {
-        id: "_filename",
-        gridItem: {xs: 5},
-        uploadField: {
-          label: "Filename",
-          prefill: _filename,
-        },
-      },
-      {
-        id: "format",
-        gridItem: {xs: 1},
-        uploadField: {
-          label: "Format",
-          prefill: format,
-        },
-      },
-      {
-        id: "filename",
-        gridItem: {xs: 6},
-        uploadField: {
-          label: "Upload as",
-          onClickEdit: () => onClickEdit('filename'),
-          isEditing: editInputs.filename,
-          inputField: uploadFilenameController({control, _format}),
-          prefill: _filename,
-        },
-      },
-    ],
+    
     [
       {
         id: "track-title",
@@ -493,7 +466,36 @@ export const UploadForm = ({metadata: {
           prefill: /*genre ||*/ '',
         },
       },
-    ]
+    ],
+    [
+      {
+        id: "_filename",
+        gridItem: {xs: 5},
+        uploadField: {
+          label: "Filename",
+          prefill: _filename,
+        },
+      },
+      {
+        id: "format",
+        gridItem: {xs: 1},
+        uploadField: {
+          label: "Format",
+          prefill: format,
+        },
+      },
+      {
+        id: "filename",
+        gridItem: {xs: 6},
+        uploadField: {
+          label: "Upload as",
+          onClickEdit: () => onClickEdit('filename'),
+          isEditing: editInputs.filename,
+          inputField: uploadFilenameController({control, _format}),
+          prefill: _filename,
+        },
+      },
+    ],
   ]
 
   return (
