@@ -9,7 +9,6 @@ const genreController = ({control, ...props}) => (
       {onChange, value, name},
     ) => (
       <MyInputField
-        label = "Genre"
         inputProps = {{
           name,
           value,

@@ -14,6 +14,7 @@ import {
   trackDurationController,
   trackKeyController,
 } from './controllers';
+import {MyInputField} from '../../ui'
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons'
@@ -216,6 +217,70 @@ const getKeyString = (key) => {
   )
 }
 
+
+const AddTagWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  height: 100%;
+`
+
+const AddTagSubmit = styled.div`
+  margin-left: .8rem;
+  padding: .4rem .5rem;
+  border-radius: .2rem;
+  background-color: ${({disabled}) => disabled ? 'grey' : 'orangered'};
+
+`;
+
+const AddTag = ({addTag}) => {
+  const [newTag, setNewTag] = useState('');
+  const handleChange = ({target: {value}}) => {
+    const allowAlnum = /[^a-z0-9\s]/i
+    setNewTag(value.replace(allowAlnum, '').toLowerCase());
+  }
+  const handleSubmit = () => {
+    addTag(newTag);
+    setNewTag('');
+  }
+  const disabled = newTag.length === 0;
+
+  return (
+    <AddTagWrapper>
+      <MyInputField width="12rem" inputProps={{onChange: handleChange, value: newTag, placeholder: "ie: 'uplifting' or 'anjuna'"}}/>
+      <AddTagSubmit onClick={handleSubmit} disabled={disabled}>Add Tag</AddTagSubmit>
+    </AddTagWrapper>
+  )
+}
+
+const LegendRow = styled.div`
+  margin-top: 1.6rem;
+  margin-bottom: .8rem;
+  display: flex;
+  /* justify-content: flex-end; */
+
+  .legend {
+    display: flex;
+    font-style: italic;
+    font-size: 80%;
+
+    > :not(:first-child) {
+      margin-left: 3rem;
+    }
+
+    &__nb {
+      display: none;
+    }
+
+    &__required {
+      
+    }
+
+    &__metadata {
+      color: ${({theme: {text}}) => text.alert}
+    }
+  }
+`;
+
 export const UploadForm = ({metadata: {
   title, filename: _filename, format, artist, duration, bpm, key
 }, unstageTracks}) => {
@@ -227,7 +292,32 @@ export const UploadForm = ({metadata: {
       console.log(x)
     }
   })
-  const [keywords, setKeywords] = useState(getKeywords({title, artist}));
+  const [{keywords, custom}, setTags] = useState({
+    keywords: getKeywords({title, artist}),
+    custom: [],
+  });
+
+
+  const removeTag = (idx) => {
+    const newTags = [...custom];
+    newTags.splice(idx, 1)
+    setTags({
+      keywords,
+      custom: newTags
+    })
+  };
+  
+  const addTag = (newTag) => {
+    if (newTag.length) {
+      const newTags = [...custom]; 
+      newTags.push(newTag);
+      setTags({
+        keywords,
+        custom: newTags
+      })
+    }
+  }
+
   
   const [editInputs, setEditInputs] = useState({
     filename: false,
@@ -277,8 +367,6 @@ export const UploadForm = ({metadata: {
       _title
     }
 
-    console.log(entry)
-
     // @TODO: before uncommenting track upload, make sure it sources _filename and uploads filename!!
 
     // trackUpload({variables: {entry}}).then(({data: {trackUpload: res}}) => {
@@ -297,8 +385,6 @@ export const UploadForm = ({metadata: {
     return <div>...Error...</div>
   }
 
-  
-  
   const onClickEdit = (key) => setEditInputs({...editInputs, [key]: true});
 
   const formInputRows = [
@@ -323,7 +409,7 @@ export const UploadForm = ({metadata: {
         id: "filename",
         gridItem: {xs: 6},
         uploadField: {
-          label: "New filename (optional)",
+          label: "Upload as",
           onClickEdit: () => onClickEdit('filename'),
           isEditing: editInputs.filename,
           inputField: uploadFilenameController({control, _format}),
@@ -404,35 +490,11 @@ export const UploadForm = ({metadata: {
           inputField: genreController({control}),
           // metadata: genre,
           required: true,
-          prefill: /*genre ||*/ '--',
+          prefill: /*genre ||*/ '',
         },
       },
     ]
   ]
-
-  // <FlexRow>
-  //       <FlexGridItem xs={2}>
-  //         {trackDurationController({control})}
-  //       </FlexGridItem>
-  //       <FlexGridItem xs={2}>
-  //         <FileUploadField
-  //           label="BPM"
-  //           onClickEdit={() => onClickEdit('bpm')}
-  //           isEditing={editInputs.bpm}
-  //           metadata={bpm}
-  //           inputField={bpmController({control})}
-  //           required
-  //         >
-  //           {bpm}
-  //         </FileUploadField>
-  //       </FlexGridItem>
-  //       <FlexGridItem xs={4}>
-  //         {trackKeyController({control})}
-  //       </FlexGridItem>
-  //       <FlexGridItem xs={4}>
-  //         {genreController({control})}
-  //       </FlexGridItem>
-  //     </FlexRow>
 
   return (
     <UploadCard>
@@ -447,8 +509,17 @@ export const UploadForm = ({metadata: {
         </FlexRow>
       ))}
       <FlexRow>
-        <TagList keywords={keywords} />
+        <TagList keywords={keywords} custom={custom} removeTag={removeTag} />
       </FlexRow>
+      <FlexRow>
+        <AddTag addTag={addTag} />
+      </FlexRow>
+      <LegendRow>
+        <div className="legend">
+          <span className="legend__required">*required</span>
+          <span className="legend__metadata">(indicates info taken from track metadata)</span>
+        </div>
+      </LegendRow>
           {/* <Button type="submit" onClick={handleSubmit(onSubmit)}>Submit</Button>
           <Button type="submit" onClick={() => unstageTracks({variables: {files: [filename]}})}>Remove</Button> */}
     </UploadCard>

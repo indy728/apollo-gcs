@@ -10,7 +10,6 @@ const artistController = ({control, ...props}) => (
       {onChange, value, name},
     ) => (
       <MyInputField
-        label = "Artist"
         inputProps = {{
           name,
           value,

@@ -40,7 +40,6 @@ const trackKeyController = ({control, ...props}) => (
       {onChange, value, name},
     ) => (
       <MyInputField
-        label = "Key"
         // inputProps = {{
         //   name,
         //   value,

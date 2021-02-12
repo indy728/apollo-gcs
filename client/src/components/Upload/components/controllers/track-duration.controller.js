@@ -20,7 +20,6 @@ const trackDurationController = ({control, ...props}) => {
           {value, name, onChange},
         ) => (
           <MyInputField
-            label = "Length"
             inputProps = {{
               name,
               value,

@@ -10,7 +10,6 @@ const trackTitleController = ({control, ...props}) => (
       {onChange, value, name},
     ) => (
       <MyInputField
-        label = "Track title"
         inputProps = {{
           name,
           value,
