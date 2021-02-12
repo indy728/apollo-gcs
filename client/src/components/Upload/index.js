@@ -6,7 +6,7 @@ import FileFormList from './file-form-list.upload';
 import FileSelector from './file-selector.upload';
 
 const UploadPage = styled.main`
-  width: auto;
+  width: 100%;
   margin: 32px auto;
 `
 

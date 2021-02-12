@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import {MyInputField} from '../../../ui'
 
 const Wrapper = styled.div`
   display: flex;
@@ -21,7 +22,7 @@ const TagsWrapper = styled.ul`
 const TagWrapper = styled.li`
   list-style-type: none;
   display: flex;
-  border-radius: .2rem;
+  border-radius: ${({theme: {borderRadius}}) => borderRadius};
   padding: .8rem 1rem;
   background: ${({theme: {secondary}, clearable}) => clearable ? secondary[1] : secondary[0]};
   margin: .5rem;
@@ -43,19 +44,37 @@ const TagClose = styled.div`
 `;
 const TagLabel = styled.div``;
 
+const AddTagLineItem = styled.li`
+  list-style-type: none;
+  margin: .5rem;
+`;
 
+const AddTagWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  height: 100%;
+`
+const AddTagInput = styled.input`
+  height: 2rem;
+  width: 10rem;
+  color: black;
+  padding: auto 1rem;
+  outline: none;
+`;
 
+const AddTagSubmit = styled.div`
+  margin-left: .8rem;
+  padding: .4rem .5rem;
+  border-radius: .2rem;
+  background-color: ${({disabled}) => disabled ? 'grey' : 'orangered'};
 
-const TagList = ({keywords = []}) => {
-  const [tags, setTags] = useState([]);
-  const [newTag, setNewTag] = useState('');
-  console.log('[index] tags: ', tags)
+`;
 
-  const removeTag = (idx) => {
-    const newTags = [...tags];
-    newTags.splice(idx, 1)
-    setTags(newTags)
-  };
+const AddTag = ({tagMethods: {tags, newTag, setTags, setNewTag}}) => {
+
+  const disabled = newTag.length === 0;
+  console.log('[index] disabled: ', disabled, newTag)
+
   const addTag = () => {
     if (newTag.length) {
       const newTags = [...tags]; 
@@ -70,6 +89,26 @@ const TagList = ({keywords = []}) => {
     setNewTag(value.replace(allowAlnum, '').toLowerCase());
   }
 
+  return (
+    <AddTagWrapper>
+      <MyInputField width="12rem" inputProps={{onChange: handleChange, value: newTag, placeholder: "ie: 'uplifting' or 'anjuna'"}}/>
+      <AddTagSubmit onClick={addTag} disabled={disabled}>Add Tag</AddTagSubmit>
+    </AddTagWrapper>
+  )
+}
+
+const TagList = ({keywords = []}) => {
+  const [tags, setTags] = useState([]);
+  const [newTag, setNewTag] = useState('');
+
+  console.log('[index] newTag: ', newTag)
+
+  const removeTag = (idx) => {
+    const newTags = [...tags];
+    newTags.splice(idx, 1)
+    setTags(newTags)
+  };
+
   const _makeTags = (list, clearable = false) => (
     list.map((x, idx) => (
         <TagWrapper key={x + idx} clearable={clearable}>
@@ -83,9 +122,10 @@ const TagList = ({keywords = []}) => {
     <Wrapper> 
       <TagsWrapper>
         {[ _makeTags(keywords), _makeTags(tags, true)]}
+        <AddTagLineItem>
+          <AddTag tagMethods={{tags, newTag, setTags, setNewTag}} />
+        </AddTagLineItem>
       </TagsWrapper>
-      <input onChange={handleChange} value={newTag} style={{height: '10px'}}/>
-      <div onClick={addTag}>Add Tag</div>
     </Wrapper>
   )
 }

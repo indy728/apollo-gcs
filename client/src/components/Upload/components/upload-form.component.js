@@ -3,9 +3,8 @@ import { useMutation } from "@apollo/client";
 import {TRACK_UPLOAD, UNSTAGE_TRACKS} from '../../apollo'
 import {useForm, Controller} from 'react-hook-form'
 import styled from 'styled-components'
-import Button from '@material-ui/core/Button';
 import TagList from './tag-list';
-import {MyInputField} from '../../ui'
+import {TrackInfoHeader} from './header';
 import {
   uploadFilenameController,
   trackTitleController,
@@ -16,8 +15,15 @@ import {
   trackKeyController,
 } from './controllers';
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencilAlt } from '@fortawesome/free-solid-svg-icons'
+
+
 const UploadCard = styled.div`
   width: 100%;
+  background-color: ${({theme: {primary}}) => primary[0]};
+  padding: 1rem 2rem;
+  border-radius: ${({theme: {borderRadius}}) => borderRadius};
 
   &:not(:first-of-type){
     margin-top: 20px;
@@ -63,7 +69,7 @@ const FlexRow = styled.div`
   }
 
   &:not(:first-of-type) {
-    padding-top: 2rem;
+    padding-top: 1.2rem;
   }
 `;
 
@@ -75,21 +81,79 @@ const FlexGridItem = styled.div`
     font-style: italic;
   }
 
-  .immutable {
-    background-color: transparent;
-    border: 0;
-    height: 3rem;
-    line-height: 3rem;
-    width: ${({width}) => width || '100%'};
-    padding: 0 .5rem;
-
-    :focus {
-      outline: none;
-      background-color: rgba(0,0,0,.2);
-      font-size: 150%;
-    }
-  }
+  
 `;
+
+const FUFWrapper = styled.div`
+  display: flex;
+  flex-flow: column;
+`;
+const FUFLabelWrapper = styled.div`
+  display: flex;
+
+  font-size: 80%;
+  font-style: italic;
+
+  /* > :not(:first-child) {
+    margin-left: 1rem;
+  } */
+`;
+const FUFLabel = styled.div``;
+const FUFEditWrapper = styled.div`
+  margin-left: 1rem;
+  transform: scale(.8) translateY(-5px);
+  cursor: pointer;
+`;
+const FUFMetadata = styled.div`
+  margin-left: 1.2rem;
+  color: ${({theme: {text}}) => text.alert};
+`;
+const FUFValue = styled.div`
+  display: flex;
+  height: 3rem;
+  line-height: 3rem;
+  width: ${({width}) => width || '100%'};
+  padding: 0 .5rem;
+`;
+
+const FUFEdit = ({onClick}) => {
+  return (
+    <FUFEditWrapper onClick={onClick}>
+      <FontAwesomeIcon size="xs" icon={faPencilAlt} />
+    </FUFEditWrapper>
+  )
+}
+
+const FlexSpacer = styled.div`
+  flex: 1;
+`;
+
+const FileUploadField = ({
+  label,
+  onClickEdit = null,
+  isEditing = false,
+  metadata = '',
+  inputField = null,
+  children,
+  required
+}) => {
+  return (
+    <FUFWrapper>
+      <FUFLabelWrapper>
+        <FUFLabel>{required && '*'}{label}:</FUFLabel>
+        {!!metadata.length && <FUFMetadata>{metadata}</FUFMetadata>}
+      </FUFLabelWrapper>
+      {/* Input Field */}
+      {isEditing ? inputField : (
+        <FUFValue>
+          {children}
+          {!!onClickEdit && <FUFEdit onClick={onClickEdit} />}
+        </FUFValue>
+
+      )}
+    </FUFWrapper>
+  )
+}
 
 export const UploadForm = ({metadata: {
   title, filename: _filename, format, artist, duration, bpm, key
@@ -102,7 +166,18 @@ export const UploadForm = ({metadata: {
       console.log(x)
     }
   })
-  const [keywords, setKeywords] = useState(getKeywords({title, artist}))
+  const [keywords, setKeywords] = useState(getKeywords({title, artist}));
+  
+  const [editInputs, setEditInputs] = useState({
+    filename: false,
+    trackTitle: false,
+    artist: false,
+    trackDuration: false,
+    bpm: false,
+    trackKey: false,
+    genre: false,
+  })
+
   const filetypeRe = /\.[0-9a-z]+$/i
   const [_format] = _filename.match(filetypeRe);
   const filename = _filename.replace(filetypeRe, '');
@@ -162,21 +237,22 @@ export const UploadForm = ({metadata: {
   }
 
   
-
+  
+  const onClickEdit = (key) => setEditInputs({...editInputs, [key]: true});
 
   return (
     <UploadCard>
-        <h6>
-          Track information
-        </h6>
+      <TrackInfoHeader />
       <FlexRow>
         <FlexGridItem xs={5}>
-          <label>Filename:</label>
-          <div className="immutable">{_filename}</div>
+          <FileUploadField label="Filename">
+            {_filename}
+          </FileUploadField>
         </FlexGridItem>
         <FlexGridItem xs={1}>
-          <label>Format:</label>
-          <div className="immutable">{format}</div>
+          <FileUploadField label="Format">
+            {format}
+          </FileUploadField>
         </FlexGridItem>
         <FlexGridItem xs={6}>
           {uploadFilenameController({control, _format})}
@@ -195,7 +271,16 @@ export const UploadForm = ({metadata: {
           {trackDurationController({control})}
         </FlexGridItem>
         <FlexGridItem xs={2}>
-          {bpmController({control})}
+          <FileUploadField
+            label="BPM"
+            onClickEdit={() => onClickEdit('bpm')}
+            isEditing={editInputs.bpm}
+            metadata={bpm}
+            inputField={bpmController({control})}
+            required
+          >
+            {bpm}
+          </FileUploadField>
         </FlexGridItem>
         <FlexGridItem xs={4}>
           {trackKeyController({control})}
@@ -207,8 +292,8 @@ export const UploadForm = ({metadata: {
       <FlexRow>
         <TagList keywords={keywords} />
       </FlexRow>
-          <Button type="submit" onClick={handleSubmit(onSubmit)}>Submit</Button>
-          <Button type="submit" onClick={() => unstageTracks({variables: {files: [filename]}})}>Remove</Button>
+          {/* <Button type="submit" onClick={handleSubmit(onSubmit)}>Submit</Button>
+          <Button type="submit" onClick={() => unstageTracks({variables: {files: [filename]}})}>Remove</Button> */}
     </UploadCard>
     )
 }

@@ -9,7 +9,6 @@ const bpmController = ({control, ...props}) => (
       {onChange, value, name},
     ) => (
       <MyInputField
-        label = "BPM"
         inputProps = {{
           name,
           value,

@@ -1,7 +1,6 @@
 import React from "react";
 import styled from 'styled-components';
 import {UploadForm} from './components';
-import Typography from '@material-ui/core/Typography';
 
 const FileUploadContainer = styled.div`
   display: flex;
@@ -9,14 +8,18 @@ const FileUploadContainer = styled.div`
   justify-content: center;
   flex-flow: column;
   background-color: ${({theme: {primary}}) => primary[0]};
-  padding: 2rem 4rem;
+  padding: 1rem 1rem;
+  max-width: 960px;
+  margin: 0 auto;
+  border-radius: ${({theme: {borderRadius}}) => borderRadius};
 `
 
 const FileUploadPaper = styled.div`
   width: 100%;
+  background-color: ${({theme: {grey}}) => grey};
+  border-radius: ${({theme: {borderRadius}}) => borderRadius};
+  padding: 1rem 1rem;
 `
-
-
 
 const FileFormList = ({queryResult: { data, loading, error}, unstageTracks}) => {
   if (loading) {

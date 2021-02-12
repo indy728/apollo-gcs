@@ -31,14 +31,13 @@ const Wrapper = styled.div`
 `
 
 const MyInput = styled.input`
-  
 `
 
-export const MyInputField = ({label, inputProps = {}, prefix = null, suffix = null, render, select, selectProps}) => {
+export const MyInputField = ({label, inputProps = {}, prefix = null, suffix = null, render, select, selectProps, width}) => {
   const {value = '', placeholder = '', name = '', onChange = null} = inputProps;
 
   return (
-    <Wrapper>
+    <Wrapper width={width}>
       {label && (
         <label>
           {label}
@@ -47,7 +46,7 @@ export const MyInputField = ({label, inputProps = {}, prefix = null, suffix = nu
       <div class="flex">
       {prefix}
       {render || (
-        <MyInput {...inputProps} />
+        <MyInput {...inputProps}/>
         )}
         {suffix}
       </div>

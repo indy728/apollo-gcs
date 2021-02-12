@@ -13,13 +13,23 @@ const theme = {
   compliment: ['#F2EDBD', '#F3E973', '#F2E768', '#E3D133', '#A8A040'],
   black: '#000000',
   white: '#fffaff',
+  grey: 'grey',
   text: {
     primary: '#fffaff',
-    secondary: '#000000',
-    compliment: '#000',
-    alert: '#000',
-    error: '#000'
+    secondary: '#11AB70',
+    compliment: '#F3E973',
+    alert: '#F2E768',
+    error: '#D92158',
   },
+  button: {
+    primary: '#240090',
+    secondary: '#11AB70',
+    compliment: '#F3E973',
+    cancel: '#AB3E5E',
+    disabled: 'grey',
+  },
+  borderRadius: '.2rem',
+  transition: 'all .1s linear',
 }
 
 const GlobalStyle = createGlobalStyle`
