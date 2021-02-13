@@ -14,7 +14,7 @@ import {
   trackDurationController,
   trackKeyController,
 } from './controllers';
-import {MyInputField} from 'components/ui'
+import {MyInputField, FlexRow, FlexGridItem} from 'components/ui'
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons'
@@ -60,29 +60,14 @@ const getKeywords = ({title, artist, key, tags}) => {
   return keywords
 }
 
-
-const FlexRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-
+const FormRow = styled(FlexRow)`
   > :not(:first-child) {
-    padding-left: 2rem;
-  }
+      padding-left: 2rem;
+    }
 
   &:not(:first-of-type) {
     padding-top: 1.2rem;
   }
-`;
-
-const FlexGridItem = styled.div`
-  flex: ${({xs}) => xs || 1};
-
-  label {
-    font-size: 80%;
-    font-style: italic;
-  }
-
-  
 `;
 
 const FUFWrapper = styled.div`
@@ -103,6 +88,10 @@ const FUFEditWrapper = styled.div`
   margin-left: 1rem;
   transform: scale(.8) translateY(-5px);
   cursor: pointer;
+
+  :hover {
+
+  }
 `;
 const FUFMetadata = styled.div`
   margin-left: 1.2rem;
@@ -123,10 +112,6 @@ const FUFEdit = ({onClick}) => {
     </FUFEditWrapper>
   )
 }
-
-const FlexSpacer = styled.div`
-  flex: 1;
-`;
 
 const FileUploadField = ({
   label,
@@ -502,20 +487,20 @@ export const UploadForm = ({metadata: {
     <UploadCard>
       <TrackInfoHeader />
       {formInputRows.map((row, i) => (
-        <FlexRow key={`row-${i}`}>
+        <FormRow className="form-row" key={`row-${i}`}>
           {row.map((item) => (
             <FlexGridItem key={item.id} {...item.gridItem}>
               <FileUploadField {...item.uploadField} />
             </FlexGridItem>
           ))}
-        </FlexRow>
+        </FormRow>
       ))}
-      <FlexRow>
+      <FormRow className="form-row">
         <TagList keywords={keywords} custom={custom} removeTag={removeTag} />
-      </FlexRow>
-      <FlexRow>
+      </FormRow>
+      <FormRow className="form-row">
         <AddTag addTag={addTag} />
-      </FlexRow>
+      </FormRow>
       <LegendRow>
         <div className="legend">
           <span className="legend__required">*required</span>

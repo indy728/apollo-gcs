@@ -33,11 +33,11 @@ export const TagWrapper = styled.li`
 export const TagClose = styled.div`
   cursor: pointer;
 
-  > * {
-    transition: .1s all linear;
+  svg {
+    transition: ${({theme: {transition}}) => transition};
 
     :hover {
-      transform: scale(1.1);
+      transform: ${({theme: {transform: {hover: {scale}}}}) => scale};
     }
   }
 `;

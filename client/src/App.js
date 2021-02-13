@@ -30,6 +30,15 @@ const theme = {
   },
   borderRadius: '.2rem',
   transition: 'all .1s linear',
+  transform: {
+    hover: {
+      translate: 'translateY(-.05rem)',
+      scale: 'scale(1.1)',
+    },
+    active: {
+      translate: 'translateY(0)'
+    },
+  }
 }
 
 const GlobalStyle = createGlobalStyle`
