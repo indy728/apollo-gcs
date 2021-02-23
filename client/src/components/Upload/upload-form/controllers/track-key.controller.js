@@ -29,8 +29,26 @@ const keyTable = {
   '12b': ['Emaj', '5d'],
 }
 
-const keyTableOptions = Object.entries(keyTable).map(([camelot, [fifth, openKey]]) => ({value: camelot, label: `${camelot} - ${fifth} - ${openKey}`}))
 
+const KeySelect = ({selected}) => {
+  const keyTableOptions = Object.entries(keyTable).map(([camelot, [fifth, openKey]]) => (
+    {value: camelot, label: `${camelot} - ${fifth} - ${openKey}`}
+  ))
+
+  const selectOptions = {
+    defaultValue: selected === -1 ? 'na' : Object.keys(keyTable)[selected],
+    onChange: (e) => console.log(e.target.value),
+  }
+  
+  return (
+    <select {...selectOptions}>
+      <option value="na">--</option>
+      {keyTableOptions.map(({value, label}, idx) => (
+        <option key={`key-option${idx}`} value={value}>{label}</option>
+      ))}
+    </select>
+  )
+}
 
 const trackKeyController = ({control, ...props}) => (
   <Controller
@@ -47,7 +65,7 @@ const trackKeyController = ({control, ...props}) => (
         // }}
         render = {
           // <Select name={name} onChange={({value}) => onChange(value)} options={keyTableOptions} />
-          <div>hello</div>
+          <KeySelect selected={5} />
         }
       />
     )}

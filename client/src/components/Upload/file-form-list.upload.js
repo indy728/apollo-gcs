@@ -1,6 +1,7 @@
 import React from "react";
 import styled from 'styled-components';
-import {UploadForm} from './components';
+import {UploadForm} from './upload-form';
+import {Paper} from 'components/ui';
 
 const FileUploadContainer = styled.div`
   display: flex;
@@ -14,12 +15,7 @@ const FileUploadContainer = styled.div`
   border-radius: ${({theme: {borderRadius}}) => borderRadius};
 `
 
-const FileUploadPaper = styled.div`
-  width: 100%;
-  background-color: ${({theme: {grey}}) => grey};
-  border-radius: ${({theme: {borderRadius}}) => borderRadius};
-  padding: 1rem 1rem;
-`
+const FileUploadPaper = styled(Paper)``;
 
 const FileFormList = ({queryResult: { data, loading, error}, unstageTracks}) => {
   if (loading) {

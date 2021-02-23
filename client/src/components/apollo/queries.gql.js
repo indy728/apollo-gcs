@@ -10,6 +10,7 @@ export const FILES_QUERY = gql`
       key
       bpm
       filename
+      genre
     }
   }
 `;

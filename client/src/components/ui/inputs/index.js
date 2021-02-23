@@ -43,7 +43,7 @@ export const MyInputField = ({label, inputProps = {}, prefix = null, suffix = nu
           {label}
         </label>
       )}
-      <div class="flex">
+      <div className="flex">
       {prefix}
       {render || (
         <MyInput {...inputProps}/>

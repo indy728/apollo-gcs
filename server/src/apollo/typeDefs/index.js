@@ -22,7 +22,7 @@ exports.Track = gql`
     duration: Int,
     key: String,
     bpm: String,
-    genre: String,
+    genre: [String],
     keywords: [String],
     storageBucket: String,
     filename: String,

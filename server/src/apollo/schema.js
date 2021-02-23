@@ -18,6 +18,7 @@ const resolvers = {
           duration: -1,
           artist: '',
           key: '',
+          genre: '',
           filename: file
         }
 
@@ -28,9 +29,9 @@ const resolvers = {
           const {format: {
             container, duration
           }, common: {
-            title, bpm, key, artist 
+            title, bpm, key, artist, genre
           }} = metadata;
-          
+
           Object.assign(metaData, {
             format: container,
             title,
@@ -38,6 +39,7 @@ const resolvers = {
             artist,
             key,
             bpm,
+            genre,
           })
   
           return metaData

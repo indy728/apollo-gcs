@@ -18,9 +18,6 @@ import {UploadCard, FormRow} from './upload-form.styles';
 import UploadField from './upload-field';
 import styled from 'styled-components';
 
-
-
-
 const getKeywords = ({title, artist, key, tags}) => {
   const keywords = [];
 
@@ -74,11 +71,9 @@ const keyTable = {
 const keyTableOptions = Object.entries(keyTable).map(([camelot, [fifth, openKey]]) => ({value: camelot, label: `${camelot} - ${fifth} - ${openKey}`}));
 
 const findKey = (key) => {
-  console.log('[upload-form.component] key: ', key)
   if (key.toLowerCase() in keyTable) return key.toLowerCase();
 
   return Object.keys(keyTable).find(k => keyTable[k].find(x => {
-    console.log('[upload-form.component] x, key: ', x, key)
     return x.toLowerCase() === key.toLowerCase()
   })) 
 }
@@ -171,7 +166,7 @@ const LegendRow = styled.div`
 `;
 
 export const UploadForm = ({metadata: {
-  title, filename: _filename, format, artist, duration, bpm, key
+  title, filename: _filename, format, artist, duration, bpm, key, genre: genreArray
 }, unstageTracks}) => {
   duration = duration || 0
   const songLength = `${Math.floor(duration / 60)}:${Math.floor(duration % 60).toString().padStart(2, "0")}`
@@ -186,6 +181,7 @@ export const UploadForm = ({metadata: {
     custom: [],
   });
 
+  const genre = genreArray.length !== 0 && genreArray[0] || '';
 
   const removeTag = (idx) => {
     const newTags = [...custom];
@@ -218,11 +214,21 @@ export const UploadForm = ({metadata: {
     genre: false,
   })
 
+  // const [entry, setEntry] = useState({
+  //   title: title || '',
+  //   filename,
+  //   artist: artist || '',
+  //   duration: songLength,
+  //   bpm: bpm || '',
+  //   key: key || '',
+  //   genre: genre || '',
+  // })
+
   const filetypeRe = /\.[0-9a-z]+$/i
   const [_format] = _filename.match(filetypeRe);
   const filename = _filename.replace(filetypeRe, '');
 
-  const {register, errors, handleSubmit, control} = useForm({
+  const {register, errors, control, getValues} = useForm({
     defaultValues: {
       title: title || '',
       filename,
@@ -231,14 +237,14 @@ export const UploadForm = ({metadata: {
       bpm: bpm || '',
       key: key || '',
       genre: '',
-      keywords: [],
+      // keywords: [],
     }
   });
 
   const onSubmit = values => {
     const _artist = values.artist.toLowerCase();
     const _title = values.title.toLowerCase();
-    console.log('[upload-form.component] values.duration: ', values.duration)
+    console.log('[upload-form.component] values: ', values)
     
     // @TODO: sux
     
@@ -348,9 +354,9 @@ export const UploadForm = ({metadata: {
           onClickEdit: () => onClickEdit('genre'),
           isEditing: editInputs.genre,
           inputField: genreController({control}),
-          // metadata: genre,
+          metadata: genre,
           required: true,
-          prefill: /*genre ||*/ '',
+          prefill: genre,
         },
       },
     ],
@@ -387,7 +393,7 @@ export const UploadForm = ({metadata: {
 
   return (
     <UploadCard>
-      <TrackInfoHeader />
+      <TrackInfoHeader upload={() => console.log(getValues())} />
       {formInputRows.map((row, i) => (
         <FormRow className="form-row" key={`row-${i}`}>
           {row.map((item) => (
