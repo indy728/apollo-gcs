@@ -126,10 +126,11 @@ const checkBucketForFile = (filename) => {
   return false;
 }
 
-// UPLOAD METADATA AND STORAGE LINK TO CLOUDE FIRESTORE
+// UPLOAD METADATA AND STORAGE LINK TO CLOUD FIRESTORE
 exports.trackUpload = async (_, {entry}) => {
-  const fileExists = await checkBucketForFile(filename);
-  const {errors} = await uploadTrackToBucket(entry.filename);
+  // @TODO: check for duplicates
+  // const fileExists = await checkBucketForFile(entry.filename);
+  const {errors} = await uploadTrackToBucket(entry._filename);
   if (errors.length) {
     return errors
   }

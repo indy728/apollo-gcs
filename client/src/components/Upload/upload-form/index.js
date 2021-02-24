@@ -181,7 +181,7 @@ export const UploadForm = ({metadata: {
     custom: [],
   });
 
-  const genre = genreArray.length !== 0 && genreArray[0] || '';
+  const [genre] = genreArray.length !== 0 && genreArray || [''];
 
   const removeTag = (idx) => {
     const newTags = [...custom];
@@ -214,19 +214,21 @@ export const UploadForm = ({metadata: {
     genre: false,
   })
 
-  // const [entry, setEntry] = useState({
-  //   title: title || '',
-  //   filename,
-  //   artist: artist || '',
-  //   duration: songLength,
-  //   bpm: bpm || '',
-  //   key: key || '',
-  //   genre: genre || '',
-  // })
-
   const filetypeRe = /\.[0-9a-z]+$/i
   const [_format] = _filename.match(filetypeRe);
   const filename = _filename.replace(filetypeRe, '');
+
+  const [values, setValues] = useState({
+    title: title || '',
+    filename,
+    _filename,
+    artist: artist || '',
+    duration: songLength,
+    bpm: bpm || '',
+    key: key || '',
+    genre: genre || '',
+  })
+
 
   const {register, errors, control, getValues} = useForm({
     defaultValues: {
@@ -237,39 +239,44 @@ export const UploadForm = ({metadata: {
       bpm: bpm || '',
       key: key || '',
       genre: '',
-      // keywords: [],
     }
   });
 
-  const onSubmit = values => {
-    const _artist = values.artist.toLowerCase();
-    const _title = values.title.toLowerCase();
-    console.log('[upload-form.component] values: ', values)
-    
-    // @TODO: sux
-    
-    const [min, sec] = values.duration.split(':');
-    const intDuration = +min * 60 + +sec;
-    const entry = {
+  const handleUnstage = () => {
+    unstageTracks({variables: {files: [_filename]}})
+  }
+
+  const handleUpload = () => {
+    const newValues = {
       ...values,
-      filename: values.filename + _format,
+      ...getValues()
+    };
+
+    const _artist = newValues.artist.toLowerCase();
+    const _title = newValues.title.toLowerCase();
+    
+    const [min, sec] = newValues.duration.split(':');
+    const intDuration = +min * 60 + +sec;
+
+    const entry = {
+      ...newValues,
+      filename: newValues.filename + _format,
       duration: intDuration,
+      genre: newValues.genre.toLowerCase(),
       _filename,
       //  @TODO: grab from auth
       uploader: 'indy',
-      keywords,
+      keywords: [...keywords, ...custom],
       _artist,
       _title
     }
 
-    // @TODO: before uncommenting track upload, make sure it sources _filename and uploads filename!!
-
-    // trackUpload({variables: {entry}}).then(({data: {trackUpload: res}}) => {
-    //   if (!res.length) {
-    //     console.log('[upload-form.component] values.filename: ', values.filename)
-    //     // unstageTracks({variables: {files: [filename]}})
-    //   }
-    // })
+    trackUpload({variables: {entry}}).then(({data: {trackUpload: res}}) => {
+      if (!res.length) {
+        console.log('[upload-form.component] values.filename: ', values.filename)
+        unstageTracks({variables: {files: [filename]}})
+      }
+    })
   }
 
   if (loading) {
@@ -289,6 +296,7 @@ export const UploadForm = ({metadata: {
         gridItem: {},
         uploadField: {
           label: "Track title",
+          control,
           onClickEdit: () => onClickEdit('trackTitle'),
           isEditing: editInputs.trackTitle,
           inputField: trackTitleController({control}),
@@ -301,9 +309,17 @@ export const UploadForm = ({metadata: {
         gridItem: {},
         uploadField: {
           label: "Artist",
+          control,
           onClickEdit: () => onClickEdit('artist'),
           isEditing: editInputs.artist,
-          inputField: artistController({control}),
+          inputField: artistController({
+            control,
+            // @TODO: error doesn't work
+            ref: register({
+              required: true,
+              maxLength: 50,
+            })
+          }),
           required: true,
           prefill: artist,
         },
@@ -393,7 +409,7 @@ export const UploadForm = ({metadata: {
 
   return (
     <UploadCard>
-      <TrackInfoHeader upload={() => console.log(getValues())} />
+      <TrackInfoHeader upload={handleUpload} unstage={handleUnstage}/>
       {formInputRows.map((row, i) => (
         <FormRow className="form-row" key={`row-${i}`}>
           {row.map((item) => (

@@ -13,7 +13,6 @@ const Wrapper = styled.div`
     }
   }
   
-
   input {
     background-color: transparent;
     border: 0;
@@ -46,7 +45,7 @@ export const MyInputField = ({label, inputProps = {}, prefix = null, suffix = nu
       <div className="flex">
       {prefix}
       {render || (
-        <MyInput {...inputProps}/>
+        <MyInput {...inputProps} />
         )}
         {suffix}
       </div>

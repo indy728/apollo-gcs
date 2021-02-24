@@ -1,7 +1,7 @@
 import {Controller} from 'react-hook-form'
 import {MyInputField} from '../../../ui'
 
-const artistController = ({control, ...props}) => (
+const artistController = ({control, ref, ...props}) => (
   <Controller
     control={control}
     name="artist"
@@ -14,6 +14,7 @@ const artistController = ({control, ...props}) => (
           name,
           value,
           onChange,
+          ref
         }}
       />
     )}
