@@ -17,3 +17,10 @@ export const FormRow = styled(FlexRow)`
     padding-top: 1.2rem;
   }
 `;
+
+export const KeyDisplay = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  padding-right: 1rem;
+`

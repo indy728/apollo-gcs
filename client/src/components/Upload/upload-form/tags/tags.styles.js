@@ -43,3 +43,17 @@ export const TagClose = styled.div`
 `;
 
 export const TagLabel = styled.div``;
+
+export const TagInputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-left: .5rem;
+`
+
+export const TagInputSubmit = styled.div`
+  margin-left: .8rem;
+  padding: .4rem .5rem;
+  border-radius: .2rem;
+  background-color: ${({disabled}) => disabled ? 'grey' : 'orangered'};
+`;
