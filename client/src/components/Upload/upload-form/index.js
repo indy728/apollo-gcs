@@ -15,94 +15,10 @@ import {
   trackKeyController,
 } from './controllers';
 import {FlexGridItem} from 'components/ui'
-import {filenameFormatTuple} from './util';
-import {UploadCard, FormRow} from './upload-form.styles';
+import {filenameFormatTuple, findKey, keyTable, getKeywords} from './util';
+import {toTitleCase} from 'components/util';
+import {UploadCard, FormRow, KeyDisplay} from './upload-form.styles';
 import UploadField from './upload-field';
-import styled from 'styled-components';
-
-const getKeywords = ({title, artist, key, tags}) => {
-  const keywords = [];
-
-  // Split title by word, remove parentheses
-  title.split(' ')
-    .forEach((x) => {
-      keywords.push(x.toLowerCase().replace(/\W+/g, ''))
-    });
-  // Split artists and split artist names by whitespace
-  artist.split(', ')
-    .map(y => y.split(' ')).flat()
-    .forEach(z => {
-      keywords.push(z.toLowerCase())
-    });
-  // Include key in keywords
-  if (key && key.length) {
-    keywords.push(key)
-  }
-  // @TODO: Include tags (ie deep house, techno, etc..)
-
-  return keywords
-}
-
-const keyTable = {
-  '1a': ['Abmin', '6m'],
-  '2a': ['Ebmin', '7m'],
-  '3a': ['Bbmin', '8m'],
-  '4a': ['Fmin', '9m'],
-  '5a': ['Cmin', '10m'],
-  '6a': ['Gmin', '11m'],
-  '7a': ['Dmin', '12m'],
-  '8a': ['Amin', '1m'],
-  '9a': ['Emin', '2m'],
-  '10a': ['Bmin', '3m'],
-  '11a': ['F#min', '4m'],
-  '12a': ['Dbmin', '5m'],
-  '1b': ['Bmaj', '6d'],
-  '2b': ['F#maj', '7d'],
-  '3b': ['Dbmaj', '8d'],
-  '4b': ['Abaj', '9d'],
-  '5b': ['Ebaj', '10d'],
-  '6b': ['Bbmaj', '11d'],
-  '7b': ['Fmaj', '12d'],
-  '8b': ['Cmaj', '1d'],
-  '9b': ['Gmaj', '2d'],
-  '10b': ['Dmaj', '3d'],
-  '11b': ['Amaj', '4d'],
-  '12b': ['Emaj', '5d'],
-}
-
-const keyTableOptions = Object.entries(keyTable).map(([camelot, [fifth, openKey]]) => ({value: camelot, label: `${camelot} - ${fifth} - ${openKey}`}));
-
-const findKey = (key) => {
-  if (key.toLowerCase() in keyTable) return key.toLowerCase();
-
-  return Object.keys(keyTable).find(k => keyTable[k].find(x => {
-    return x.toLowerCase() === key.toLowerCase()
-  })) 
-}
-
-const KeyDisplay = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-  padding-right: 1rem;
-`
-
-const getKeyString = (key) => {
-  if (!key) return '--'
-
-  const [fifth, openKey] = keyTable[key]
-
-  return (
-    <KeyDisplay>
-      <span>{key}</span>
-      <span>--</span>
-      <span>{fifth}</span>
-      <span>--</span>
-      <span>{openKey}</span>
-    </KeyDisplay>
-  )
-}
-
 
 export const UploadForm = ({metadata: {
   title, filename: _filename, format, artist, duration = 0, bpm, key, genre: genreArray
@@ -111,7 +27,7 @@ export const UploadForm = ({metadata: {
   // CREATED FORM VARIABLES
   const songLength = `${Math.floor(duration / 60)}:${Math.floor(duration % 60).toString().padStart(2, "0")}`
   const [_format, filename] = filenameFormatTuple(_filename);
-  const [genre] = genreArray.length !== 0 && genreArray || [''];
+  const genre = genreArray.length !== 0 && genreArray[0].toLowerCase() || '';
   const initialValues = {
     title: title || '',
     filename,
@@ -137,7 +53,7 @@ export const UploadForm = ({metadata: {
 
   // STATE MANAGEMENT
   const [{keywords, custom}, setTags] = useState({
-    keywords: getKeywords({title, artist}),
+    keywords: getKeywords({title, artist, genre}),
     custom: [],
   });
   const [editInputs, setEditInputs] = useState({
@@ -209,6 +125,22 @@ export const UploadForm = ({metadata: {
       }
     })
   };
+
+  const _getKeyString = (key) => {
+    if (!key) return '--'
+
+    const [fifth, openKey] = keyTable[key]
+
+    return (
+      <KeyDisplay>
+        <span>{key}</span>
+        <span>--</span>
+        <span>{fifth}</span>
+        <span>--</span>
+        <span>{openKey}</span>
+      </KeyDisplay>
+    )
+  }
 
   if (loading) {
     return <div>...Uploading...</div>
@@ -283,7 +215,7 @@ export const UploadForm = ({metadata: {
           isEditing: editInputs.trackKey,
           inputField: trackKeyController({control}),
           metadata: key,
-          prefill: getKeyString(findKey(key)),
+          prefill: _getKeyString(findKey(key)),
         },
       },
       genre: {
@@ -295,7 +227,7 @@ export const UploadForm = ({metadata: {
           inputField: genreController({control}),
           metadata: genre,
           required: true,
-          prefill: genre,
+          prefill: toTitleCase(genre),
         },
       },
     },
