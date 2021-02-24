@@ -1,9 +1,10 @@
 import React, {useState} from "react";
 import { useMutation } from "@apollo/client";
-import {TRACK_UPLOAD, UNSTAGE_TRACKS} from 'components/apollo'
-import {useForm, Controller} from 'react-hook-form'
-import TagList from './tag-list';
+import {TRACK_UPLOAD} from 'components/apollo'
+import {useForm} from 'react-hook-form'
+import {TagList, TagInput} from './tags';
 import {TrackInfoHeader} from './header';
+import Legend from './legend';
 import {
   uploadFilenameController,
   trackTitleController,
@@ -13,7 +14,8 @@ import {
   trackDurationController,
   trackKeyController,
 } from './controllers';
-import {MyInputField, FlexGridItem} from 'components/ui'
+import {FlexGridItem} from 'components/ui'
+import {filenameFormatTuple} from './util';
 import {UploadCard, FormRow} from './upload-form.styles';
 import UploadField from './upload-field';
 import styled from 'styled-components';
@@ -101,88 +103,54 @@ const getKeyString = (key) => {
   )
 }
 
-const AddTagWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  height: 100%;
-  margin-left: .5rem;
-`
-
-const AddTagSubmit = styled.div`
-  margin-left: .8rem;
-  padding: .4rem .5rem;
-  border-radius: .2rem;
-  background-color: ${({disabled}) => disabled ? 'grey' : 'orangered'};
-
-`;
-
-const AddTag = ({addTag}) => {
-  const [newTag, setNewTag] = useState('');
-  const handleChange = ({target: {value}}) => {
-    const allowAlnum = /[^a-z0-9\s]/i
-    setNewTag(value.replace(allowAlnum, '').toLowerCase());
-  }
-  const handleSubmit = () => {
-    addTag(newTag);
-    setNewTag('');
-  }
-  const disabled = newTag.length === 0;
-
-  return (
-    <AddTagWrapper>
-      <MyInputField width="12rem" inputProps={{onChange: handleChange, value: newTag, placeholder: "ie: 'uplifting' or 'anjuna'"}}/>
-      <AddTagSubmit onClick={handleSubmit} disabled={disabled}>Add Tag</AddTagSubmit>
-    </AddTagWrapper>
-  )
-}
-
-const LegendRow = styled.div`
-  margin-top: 1.6rem;
-  margin-bottom: .8rem;
-  display: flex;
-  /* justify-content: flex-end; */
-
-  .legend {
-    display: flex;
-    font-style: italic;
-    font-size: 80%;
-
-    > :not(:first-child) {
-      margin-left: 3rem;
-    }
-
-    &__nb {
-      display: none;
-    }
-
-    &__required {
-      
-    }
-
-    &__metadata {
-      color: ${({theme: {text}}) => text.alert}
-    }
-  }
-`;
 
 export const UploadForm = ({metadata: {
-  title, filename: _filename, format, artist, duration, bpm, key, genre: genreArray
+  title, filename: _filename, format, artist, duration = 0, bpm, key, genre: genreArray
 }, unstageTracks}) => {
-  duration = duration || 0
+
+  // CREATED FORM VARIABLES
   const songLength = `${Math.floor(duration / 60)}:${Math.floor(duration % 60).toString().padStart(2, "0")}`
+  const [_format, filename] = filenameFormatTuple(_filename);
+  const [genre] = genreArray.length !== 0 && genreArray || [''];
+  const initialValues = {
+    title: title || '',
+    filename,
+    _filename,
+    artist: artist || '',
+    duration: songLength,
+    bpm: bpm || '',
+    key: key || '',
+    genre: genre || '',
+  };
+
+  // FORM
+  const {register, errors, control, getValues} = useForm({
+    defaultValues: {...initialValues}
+  });
+
+  // GQL
   const [trackUpload, {loading, data, error}] = useMutation(TRACK_UPLOAD, {
     onCompleted: (x) => {
-
       console.log(x)
     }
   })
+
+  // STATE MANAGEMENT
   const [{keywords, custom}, setTags] = useState({
     keywords: getKeywords({title, artist}),
     custom: [],
   });
+  const [editInputs, setEditInputs] = useState({
+    filename: false,
+    trackTitle: false,
+    artist: false,
+    trackDuration: false,
+    bpm: false,
+    trackKey: false,
+    genre: false,
+  })
 
-  const [genre] = genreArray.length !== 0 && genreArray || [''];
-
+  // METHODS
   const removeTag = (idx) => {
     const newTags = [...custom];
     newTags.splice(idx, 1)
@@ -201,54 +169,17 @@ export const UploadForm = ({metadata: {
         custom: newTags
       })
     }
-  }
+  };
 
-  
-  const [editInputs, setEditInputs] = useState({
-    filename: false,
-    trackTitle: false,
-    artist: false,
-    trackDuration: false,
-    bpm: false,
-    trackKey: false,
-    genre: false,
-  })
-
-  const filetypeRe = /\.[0-9a-z]+$/i
-  const [_format] = _filename.match(filetypeRe);
-  const filename = _filename.replace(filetypeRe, '');
-
-  const [values, setValues] = useState({
-    title: title || '',
-    filename,
-    _filename,
-    artist: artist || '',
-    duration: songLength,
-    bpm: bpm || '',
-    key: key || '',
-    genre: genre || '',
-  })
-
-
-  const {register, errors, control, getValues} = useForm({
-    defaultValues: {
-      title: title || '',
-      filename,
-      artist: artist || '',
-      duration: songLength,
-      bpm: bpm || '',
-      key: key || '',
-      genre: '',
-    }
-  });
+  const onClickEdit = (key) => setEditInputs({...editInputs, [key]: true});
 
   const handleUnstage = () => {
     unstageTracks({variables: {files: [_filename]}})
-  }
+  };
 
   const handleUpload = () => {
     const newValues = {
-      ...values,
+      ...initialValues,
       ...getValues()
     };
 
@@ -277,7 +208,7 @@ export const UploadForm = ({metadata: {
         unstageTracks({variables: {files: [filename]}})
       }
     })
-  }
+  };
 
   if (loading) {
     return <div>...Uploading...</div>
@@ -287,12 +218,9 @@ export const UploadForm = ({metadata: {
     return <div>...Error...</div>
   }
 
-  const onClickEdit = (key) => setEditInputs({...editInputs, [key]: true});
-
   const formInputRows = [
-    [
-      {
-        id: "track-title",
+    {
+      "track-title": {
         gridItem: {},
         uploadField: {
           label: "Track title",
@@ -304,8 +232,7 @@ export const UploadForm = ({metadata: {
           prefill: title,
         },
       },
-      {
-        id: "artist",
+      artist: {
         gridItem: {},
         uploadField: {
           label: "Artist",
@@ -324,10 +251,9 @@ export const UploadForm = ({metadata: {
           prefill: artist,
         },
       },
-    ],
-    [
-      {
-        id: "length",
+    },
+    {
+      length: {
         gridItem: {xs: 2},
         uploadField: {
           label: "Length",
@@ -338,8 +264,7 @@ export const UploadForm = ({metadata: {
           prefill: songLength,
         },
       },
-      {
-        id: "bpm",
+      bpm: {
         gridItem: {xs: 2},
         uploadField: {
           label: "BPM",
@@ -350,8 +275,7 @@ export const UploadForm = ({metadata: {
           prefill: bpm,
         },
       },
-      {
-        id: "track-key",
+      "track-key": {
         gridItem: {xs: 4},
         uploadField: {
           label: "Key",
@@ -362,8 +286,7 @@ export const UploadForm = ({metadata: {
           prefill: getKeyString(findKey(key)),
         },
       },
-      {
-        id: "genre",
+      genre: {
         gridItem: {xs: 4},
         uploadField: {
           label: "Genre",
@@ -375,26 +298,23 @@ export const UploadForm = ({metadata: {
           prefill: genre,
         },
       },
-    ],
-    [
-      {
-        id: "_filename",
+    },
+    {
+      _filename: {
         gridItem: {xs: 5},
         uploadField: {
           label: "Filename",
           prefill: _filename,
         },
       },
-      {
-        id: "format",
+      format: {
         gridItem: {xs: 1},
         uploadField: {
           label: "Format",
           prefill: format,
         },
       },
-      {
-        id: "filename",
+      filename: {
         gridItem: {xs: 6},
         uploadField: {
           label: "Upload as",
@@ -404,7 +324,7 @@ export const UploadForm = ({metadata: {
           prefill: _filename,
         },
       },
-    ],
+    },
   ]
 
   return (
@@ -412,8 +332,8 @@ export const UploadForm = ({metadata: {
       <TrackInfoHeader upload={handleUpload} unstage={handleUnstage}/>
       {formInputRows.map((row, i) => (
         <FormRow className="form-row" key={`row-${i}`}>
-          {row.map((item) => (
-            <FlexGridItem key={item.id} {...item.gridItem}>
+          {Object.entries(row).map(([id, item]) => (
+            <FlexGridItem key={id} {...item.gridItem}>
               <UploadField {...item.uploadField} />
             </FlexGridItem>
           ))}
@@ -423,14 +343,9 @@ export const UploadForm = ({metadata: {
         <TagList keywords={keywords} custom={custom} removeTag={removeTag} />
       </FormRow>
       <FormRow className="form-row">
-        <AddTag addTag={addTag} />
+        <TagInput addTag={addTag} />
       </FormRow>
-      <LegendRow>
-        <div className="legend">
-          <span className="legend__required">*required</span>
-          <span className="legend__metadata">(indicates info taken from track metadata)</span>
-        </div>
-      </LegendRow>
+      <Legend />
           {/* <Button type="submit" onClick={handleSubmit(onSubmit)}>Submit</Button>
           <Button type="submit" onClick={() => unstageTracks({variables: {files: [filename]}})}>Remove</Button> */}
     </UploadCard>
