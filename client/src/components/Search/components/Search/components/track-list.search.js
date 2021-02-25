@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import { useQuery, useLazyQuery} from "@apollo/client";
 import styled from 'styled-components';
-import {SONGS_QUERY, DOWNLOAD_TRACKS} from '../../../../apollo';
+import {TRACKS_QUERY, DOWNLOAD_TRACKS} from '../../../../apollo';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -18,26 +18,26 @@ import fileDownload from 'js-file-download'
 const QuerySection = styled(Container)`
   && {
     padding: 40px 0;
-    background-color: ${({theme: {background}}) => background.dark0};
+    background-color: ${({theme: {primary}}) => primary[0]};
 
     /* &:first-of-type {
       border-top: 1px solid grey;
     } */
     &:not(:last-of-type) {
-      border-bottom: 1px solid ${({theme: {background}}) => background.dark2};
+      border-bottom: 1px solid ${({theme: {primary}}) => primary[2]};
     }
   }
 `
 
 const StyledTableRow = styled(TableRow)`
-  background-color: ${({theme: {background}}) => background.dark1};
+  background-color: ${({theme: {primary}}) => primary[1]};
 
   &:nth-of-type(odd) {
-    background-color: ${({theme: {background}}) => background.dark2};
+    background-color: ${({theme: {primary}}) => primary[2]};
   }
 
   :hover {
-    background-color: ${({theme: {background}}) => background.dark3};
+    background-color: ${({theme: {primary}}) => primary[3]};
   }
 `
 
@@ -45,7 +45,7 @@ const StyledTableCell = styled(TableCell)`
 `
 
 const TracksTable = styled(Table)`
-  background-color: ${({theme: {background}}) => background.black};
+  background-color: ${({theme: {black}}) => black};
   
   & th, td {
     color: ${({theme: {text}}) => text.white};
@@ -81,7 +81,7 @@ const downloadTrack = async({filename}) => {
 
 const DataRow = ({data: {title, artist, bpm, key, filename}, idx}) => {
   const [
-    downloadTracks,
+    retrieveTrackFromStorage,
     { loading }
   ] = useLazyQuery(DOWNLOAD_TRACKS, {
     fetchPolicy: "network-only",
@@ -101,11 +101,11 @@ const DataRow = ({data: {title, artist, bpm, key, filename}, idx}) => {
       <StyledTableCell align="right">
         {loading ? <div>...retrieving...</div> : (
           <>
-          <div onClick={() => downloadTracks({variables: {filename}})}>
+          <div onClick={() => retrieveTrackFromStorage({variables: {filename}})}>
             Select
             
           </div>
-          {/* {data && data.downloadTracks === 'Success' && (
+          {/* {data && data.retrieveTrackFromStorage === 'Success' && (
             <div onClick={() => localAPI({url: 'http://localhost:4000/download', filename})}>
               Download
             </div>
@@ -119,7 +119,7 @@ const DataRow = ({data: {title, artist, bpm, key, filename}, idx}) => {
 }
 
 const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
-  const {data, error, loading} = useQuery(SONGS_QUERY, {
+  const {data, error, loading} = useQuery(TRACKS_QUERY, {
     variables: {query, queryType}
   })
 

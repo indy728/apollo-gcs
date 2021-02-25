@@ -16,12 +16,13 @@ exports.database = firebase.database();;
 
 // INCLUDE SERVICE ACCOUNT CREDENTIALS, INITIALIZE CLOUD FIRESTORE
 const admin = require('firebase-admin')
-const serviceAccount = require('../../firebase-music-key.json');
+const serviceAccount = require('../../../firebase-music-key.json');
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-exports.firestore_db = admin.firestore();;
+exports.firestore_db = admin.firestore();
+exports.admin = admin;
 
 // INITIALIZE CLOUD STORAGE, CONNECT TO BUCKET
 const {Storage} = require('@google-cloud/storage');

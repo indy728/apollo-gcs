@@ -9,14 +9,13 @@ const SearchBox = styled(Box)`
   padding: 60px 0;
 `
 const SearchText = styled((props) => {
-  console.log('[search-field.search] props: ', props)
   return(
   <TextField classes={{root: 'root'}} {...props} />
   )}
 )`
   &.root {
     padding: 1rem;
-    background-color: ${({theme: {background}}) => background.dark2};
+    background-color: ${({theme: {primary}}) => primary[2]};
 
     & input, svg {
       font-size: 2.4rem;

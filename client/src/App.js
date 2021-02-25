@@ -2,22 +2,45 @@
 import React from "react";
 import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom';
 import {createGlobalStyle, ThemeProvider} from 'styled-components'
-import {FileFormList, FileSelector} from './components/Upload';
+import Upload from './components/Upload';
 import Search from './components/Search'
+import AuthPage from './components/Auth'
 import {TopNav} from './components/navigation';
+import { ApolloProvider } from "@apollo/client";
+import { client } from "./apollo";
+
 
 const theme = {
-  background: {
-    black: '#000000',
-    dark0: '#0c0032',
-    dark1: '#190061',
-    dark2: '#240090',
-    dark3: '#3500d3',
-    grey: '#282828',
-  },
+  primary: ['#0c0032', '#190061', '#240090', '#3500d3', '#282828'],
+  secondary: ['#2E7358', '#11AB70', '#13BF7D', '#19F7A2', '#62F4BC'],
+  compliment: ['#F2EDBD', '#F3E973', '#F2E768', '#E3D133', '#A8A040'],
+  black: '#000000',
+  white: '#fffaff',
+  grey: 'grey',
   text: {
-    white: '#fffaff',
-    grey: 'c8c8c8',
+    primary: '#fffaff',
+    secondary: '#11AB70',
+    compliment: '#F3E973',
+    alert: '#F2E768',
+    error: '#D92158',
+  },
+  button: {
+    primary: '#240090',
+    secondary: '#11AB70',
+    compliment: '#F3E973',
+    cancel: '#AB3E5E',
+    disabled: 'grey',
+  },
+  borderRadius: '.2rem',
+  transition: 'all .1s linear',
+  transform: {
+    hover: {
+      translate: 'translateY(-.05rem)',
+      scale: 'scale(1.1)',
+    },
+    active: {
+      translate: 'translateY(0)'
+    },
   }
 }
 
@@ -26,8 +49,10 @@ const GlobalStyle = createGlobalStyle`
     * { 
         margin: 0;
         padding: 0;
-        color: ${theme.text.white};
-        font-family: 'Source Sans Pro', sans-serif !important;
+        color: ${theme.text.primary};
+        font-family: 'Source Sans Pro', sans-serif;
+        font-weight: 400;
+        letter-spacing: .7px;
     }
     *,
     *::after,
@@ -41,8 +66,12 @@ const GlobalStyle = createGlobalStyle`
         font-size: 62.5%;
     }
     body {
-        background: ${theme.background.black};
+        background: ${theme.black};
         min-height: 100vh;
+    }
+
+    .brand-text {
+      font-family: 'Gugi', serif;
     }
 
     @media (min-width: 760px) {
@@ -93,26 +122,31 @@ const GlobalStyle = createGlobalStyle`
 
 
 const App = () => {
-  const Upload = () => (
-    <>
-      <FileFormList />
-      <FileSelector />
-    </>
-  )
 
-  const routes = (
+  let routes = (
     <Switch>
-      <Route path="/search" component={Search} /> 
-      <Route path="/upload" component={Upload} />
-      <Redirect to="/search" />
+      <Route path="/auth" component={AuthPage} />
+      <Redirect to="/auth" />
     </Switch>
   )
+
+  if (1 === 1) {
+    routes = (
+      <>
+      <TopNav />
+      <Switch>
+        <Route path="/search" component={Search} /> 
+        <Route path="/upload" component={Upload} />
+        <Redirect to="/search" />
+      </Switch>
+    </>
+  )
+}
 
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-        <TopNav />
           {routes}
         {/* Bottom Nav */}
       </ThemeProvider>
@@ -120,4 +154,9 @@ const App = () => {
   );
 }
 
-export default App;
+export default () => (
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>
+);
+

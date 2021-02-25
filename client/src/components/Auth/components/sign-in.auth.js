@@ -27,6 +27,8 @@ function Copyright() {
 }
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+  },
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
@@ -40,18 +42,20 @@ const useStyles = makeStyles((theme) => ({
   form: {
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
+    color: 'white'
+
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
 }));
 
-export default function SignIn() {
+const SignIn = ({toggle}) => {
   const classes = useStyles();
 
   return (
     <Container component="main" maxWidth="xs">
-      <CssBaseline />
+      {/* <CssBaseline /> */}
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
@@ -82,10 +86,10 @@ export default function SignIn() {
             id="password"
             autoComplete="current-password"
           />
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          />
+          /> */}
           <Button
             type="submit"
             fullWidth
@@ -103,7 +107,9 @@ export default function SignIn() {
             </Grid>
             <Grid item>
               <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
+                <div onClick={toggle}>
+                  {"Don't have an account? Sign Up"}
+                </div>
               </Link>
             </Grid>
           </Grid>
@@ -115,3 +121,5 @@ export default function SignIn() {
     </Container>
   );
 }
+
+export default SignIn;

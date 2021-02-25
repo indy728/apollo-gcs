@@ -23,7 +23,7 @@ const searchLists = [
 
 const TracksPageContainer = styled(Container)`
   && {
-    background-color: ${({theme: {background}}) => background.dark0}
+    background-color: ${({theme: {primary}}) => primary[0]}
   }
 `
 
@@ -35,18 +35,11 @@ const SearchTracks = () => {
     <TracksPageContainer>
       <SearchField onChange={onChange} />
 
-      {searchLists.map((list) => (
-        <TrackList query={query} list={list} />
+      {searchLists.map((list, idx) => (
+        <TrackList key={list.key} query={query} list={list} />
       ))}
     </TracksPageContainer>
   )
 }
 
 export default SearchTracks;
-
-//   <div key={key}>
-      //     <div style={{height: '40px', backgroundColor: 'grey'}} />
-      //     <div><span>{text}</span></div>
-      //       <TrackList query={query} queryType={queryType} />
-      //   </div>
-      // ))}

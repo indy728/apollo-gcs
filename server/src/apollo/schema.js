@@ -1,63 +1,15 @@
-const {gql} = require('apollo-server-express');
 const {readdirSync} = require('fs');
 const mm = require('music-metadata');
-const {fsAdd, uploadToServer, deleteFile} = require('./mutations')
+// const {firestoreTrackUpload, uploadToServer, deleteFile} = require('./resolvers/mutations')
+const {stageTracks, trackUpload, unstageTracks} = require('./resolvers/mutations')
 const {firestore_db, musicBucket} = require('./firebase-config')
 const path = require('path');
-
-const typeDefs = gql`
-  type Query {
-    files: [MetaData],
-    searchTracks(query: String!, queryType: String!): [MetaData],
-    downloadTracks(filename: String): String,
-  }
-
-  type MetaData {
-    format: String,
-    title: String,
-    filename: String,
-    duration: Int,
-    artist: String,
-    artists: [String],
-    key: String,
-    bpm: String,
-    id: String,
-    directUrl: String,
-    signedUrl: String,
-    # save album art for another time
-    # involves converting hex octets to tmp-music
-    # picture: []
-  }
-
-  input SongInput {
-    format: String,
-    title: String!,
-    _title: String,
-    filename: String,
-    duration: String,
-    artist: String,
-    _artist: String!,
-    key: String,
-    bpm: String,
-    keywords: [String],
-    # save album art for another time
-    # involves converting hex octets to tmp-music
-    # picture: []
-  }
-
- type Mutation {
-   uploadToBucket(files: [String!]): Boolean,
-   uploadToServer(files: [Upload!]): Boolean,
-   fsAdd(entry: SongInput): [String],
-   deleteFile(file: String!): Boolean
- }
-`
 
 const resolvers = {
   Query: {
     // could do await new Promise with readdir (async)
-    files: async () => {
-      const files = readdirSync(path.join(__dirname, 'tmp-music'))
+    stagedTracks: async () => {
+      const files = readdirSync(path.join(__dirname, '..', 'tmp-music'))
 
       const mds = await Promise.all(files.map(async(file) => {
         const metaData = {
@@ -66,26 +18,28 @@ const resolvers = {
           duration: -1,
           artist: '',
           key: '',
+          genre: '',
           filename: file
         }
 
         try {
-          const metadata = await mm.parseFile(path.join(__dirname, 'tmp-music', file));
+          const metadata = await mm.parseFile(path.join(__dirname, '..','tmp-music', file));
           // console.log(util.inspect(metadata, { showHidden: false, depth: null }));
           // const metadata = await mm.parseStream(createReadStream());
           const {format: {
             container, duration
           }, common: {
-            title, bpm, key, artist 
+            title, bpm, key, artist, genre
           }} = metadata;
-          
+
           Object.assign(metaData, {
             format: container,
-            title,
-            duration: Math.trunc(duration),
-            artist,
-            key,
-            bpm,
+            title: title || '',
+            duration: duration && Math.trunc(duration) || 0,
+            artist: artist || '',
+            key: key || '',
+            bpm: bpm || '',
+            genre: genre || [],
           })
   
           return metaData
@@ -122,8 +76,8 @@ const resolvers = {
       //     })
       // })
     },
-    downloadTracks: async (_, {filename}) => {
-      const destination = path.join(__dirname, 'new-music', filename)
+    retrieveTrackFromStorage: async (_, {filename}) => {
+      const destination = path.join(__dirname, '..', 'new-music', filename)
       const options = {
         destination,
       }
@@ -137,10 +91,11 @@ const resolvers = {
     }
   },
   Mutation: {
-    fsAdd,
-    uploadToServer,
-    deleteFile,
+    stageTracks,
+    trackUpload,
+    unstageTracks,
   }
 }
-exports.typeDefs = typeDefs;
+
+// exports.typeDefs = typeDefs;
 exports.resolvers = resolvers;

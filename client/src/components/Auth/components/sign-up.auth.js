@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignUp() {
+const SignUp = ({toggle}) => {
   const classes = useStyles();
 
   return (
@@ -126,7 +126,9 @@ export default function SignUp() {
           <Grid container justify="flex-end">
             <Grid item>
               <Link href="#" variant="body2">
+              <div onClick={toggle}>
                 Already have an account? Sign in
+                </div>
               </Link>
             </Grid>
           </Grid>
@@ -138,3 +140,5 @@ export default function SignUp() {
     </Container>
   );
 }
+
+export default SignUp;

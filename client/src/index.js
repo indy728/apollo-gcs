@@ -3,14 +3,10 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import { ApolloProvider } from "@apollo/client";
-// import * as serviceWorker from "./serviceWorker";
-import { client } from "./apollo";
+// // import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <App />
-  </ApolloProvider>,
+    <App />,
   document.getElementById("root")
 );
 

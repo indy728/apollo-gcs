@@ -23,12 +23,13 @@ const links = [
 ]
 
 const StyledToolbar = styled(Toolbar)`
-  background-color: ${({theme: {background}}) => background.dark0};
-  height: 100px;
+  background-color: ${({theme: {primary}}) => primary[0]};
+  height: 10rem;
   
   && {
     * {
-      font-size: 2rem;
+      font-size: 2.8rem;
+      font-family: 'Gugi', serif !important;
     }
   }
 `
@@ -72,7 +73,7 @@ const TopNav = () => {
           {menu}
         </IconButton>
         <Typography variant="h6">
-          Indy's DJ Track Database
+          meatport
         </Typography>
         {/* @TODO: User / Logout */}
       </StyledToolbar>

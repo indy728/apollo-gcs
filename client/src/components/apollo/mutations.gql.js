@@ -6,20 +6,20 @@ export const UPLOAD_BUCKET = gql`
   }
 `;
 
-export const FIRESTORE_ADD = gql`
-  mutation FsAdd($entry: SongInput) {
-    fsAdd(entry: $entry)
+export const TRACK_UPLOAD = gql`
+  mutation TrackUpload($entry: TrackInput) {
+    trackUpload(entry: $entry)
   }
 `;
 
-export const UPLOAD_SERVER = gql`
-  mutation UploadToServer($files: [Upload!]) {
-    uploadToServer(files: $files)
+export const STAGE_TRACKS = gql`
+  mutation StageTracks($files: [Upload!]) {
+    stageTracks(files: $files)
   }
 `;
 
-export const DELETE_FILE = gql`
-  mutation DeleteFile($file: String!) {
-    deleteFile(file: $file)
+export const UNSTAGE_TRACKS = gql`
+  mutation UnstageTracks($files: [String!]) {
+    unstageTracks(files: $files)
   }
 `;
