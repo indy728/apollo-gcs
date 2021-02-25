@@ -21,22 +21,23 @@ import {UploadCard, FormRow, KeyDisplay} from './upload-form.styles';
 import UploadField from './upload-field';
 
 export const UploadForm = ({metadata: {
-  title, filename: _filename, format, artist, duration = 0, bpm, key, genre: genreArray
+  title, filename: _filename, format, artist, duration, bpm, key, genre: genreArray
 }, unstageTracks}) => {
+
 
   // CREATED FORM VARIABLES
   const songLength = `${Math.floor(duration / 60)}:${Math.floor(duration % 60).toString().padStart(2, "0")}`
   const [_format, filename] = filenameFormatTuple(_filename);
   const genre = genreArray.length !== 0 && genreArray[0].toLowerCase() || '';
   const initialValues = {
-    title: title || '',
+    title,
     filename,
     _filename,
-    artist: artist || '',
+    artist,
     duration: songLength,
-    bpm: bpm || '',
-    key: key || '',
-    genre: genre || '',
+    bpm,
+    key,
+    genre,
   };
 
   // FORM
@@ -105,12 +106,16 @@ export const UploadForm = ({metadata: {
     const [min, sec] = newValues.duration.split(':');
     const intDuration = +min * 60 + +sec;
 
+    console.log(newValues.key)
+
     const entry = {
       ...newValues,
+      
       filename: newValues.filename + _format,
       duration: intDuration,
       genre: newValues.genre.toLowerCase(),
       _filename,
+      key: findKey(newValues.key) || '0',
       //  @TODO: grab from auth
       uploader: 'indy',
       keywords: [...keywords, ...custom],
@@ -118,10 +123,9 @@ export const UploadForm = ({metadata: {
       _title
     }
 
-    trackUpload({variables: {entry}}).then(({data: {trackUpload: res}}) => {
-      if (!res.length) {
-        console.log('[upload-form.component] values.filename: ', values.filename)
-        unstageTracks({variables: {files: [filename]}})
+    trackUpload({variables: {entry}}).then(({data: {trackUpload: errors}}) => {
+      if (!errors.length) {
+        unstageTracks({variables: {files: [_filename]}})
       }
     })
   };
@@ -210,6 +214,7 @@ export const UploadForm = ({metadata: {
       "track-key": {
         gridItem: {xs: 4},
         uploadField: {
+          control,
           label: "Key",
           onClickEdit: () => onClickEdit('trackKey'),
           isEditing: editInputs.trackKey,
@@ -278,6 +283,9 @@ export const UploadForm = ({metadata: {
         <TagInput addTag={addTag} />
       </FormRow>
       <Legend />
+      <button onClick={() => {
+        console.log(getValues())
+      }}>Values</button>
           {/* <Button type="submit" onClick={handleSubmit(onSubmit)}>Submit</Button>
           <Button type="submit" onClick={() => unstageTracks({variables: {files: [filename]}})}>Remove</Button> */}
     </UploadCard>

@@ -52,7 +52,7 @@ const toAlnumID = (str) => {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^0-9a-zA-Z]/g, '').toLowerCase();
 }
 
-const fireStoreAddArtist = ({artist = '', id = ''}) => {
+const fireStoreAddArtist = ({artist = '', _artist = '', id = ''}) => {
   const artistObj = {
     name: artist,
     tracks: [id],
@@ -63,17 +63,16 @@ const fireStoreAddArtist = ({artist = '', id = ''}) => {
       picture: '',
     }
   }
-  const _artist = toAlnumID(artist);
-  console.log('[tracks.mutations] _artist: ', _artist)
 
   firestore_db.collection('artists').doc(_artist).set(artistObj)
 }
 
-const firestoreUpdateArtist = async({artist = '', id = ''}) => {
-  const artistRef = await firestore_db.collection('artists').doc(artist);
+const firestoreUpdateArtist = async({artist = '', _artist = '', id = ''}) => {
+  const artistRef = await firestore_db.collection('artists').doc(_artist);
   const {exists} = await artistRef.get();
+  
   if (!exists) {
-    fireStoreAddArtist({artist, id})
+    fireStoreAddArtist({artist, _artist, id})
   } else {
     artistRef.update({
       tracks: admin.firestore.FieldValue.arrayUnion(id),
@@ -81,11 +80,47 @@ const firestoreUpdateArtist = async({artist = '', id = ''}) => {
   }
 }
 
+const fireStoreAddGenre = ({genre = '', _genre = '', id = ''}) => {
+  const genreObj = {
+    name: genre,
+    tracks: [id],
+  }
+
+  firestore_db.collection('genres').doc(_genre).set(genreObj)
+}
+
+const firestoreUpdateGenre = async({genre = '', _genre = '', id = ''}) => {
+  const genreRef = await firestore_db.collection('genres').doc(_genre);
+  const {exists} = await genreRef.get();
+  
+  if (!exists) {
+    fireStoreAddGenre({genre, _genre, id})
+  } else {
+    genreRef.update({
+      tracks: admin.firestore.FieldValue.arrayUnion(id),
+    })
+  }
+}
+
+const fireStoreAddUser = ({username = '', id = ''}) => {
+  const userObj = {
+    username,
+    name: '',
+    tracks: [id],
+    bio: {
+      about: '',
+      picture: '',
+    }
+  }
+
+  firestore_db.collection('users').doc(username).set(userObj)
+}
+
 const firestoreUpdateUser = async({username = '', id = ''}) => {
   const userRef = await firestore_db.collection('users').doc(username)
   const {exists} = await userRef.get();
   if (!exists) {
-    // fuck!
+    fireStoreAddUser({username, id})
   } else {
     userRef.update({
       uploads: admin.firestore.FieldValue.arrayUnion(id),
@@ -103,21 +138,17 @@ const firestoreAddTrack = async(entry) => {
       entry
     )
     res.id = id;
-    console.log('[tracks.mutations] id: ', id)
 
-    const artists = entry.artist.split(', ');
-    
-    artists.forEach((artist) => {
-      firestoreUpdateArtist({artist, id});
+    entry.artist.split(', ').forEach((artist) => {
+      let _artist = toAlnumID(artist);
+
+      firestoreUpdateArtist({artist, _artist, id});
     });
-
+    firestoreUpdateGenre({genre: entry.genre, _genre: toAlnumID(entry.genre), id})
     firestoreUpdateUser({username: entry.uploader, id});
-    // @TODO: collection('genre').add(entry.genre if !genre in db)
-
   } catch(err) {
     res.errors.push(err.message);
   }
-
   return res
 }
 
@@ -130,7 +161,10 @@ const checkBucketForFile = (filename) => {
 exports.trackUpload = async (_, {entry}) => {
   // @TODO: check for duplicates
   // const fileExists = await checkBucketForFile(entry.filename);
-  const {errors} = await uploadTrackToBucket(entry._filename);
+
+  // @TODO: upload to new music bucket
+  // const {errors} = await uploadTrackToBucket(entry._filename);
+  const errors = [];
   if (errors.length) {
     return errors
   }
@@ -139,8 +173,9 @@ exports.trackUpload = async (_, {entry}) => {
     res.errors.forEach(error => errors.push(error));
   }
 
-  if (!errors.length) {
-    deleteFiles(null, {files: [entry.filename]})
-  }
+  // moved to front-end
+  // if (!errors.length) {
+  //   deleteFiles([entry._filename])
+  // }
   return errors
 }

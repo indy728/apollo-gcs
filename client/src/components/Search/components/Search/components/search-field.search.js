@@ -9,7 +9,6 @@ const SearchBox = styled(Box)`
   padding: 60px 0;
 `
 const SearchText = styled((props) => {
-  console.log('[search-field.search] props: ', props)
   return(
   <TextField classes={{root: 'root'}} {...props} />
   )}

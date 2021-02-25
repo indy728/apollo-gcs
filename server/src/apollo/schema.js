@@ -34,12 +34,12 @@ const resolvers = {
 
           Object.assign(metaData, {
             format: container,
-            title,
-            duration: Math.trunc(duration),
-            artist,
-            key,
-            bpm,
-            genre,
+            title: title || '',
+            duration: duration && Math.trunc(duration) || 0,
+            artist: artist || '',
+            key: key || '',
+            bpm: bpm || '',
+            genre: genre || [],
           })
   
           return metaData

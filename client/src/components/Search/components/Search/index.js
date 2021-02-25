@@ -35,8 +35,8 @@ const SearchTracks = () => {
     <TracksPageContainer>
       <SearchField onChange={onChange} />
 
-      {searchLists.map((list) => (
-        <TrackList query={query} list={list} />
+      {searchLists.map((list, idx) => (
+        <TrackList key={list.key} query={query} list={list} />
       ))}
     </TracksPageContainer>
   )

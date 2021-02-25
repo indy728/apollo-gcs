@@ -24,11 +24,11 @@ const links = [
 
 const StyledToolbar = styled(Toolbar)`
   background-color: ${({theme: {primary}}) => primary[0]};
-  height: 100px;
+  height: 10rem;
   
   && {
     * {
-      font-size: 2rem;
+      font-size: 2.8rem;
       font-family: 'Gugi', serif !important;
     }
   }

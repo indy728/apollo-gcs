@@ -6,6 +6,9 @@ import Upload from './components/Upload';
 import Search from './components/Search'
 import AuthPage from './components/Auth'
 import {TopNav} from './components/navigation';
+import { ApolloProvider } from "@apollo/client";
+import { client } from "./apollo";
+
 
 const theme = {
   primary: ['#0c0032', '#190061', '#240090', '#3500d3', '#282828'],
@@ -151,4 +154,9 @@ const App = () => {
   );
 }
 
-export default App;
+export default () => (
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>
+);
+
