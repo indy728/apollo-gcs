@@ -27,6 +27,14 @@ export const TRACKS_QUERY = gql`
   }
 `
 
+export const GENRES_QUERY = gql`
+  {
+    getAllGenres {
+      name
+    }
+  }
+`
+
 export const DOWNLOAD_TRACKS = gql`
   query DownloadTracks($filename: String!){
     retrieveTrackFromStorage(filename: $filename)

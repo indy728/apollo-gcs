@@ -68,13 +68,21 @@ const resolvers = {
         tracks.push(data)
       })
       return tracks
+    },
+    getAllGenres: async () => {
+      const genresRef = firestore_db.collection('genres');
 
-      // return await database.ref('songs').orderByValue('keywords').startAt('M').endAt('M'+'\uf8ff').once('value').then((snap) => {
-      //   return Object.entries(snap.val())
-      //     .map(([id, info]) => {
-      //       return {...info, id}
-      //     })
-      // })
+      /*
+        **Reminder that docs is not an array. It is a class with a 'forEach' method.
+        **You cannot use the map method on docs
+      */
+      const docs = await genresRef.get();
+      const genres = [];
+      docs.forEach((genre) => {
+        const data = genre.data();
+        genres.push(data);
+      });
+      return genres;
     },
     retrieveTrackFromStorage: async (_, {filename}) => {
       const destination = path.join(__dirname, '..', 'new-music', filename)
@@ -97,5 +105,4 @@ const resolvers = {
   }
 }
 
-// exports.typeDefs = typeDefs;
 exports.resolvers = resolvers;

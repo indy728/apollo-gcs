@@ -168,6 +168,7 @@ exports.trackUpload = async (_, {entry}) => {
   if (errors.length) {
     return errors
   }
+  delete entry._filename
   const res = await firestoreAddTrack(entry);
   if (res.errors) {
     res.errors.forEach(error => errors.push(error));

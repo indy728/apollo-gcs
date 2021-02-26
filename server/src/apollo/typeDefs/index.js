@@ -54,6 +54,7 @@ exports.Track = gql`
     # picture: []
   }
 
+
   extend type Query {
     stagedTracks: [Track],
     searchTracks(query: String!, queryType: String!): [Track],
@@ -87,5 +88,16 @@ exports.User = gql`
   extend type Mutation {
     updateUser(user: UserInput): User,
     addUser(user: UserInput): User,
+  }
+`;
+
+
+exports.Genre = gql`
+  type Genre {
+    name: String,
+  }
+
+  extend type Query {
+    getAllGenres: [Genre],
   }
 `;
