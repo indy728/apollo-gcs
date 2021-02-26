@@ -24,7 +24,6 @@ export const UploadForm = ({metadata: {
   title, filename: _filename, format, artist, duration, bpm, key, genre: genreArray
 }, unstageTracks}) => {
 
-
   // CREATED FORM VARIABLES
   const songLength = `${Math.floor(duration / 60)}:${Math.floor(duration % 60).toString().padStart(2, "0")}`
   const [_format, filename] = filenameFormatTuple(_filename);
@@ -105,8 +104,6 @@ export const UploadForm = ({metadata: {
     
     const [min, sec] = newValues.duration.split(':');
     const intDuration = +min * 60 + +sec;
-
-    console.log(newValues.key)
 
     const entry = {
       ...newValues,
@@ -283,11 +280,6 @@ export const UploadForm = ({metadata: {
         <TagInput addTag={addTag} />
       </FormRow>
       <Legend />
-      <button onClick={() => {
-        console.log(getValues())
-      }}>Values</button>
-          {/* <Button type="submit" onClick={handleSubmit(onSubmit)}>Submit</Button>
-          <Button type="submit" onClick={() => unstageTracks({variables: {files: [filename]}})}>Remove</Button> */}
     </UploadCard>
     )
 }
