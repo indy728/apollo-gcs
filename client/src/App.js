@@ -130,7 +130,7 @@ const App = () => {
     </Switch>
   )
 
-  if (1 === 1) {
+  if (0 === 1) {
     routes = (
       <>
       <TopNav />
