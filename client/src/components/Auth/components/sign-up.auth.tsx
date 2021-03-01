@@ -1,5 +1,4 @@
 
-// @ts-nocheck
 import React from 'react';
 import {Paper, Card} from 'components/ui';
 import {ToggleState} from 'types';
@@ -31,6 +30,7 @@ const SignUp: React.FC<Props> = ({toggle}) => {
             <input name="username" />
             <input name="password" />
             <input name="verify-password" />
+            <button type="submit">Submit</button>
           </form>
         </Card>
       </Paper>
