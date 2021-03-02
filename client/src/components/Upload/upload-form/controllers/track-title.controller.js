@@ -1,5 +1,5 @@
 import {Controller} from 'react-hook-form'
-import {MyInputField} from '../../../ui'
+import {MyInputField} from 'components/ui'
 
 const trackTitleController = ({control, ...props}) => (
   <Controller
