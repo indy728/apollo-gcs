@@ -1,6 +1,6 @@
 
 import React from 'react';
-import {Paper, Card, MyInputField} from 'components/ui';
+import {Paper, Card, MyInputField, MyButton, InlineBrand, Typography} from 'components/ui';
 import {ToggleState} from 'types';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
@@ -23,16 +23,27 @@ interface Props {
   toggle: ToggleState,
 }
 
+interface IInputField {
+  placeholder: string,
+  type?: string, 
+}
+
+interface IInputFields {
+  username: IInputField,
+  email: IInputField,
+  password: IInputField,
+  confirmPassword: IInputField,
+}
+
 type SignUpValues = {
   username: string,
   password: string,
   confirmPassword: string,
 }
 
-const matchPasswords = (a: string, b: string): boolean => (a === b);
-
 const schema = yup.object().shape({
   username: yup.string().required(),
+  email: yup.string().required().email(),
   password: yup.string().required().matches(
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
     "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
@@ -42,7 +53,7 @@ const schema = yup.object().shape({
 });
 
 const SignUp: React.FC<Props> = ({toggle}) => {
-  const { register, handleSubmit, errors } = useForm<SignUpValues>({
+  const { register, handleSubmit, errors, reset } = useForm<SignUpValues>({
     resolver: yupResolver(schema),
   });
 
@@ -51,9 +62,12 @@ const SignUp: React.FC<Props> = ({toggle}) => {
     console.log(values);
   }
 
-  const inputFields = {
+  const inputFields: IInputFields = {
     username: {
       placeholder: "Username",
+    },
+    email: {
+      placeholder: "Your email address",
     },
     password: {
       placeholder: "Password",
@@ -69,12 +83,12 @@ const SignUp: React.FC<Props> = ({toggle}) => {
     <Container>
       <Paper>
         <Card>
-          <div>Sign Up for meatport</div>
-          <div>It's free to view our music library!</div>
+          <Typography tag="h2">Sign Up for <InlineBrand /></Typography>
+          <Typography>It's free to view our music library!</Typography>
           <pre>
           {JSON.stringify(errors, null, 2)}
           </pre>
-          <form onSubmit={handleSubmit(logValues)}>
+          <form>
             {Object.entries(inputFields).map(([id, props]) => (
               /*
               // @ts-ignore */
@@ -87,10 +101,16 @@ const SignUp: React.FC<Props> = ({toggle}) => {
                 }}
               />
             ))}
-            {/* <input ref={register} name="username" /> */}
-            <button type="submit">Submit</button>
           </form>
-          <div>Already a meatport user? <span onClick={toggle} style={{color: 'red', cursor: 'pointer'}}>Sign in instead!</span></div>
+          <div>Already a <InlineBrand /> user? <span onClick={toggle} style={{color: 'red', cursor: 'pointer'}}>Sign in instead!</span></div>
+          <div style={{display: 'flex'}}>
+            {/*
+                // @ts-ignore */}
+            <MyButton onClick={handleSubmit(logValues)}>sign up</MyButton>
+            {/*
+                // @ts-ignore */}
+            <MyButton type="error" className="my-button--cancel" onClick={reset}>clear form</MyButton>
+          </div>
         </Card>
       </Paper>
     </Container>

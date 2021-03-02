@@ -41,6 +41,9 @@ const theme = {
     active: {
       translate: 'translateY(0)'
     },
+  },
+  font: {
+    brand: "'Gugi', serif",
   }
 }
 
