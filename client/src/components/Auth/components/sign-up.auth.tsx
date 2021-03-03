@@ -1,11 +1,18 @@
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Paper, Card, MyInputField, MyButton, InlineBrand, Typography} from 'components/ui';
 import {ToggleState} from 'types';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
+import {
+  AuthForm,
+  AuthItemWrapper,
+  AuthErrorWrapper,
+  AuthSubContainer,
+  AuthToggleText
+} from './auth-form.styles';
 
 const Container = styled.div`
   display: flex;
@@ -23,9 +30,15 @@ interface Props {
   toggle: ToggleState,
 }
 
+interface IError {
+  message: string
+}
+
 interface IInputField {
   placeholder: string,
-  type?: string, 
+  label: string,
+  type?: string,
+  error?: string | undefined, 
 }
 
 interface IInputFields {
@@ -41,12 +54,15 @@ type SignUpValues = {
   confirmPassword: string,
 }
 
+const pwLength: string = 'Password must be between 8 and 26 characters in length'
+
 const schema = yup.object().shape({
   username: yup.string().required(),
   email: yup.string().required().email(),
-  password: yup.string().required().matches(
+  password: yup.string().required().min(8, pwLength).max(26, pwLength).matches(
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-    "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
+    "Must contain at least 1 uppercase, 1 lowercase, 1 \
+    number and at least one special case character from @$!%*#?&"
   ),
   confirmPassword: yup.string()
   .oneOf([yup.ref('password'), null], 'Passwords must match'),
@@ -64,18 +80,26 @@ const SignUp: React.FC<Props> = ({toggle}) => {
 
   const inputFields: IInputFields = {
     username: {
+      label: 'Username',
       placeholder: "Username",
+      error: errors?.username?.message
     },
     email: {
+      label: 'Email',
       placeholder: "Your email address",
+      // error: errors?.email
     },
     password: {
+      label: 'Password',
       placeholder: "Password",
       type: 'password',
+      error: errors?.password?.message
     },
     confirmPassword: {
+      label: 'Confirm Password',
       placeholder: "Confirm Password",
-      type: 'password'
+      type: 'password',
+      error: errors?.confirmPassword?.message
     },
   }
 
@@ -83,34 +107,47 @@ const SignUp: React.FC<Props> = ({toggle}) => {
     <Container>
       <Paper>
         <Card>
-          <Typography tag="h2">Sign Up for <InlineBrand /></Typography>
-          <Typography>It's free to view our music library!</Typography>
-          <pre>
-          {JSON.stringify(errors, null, 2)}
-          </pre>
-          <form>
-            {Object.entries(inputFields).map(([id, props]) => (
-              /*
-              // @ts-ignore */
-              <MyInputField
-                key={id}
-                inputProps={{
-                  name: id,
-                  ref: register,
-                  ...props,
-                }}
-              />
+          <AuthSubContainer>
+            <Typography tag="h1">Sign Up for <InlineBrand /></Typography>
+            <Typography fontSize="5rem" mt=".5rem">It's free to view our music library!</Typography>
+          </AuthSubContainer>
+          <AuthForm>
+            {Object.entries(inputFields).map(([id, {label, error, ...props}]) => (
+              <AuthItemWrapper>
+                {/*
+                // @ts-ignore */}
+                <MyInputField
+                  key={id}
+                  label={label}
+                  inputProps={{
+                    name: id,
+                    ref: register,
+                    ...props,
+                  }}
+                />
+                {error && (
+                  <AuthErrorWrapper>
+                    {error}
+                  </AuthErrorWrapper>
+                )}
+              </AuthItemWrapper>
             ))}
-          </form>
-          <div>Already a <InlineBrand /> user? <span onClick={toggle} style={{color: 'red', cursor: 'pointer'}}>Sign in instead!</span></div>
-          <div style={{display: 'flex'}}>
+          </AuthForm>
+          <AuthSubContainer>
             {/*
                 // @ts-ignore */}
             <MyButton onClick={handleSubmit(logValues)}>sign up</MyButton>
-            {/*
-                // @ts-ignore */}
-            <MyButton type="error" className="my-button--cancel" onClick={reset}>clear form</MyButton>
-          </div>
+          </AuthSubContainer>
+          
+          <div style={{height: 0, borderBottom: '1px solid white', margin: '1rem auto', padding: '1rem 0', width: '90%'}} />
+          <AuthSubContainer>
+            <div>
+              Already a&nbsp;<InlineBrand />&nbsp;user?&nbsp;
+              <AuthToggleText onClick={toggle}>
+                Sign in instead!
+              </AuthToggleText>
+            </div>
+          </AuthSubContainer>
         </Card>
       </Paper>
     </Container>

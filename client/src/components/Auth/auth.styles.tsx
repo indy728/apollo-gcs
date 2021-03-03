@@ -8,7 +8,7 @@ export const AuthWrapper = styled.div`
   align-items: center;
   justify-content: center;
   position: relative;
-  /* padding: 5rem 0; */
+  padding: 2rem 0;
 
   @media (min-width: 960px) {
     /* background-image */

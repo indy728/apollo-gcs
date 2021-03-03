@@ -71,6 +71,13 @@ const GlobalStyle = createGlobalStyle`
     body {
         background: ${theme.black};
         min-height: 100vh;
+
+
+      .ellipsis, input {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
     .brand-text {
