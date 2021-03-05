@@ -28,6 +28,8 @@ const Container = styled.div`
 
 interface Props {
   toggle: ToggleState,
+  // authFormHeader: React.ReactNode,
+
 }
 
 interface IError {
@@ -36,20 +38,22 @@ interface IError {
 
 interface IInputField {
   placeholder: string,
+  autoComplete?: string,  
   label: string,
   type?: string,
   error?: string | undefined, 
 }
 
 interface IInputFields {
-  username: IInputField,
+  username?: IInputField,
   email: IInputField,
   password: IInputField,
-  confirmPassword: IInputField,
+  confirmPassword?: IInputField,
 }
 
 type SignUpValues = {
   username: string,
+  email: string,
   password: string,
   confirmPassword: string,
 }
@@ -82,12 +86,14 @@ const SignUp: React.FC<Props> = ({toggle}) => {
     username: {
       label: 'Username',
       placeholder: "Username",
-      error: errors?.username?.message
+      error: errors?.username?.message,
+      autoComplete: 'off',
     },
     email: {
       label: 'Email',
       placeholder: "Your email address",
-      // error: errors?.email
+      autoComplete: 'off',
+      error: errors?.email?.message,
     },
     password: {
       label: 'Password',
@@ -103,13 +109,19 @@ const SignUp: React.FC<Props> = ({toggle}) => {
     },
   }
 
+  const authFormHeader = (
+    <>
+      <Typography tag="h1">Sign Up for <InlineBrand /></Typography>
+      <Typography fontSize="5rem" mt=".5rem">It's free to view our music library!</Typography>
+    </>
+  )
+
   return (
     <Container>
       <Paper>
         <Card>
           <AuthSubContainer>
-            <Typography tag="h1">Sign Up for <InlineBrand /></Typography>
-            <Typography fontSize="5rem" mt=".5rem">It's free to view our music library!</Typography>
+            {authFormHeader}
           </AuthSubContainer>
           <AuthForm>
             {Object.entries(inputFields).map(([id, {label, error, ...props}]) => (
