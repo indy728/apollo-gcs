@@ -1,2 +1,2 @@
-export {default as SignUp} from './sign-up.auth';
-export {default as SignIn} from './sign-in.auth';
+export {default as signUpProps} from './sign-up.auth';
+export {default as signInProps} from './sign-in.auth';

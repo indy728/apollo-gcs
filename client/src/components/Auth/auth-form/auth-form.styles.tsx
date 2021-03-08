@@ -4,7 +4,6 @@ export const AuthForm = styled.form`
   margin: 2.4rem 0;
 `;
 
-
 export const AuthSubContainer = styled.div`
   display: flex;
   flex-direction: column;
