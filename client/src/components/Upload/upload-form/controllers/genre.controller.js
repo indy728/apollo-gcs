@@ -1,47 +1,54 @@
 import {Controller} from 'react-hook-form'
+import {useQuery} from "@apollo/client";
 import {MyInputField} from '../../../ui'
+import {GENRES_QUERY} from 'components/apollo'
+import {toTitleCase} from 'components/util';
 
-import React, {useState} from 'react';
-
-
-const genres = [
-  'Deep House',
-  'Tech House',
-  'Techno'
-]
+import React, {useState, useEffect} from 'react';
 
 const GenreSuggest = ({setValue}) => {
-  const [suggestions, setSuggestions] = useState([]);
-  const [text, setText] = useState('');
+  const [suggestions, setSuggestions] = useState({
+    list: [],
+    text: ''
+  });
+  const [genres, setGenres] = useState([])
+  const {data, error, loading} = useQuery(GENRES_QUERY, {
+    onCompleted: () => setGenres(data && data.getAllGenres.map(({name}) => (name)))
+  })
 
   const handleChange = ({target: {value}}) => {
+    if (loading) return;
     let newSuggestions = [];
     if (value.length > 0) {
       const regex = new RegExp(`${value}`, `i`);
       newSuggestions = genres.filter(v => regex.test(v)).sort();
     }
 
-    setSuggestions(newSuggestions);
-    setText(value);
+    setSuggestions({
+      list: newSuggestions,
+      text: value,
+    });
   }
 
-  const handleBlur = () => setValue(text);
+  // const handleBlur = () => setValue(suggestions.text);
 
   const suggestionSelected = (value) => {
-    setSuggestions([]);
-    setText(value);
+    setSuggestions({
+      list: [],
+      text: value,
+    });
     setValue(value);
   }
  
   const renderSuggestions = () => {
-    if (!suggestions.length) {
+    if (!suggestions.list.length) {
       return null;
     }
     return (
       <ul>
-        {suggestions.map(genre => (
+        {suggestions.list.map(genre => (
           <li key={genre} onClick={()=>suggestionSelected(genre)}>
-            {genre}
+            {toTitleCase(genre)}
           </li>
         ))}
       </ul>
@@ -50,7 +57,14 @@ const GenreSuggest = ({setValue}) => {
 
   return (
     <div>
-      <input onChange={handleChange} onBlur={handleBlur} placeholder="Search for or add genre" value={text} type="text" />
+      <input
+        name="genre"
+        onChange={handleChange}
+        // onBlur={handleBlur}
+        placeholder="Search for or add genre"
+        value={suggestions.text}
+        type="text"
+      />
       {renderSuggestions()}
     </div>
   );

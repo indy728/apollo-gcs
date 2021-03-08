@@ -8,12 +8,12 @@ const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const {resolvers} = require('./apollo/schema');
-const {Query, Mutation, Track, User} = require('./apollo/typeDefs')
+const {Query, Mutation, Track, User, Genre} = require('./apollo/typeDefs')
 
 existsSync(path.join(__dirname, "tmp-music")) || mkdirSync(path.join(__dirname, "tmp-music"));
 existsSync(path.join(__dirname, "new-music")) || mkdirSync(path.join(__dirname, "new-music"));
 
-const server = new ApolloServer({typeDefs: [Query, Mutation, Track, User], resolvers});
+const server = new ApolloServer({typeDefs: [Query, Mutation, Track, User, Genre], resolvers});
 const app = express();
 
 app.use(cors())

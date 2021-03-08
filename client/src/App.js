@@ -41,6 +41,9 @@ const theme = {
     active: {
       translate: 'translateY(0)'
     },
+  },
+  font: {
+    brand: "'Gugi', serif",
   }
 }
 
@@ -68,6 +71,13 @@ const GlobalStyle = createGlobalStyle`
     body {
         background: ${theme.black};
         min-height: 100vh;
+
+
+      .ellipsis, input {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
 
     .brand-text {
@@ -130,7 +140,7 @@ const App = () => {
     </Switch>
   )
 
-  if (1 === 1) {
+  if (0 === 1) {
     routes = (
       <>
       <TopNav />
