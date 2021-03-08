@@ -1,27 +1,7 @@
 
-import React from 'react';
+import {IInputFields} from './types';
 import {InlineBrand, Typography} from 'components/ui';
 import * as yup from "yup";
-
-
-interface IError {
-  message: string
-}
-
-interface IInputField {
-  placeholder: string,
-  autoComplete?: string,  
-  label: string,
-  type?: string,
-  error?: string | undefined, 
-}
-
-interface IInputFields {
-  username?: IInputField,
-  email: IInputField,
-  password: IInputField,
-  confirmPassword?: IInputField,
-}
 
 const inputFields: IInputFields = {
   username: {
