@@ -1,5 +1,18 @@
 import { gql } from "@apollo/client";
 
+export const CHECK_AUTH = gql`
+  {
+    checkAuth {
+      email
+      username
+      error {
+        code
+        message
+      }
+    }
+  }
+`
+
 export const FILES_QUERY = gql`
   {
     stagedTracks {

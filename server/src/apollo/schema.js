@@ -1,7 +1,15 @@
 const {readdirSync} = require('fs');
 // const {firestoreTrackUpload, uploadToServer, deleteFile} = require('./resolvers/mutations')
 const {trackMutations, authMutations} = require('./resolvers/mutations')
-const {stagedTracks, searchTracks, getAllGenres, retrieveTrackFromStorage} = require('./resolvers/queries');
+const { trackQueries, authQueries } = require('./resolvers/queries');
+
+const {
+  stagedTracks, searchTracks, getAllGenres, retrieveTrackFromStorage
+} = trackQueries
+
+const {
+  checkAuth,
+} = authQueries
 
 const {
   stageTracks, trackUpload, unstageTracks 
@@ -9,11 +17,12 @@ const {
 
 const {
   createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
 } = authMutations;
 
 const resolvers = {
   Query: {
-    // could do await new Promise with readdir (async)
+    checkAuth,
     stagedTracks,
     searchTracks,
     getAllGenres,
@@ -24,6 +33,7 @@ const resolvers = {
     trackUpload,
     unstageTracks,
     createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
   }
 }
 

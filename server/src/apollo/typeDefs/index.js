@@ -78,12 +78,17 @@ exports.Auth = gql`
   type Auth {
     email: String,
     password: String,
-    displayName: String,
+    username: String,
     error: AuthError,
+  }
+
+  extend type Query {
+    checkAuth: Auth, 
   }
 
   extend type Mutation {
     createUserWithEmailAndPassword(email: String, password: String, username: String): Auth,
+    signInWithEmailAndPassword(email: String, password: String): Auth,
   }
 `;
 

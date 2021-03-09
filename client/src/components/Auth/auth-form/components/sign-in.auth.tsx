@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from "@apollo/client";
 import * as yup from "yup";
-import {Card, Typography, InlineBrand, MyInputField, MyButton} from 'components/ui';
+import {Card, Typography, InlineBrand, MyInputField, MyButton, DividerLine} from 'components/ui';
 import {
   AuthForm as AuthFormWrapper,
   AuthItemWrapper,
@@ -12,6 +12,7 @@ import {
   AuthToggleText
 } from './auth-form.styles';
 import {ToggleState, SignUpValues, IInputFields} from 'types';
+import {FB_LOGIN_USER} from 'components/apollo';
 
 
 const schema = yup.object().shape({
@@ -24,14 +25,21 @@ interface Props {
 };
 
 const SignIn: React.FC<Props> = ({toggle}) => {
-  const { register, handleSubmit, errors, reset } = useForm<SignUpValues>({
+  const { register, handleSubmit, errors, reset, setError } = useForm<SignUpValues>({
     resolver: yupResolver(schema),
   });
 
+  const [fbCreateUser, {loading, error: fbError, data: fbData}] = useMutation(FB_LOGIN_USER, {
+    onCompleted: (x) => {
+      console.log('[sign-up.auth] x: ', x)
+    }
+  })
+
+  const onSubmit = async (values: SignUpValues): Promise<void> => {
+    const {email, password, username} = values;
+    const {data} = await fbCreateUser({variables: {email, password, username}});
     
-  const logValues = (values: SignUpValues): void => {
-    console.log('hello')
-    console.log(values);
+    console.log('[sign-in.auth] data: ', data)
   }
 
   const inputFields: IInputFields = {
@@ -75,13 +83,13 @@ const SignIn: React.FC<Props> = ({toggle}) => {
           </AuthItemWrapper>
         ))}
       </AuthFormWrapper>
-      <AuthSubContainer>
+      <AuthSubContainer className="auth-button">
         {/*
             // @ts-ignore */}
-        <MyButton onClick={handleSubmit(logValues)}>sign in</MyButton>
+        <MyButton onClick={handleSubmit(onSubmit)}>sign in</MyButton>
       </AuthSubContainer>
       
-      <div style={{height: 0, borderBottom: '1px solid white', margin: '1rem auto', padding: '1rem 0', width: '90%'}} />
+      <DividerLine />
       <AuthSubContainer>
         <div>
           New to&nbsp;<InlineBrand />?&nbsp;

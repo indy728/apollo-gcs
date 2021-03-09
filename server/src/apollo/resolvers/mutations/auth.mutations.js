@@ -11,7 +11,7 @@ exports.createUserWithEmailAndPassword = async (_, {email, password, username}) 
   const authenticatedUser = {
     email,
     password,
-    displayName: username,
+    username,
   }
 
   try {
@@ -44,3 +44,26 @@ exports.createUserWithEmailAndPassword = async (_, {email, password, username}) 
   //   // ..
   // });
 }
+
+exports.signInWithEmailAndPassword = async (_, {email, password, username}) => {
+  const authenticatedUser = {}
+
+  try {
+    const {user} = await auth().signInWithEmailAndPassword(email, password)
+
+    if (user) {
+      authenticatedUser.username = user.displayName;
+      authenticatedUser.email = user.email;
+    } else {
+      authenticatedUser.error = {
+        code: 'auth/unexpected-login-error',
+        message: 'An unexpected error occured on login'
+      }
+    }
+  } catch({code, message}) {
+    authenticatedUser.error = setError(code, message)
+  }
+
+  return authenticatedUser;
+}
+

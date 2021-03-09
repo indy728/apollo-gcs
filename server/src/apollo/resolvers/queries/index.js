@@ -1,3 +1,7 @@
 const trackQueries = require('./tracks.queries');
+const authQueries = require('./auth.queries');
 
-module.exports = trackQueries;
+module.exports = {
+  trackQueries,
+  authQueries
+};
