@@ -89,6 +89,7 @@ exports.Auth = gql`
   extend type Mutation {
     createUserWithEmailAndPassword(email: String, password: String, username: String): Auth,
     signInWithEmailAndPassword(email: String, password: String): Auth,
+    signOut: Boolean,
   }
 `;
 

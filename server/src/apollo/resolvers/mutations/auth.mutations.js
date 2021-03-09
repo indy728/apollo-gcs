@@ -67,3 +67,13 @@ exports.signInWithEmailAndPassword = async (_, {email, password, username}) => {
   return authenticatedUser;
 }
 
+exports.signOut = async () => {
+  try {
+    await auth().signOut();
+
+    return true
+  } catch {
+    return false
+  }
+}
+

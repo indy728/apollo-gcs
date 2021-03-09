@@ -50,3 +50,9 @@ export const FB_LOGIN_USER = gql`
     }
   }
 `;
+
+export const FB_LOGOUT_USER = gql`
+  mutation SignOut {
+    signOut
+  }
+`;

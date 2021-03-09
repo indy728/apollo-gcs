@@ -18,6 +18,7 @@ const {
 const {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
 } = authMutations;
 
 const resolvers = {
@@ -34,6 +35,7 @@ const resolvers = {
     unstageTracks,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    signOut,
   }
 }
 

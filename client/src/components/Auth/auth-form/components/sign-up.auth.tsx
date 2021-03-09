@@ -12,7 +12,7 @@ import {
   AuthToggleText
 } from './auth-form.styles';
 import {ToggleState, SignUpValues, IInputFields} from 'types';
-import {FB_CREATE_USER} from 'components/apollo';
+import {FB_CREATE_USER, CHECK_AUTH} from 'components/apollo';
 
 const pwLength: string = 'Password must be between 8 and 26 characters in length'
 
@@ -37,8 +37,9 @@ const SignUp: React.FC<Props> = ({toggle}) => {
     resolver: yupResolver(schema),
   });
   const [fbCreateUser, {loading, error: fbError, data: fbData}] = useMutation(FB_CREATE_USER, {
-    onCompleted: (x) => {
-      console.log('[sign-up.auth] x: ', x)
+    refetchQueries: (x) => {
+      if (x?.signInWithEmailAndPassword?.error) return [];
+      return [{query: CHECK_AUTH}]
     }
   })
 

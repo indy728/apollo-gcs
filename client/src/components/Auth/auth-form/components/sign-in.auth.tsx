@@ -12,7 +12,7 @@ import {
   AuthToggleText
 } from './auth-form.styles';
 import {ToggleState, SignUpValues, IInputFields} from 'types';
-import {FB_LOGIN_USER} from 'components/apollo';
+import {CHECK_AUTH, FB_LOGIN_USER} from 'components/apollo';
 
 
 const schema = yup.object().shape({
@@ -30,16 +30,31 @@ const SignIn: React.FC<Props> = ({toggle}) => {
   });
 
   const [fbCreateUser, {loading, error: fbError, data: fbData}] = useMutation(FB_LOGIN_USER, {
-    onCompleted: (x) => {
-      console.log('[sign-up.auth] x: ', x)
+    refetchQueries: (x) => {
+      if (x?.signInWithEmailAndPassword?.error) return [];
+      return [{query: CHECK_AUTH}]
     }
   })
 
   const onSubmit = async (values: SignUpValues): Promise<void> => {
     const {email, password, username} = values;
-    const {data} = await fbCreateUser({variables: {email, password, username}});
+    const {data: {signInWithEmailAndPassword}} = await fbCreateUser({variables: {email, password, username}});
     
-    console.log('[sign-in.auth] data: ', data)
+    const {error} = signInWithEmailAndPassword;
+    if (error) {
+      console.log('[sign-in.auth] error: ', error)
+      switch(error.code) {
+        case 'auth/user-not-found':
+          setError("email", {message: error.message});
+          break;
+        case 'auth/wrong-password':
+          setError("password", {message: error.message});
+          break;
+        default:
+          setError("email", {message: error.message});
+          break;
+      }
+    }
   }
 
   const inputFields: IInputFields = {
@@ -47,13 +62,13 @@ const SignIn: React.FC<Props> = ({toggle}) => {
       label: 'Email',
       placeholder: "Your email address",
       autoComplete: 'off',
-      // error: errors?.email?.message,
+      error: errors?.email?.message,
     },
     password: {
       label: 'Password',
       placeholder: "Password",
       type: 'password',
-      // error: errors?.password?.message
+      error: errors?.password?.message
     },
   };
   

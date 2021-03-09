@@ -144,7 +144,7 @@ const App = () => {
     </Switch>
   )
 
-  if (!loading && data.checkAuth.username) {
+  if (!loading && data?.checkAuth?.username) {
     routes = (
       <>
       <TopNav />

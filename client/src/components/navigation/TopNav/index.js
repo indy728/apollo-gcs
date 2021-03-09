@@ -8,6 +8,9 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu';
+import { FlexSpacer } from 'components/ui';
+import { useMutation } from '@apollo/client';
+import { FB_LOGOUT_USER, CHECK_AUTH } from 'components/apollo';
 
 const links = [
   {
@@ -36,6 +39,9 @@ const StyledToolbar = styled(Toolbar)`
 
 const TopNav = () => {
   const [menuAnchor, setMenuAnchor] = useState()
+  const [signOut, {loading, error}] = useMutation(FB_LOGOUT_USER, {
+    refetchQueries: [{query: CHECK_AUTH}]
+  });
 
   const handleMenuToggle = (e) => {
     setMenuAnchor(menuAnchor ? null : e.currentTarget)
@@ -75,7 +81,13 @@ const TopNav = () => {
         <Typography variant="h6">
           meatport
         </Typography>
+        <FlexSpacer />
         {/* @TODO: User / Logout */}
+        <div onClick={signOut}>
+          <Typography>
+            logout
+          </Typography>
+        </div>
       </StyledToolbar>
     </AppBar>
   )
