@@ -33,10 +33,10 @@ interface Props {
 };
 
 const SignUp: React.FC<Props> = ({toggle}) => {
-  const { register, handleSubmit, errors, reset } = useForm<SignUpValues>({
+  const { register, handleSubmit, errors, reset, setError } = useForm<SignUpValues>({
     resolver: yupResolver(schema),
   });
-  const [fbCreateUser, {loading, error: fbError, data}] = useMutation(FB_CREATE_USER, {
+  const [fbCreateUser, {loading, error: fbError, data: fbData}] = useMutation(FB_CREATE_USER, {
     onCompleted: (x) => {
       console.log('[sign-up.auth] x: ', x)
     }
@@ -44,8 +44,11 @@ const SignUp: React.FC<Props> = ({toggle}) => {
 
   const onSubmit = async (values: SignUpValues): Promise<void> => {
     const {email, password, username} = values;
-    const res = await fbCreateUser({variables: {email, password, username}});
-    console.log(res);
+    const {data: {createUserWithEmailAndPassword}} = await fbCreateUser({variables: {email, password, username}});
+    
+    if (createUserWithEmailAndPassword.error) {
+      setError("email", {message: 'A user with this email already exists!'})
+    }
   }
 
   const inputFields: IInputFields = {
