@@ -12,7 +12,8 @@ var firebaseConfig = {
   measurementId: process.env.FIREBASE_CONFIG_MEASUREMENTID,
 };
 firebase.initializeApp(firebaseConfig);
-exports.database = firebase.database();;
+exports.database = firebase.database();
+exports.auth = firebase.auth;
 
 // INCLUDE SERVICE ACCOUNT CREDENTIALS, INITIALIZE CLOUD FIRESTORE
 const admin = require('firebase-admin')

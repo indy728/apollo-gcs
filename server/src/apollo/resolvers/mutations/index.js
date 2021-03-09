@@ -1,3 +1,7 @@
 const trackMutations = require('./tracks.mutations');
+const authMutations = require('./auth.mutations');
 
-module.exports = trackMutations;
+module.exports = {
+  trackMutations,
+  authMutations
+};

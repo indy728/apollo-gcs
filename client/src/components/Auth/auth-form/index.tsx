@@ -1,19 +1,12 @@
 
 import React, {useEffect, useState} from 'react';
-import {Paper, Card, MyInputField, MyButton, InlineBrand, Typography} from 'components/ui';
-import {ToggleState} from 'types';
-import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from "yup";
+import {Paper} from 'components/ui';
 import {
-  AuthForm as AuthFormWrapper,
-  AuthItemWrapper,
-  AuthErrorWrapper,
-  AuthSubContainer,
-  AuthToggleText
-} from './auth-form.styles';
-import {SignUpSchema, SignInSchema} from './schema';
+  ToggleState,
+  SignUpValues,
+} from 'types';
+import styled from 'styled-components';
+import {SignUp, SignIn} from './components';
 
 const Container = styled.div`
   display: flex;
@@ -26,103 +19,18 @@ const Container = styled.div`
   margin: 0 auto;
   border-radius: ${({theme: {borderRadius}}) => borderRadius};
 `
-interface IAuthType {
-  text: React.ReactNode,
-  action: React.ReactNode,
-}
 
-interface Props {
-  toggle: ToggleState,
-  btnText: string,
-  authFormHeader: React.ReactNode,
-  inputFields: IInputFields,
-  authType: IAuthType,
-  // @TODO: explicit type
-  schema: any,
-}
+const AuthForm: React.FC = () => {
+  const [isSignUp, setIsSignUp] = useState<boolean>(false);
+  const toggleIsSignUp: ToggleState = () => setIsSignUp(!isSignUp);
 
-interface IError {
-  message: string
-}
-
-interface IInputField {
-  placeholder: string,
-  autoComplete?: string,  
-  label: string,
-  type?: string,
-  error?: string | undefined, 
-}
-
-interface IInputFields {
-  username?: IInputField,
-  email: IInputField,
-  password: IInputField,
-  confirmPassword?: IInputField,
-}
-
-type SignUpValues = {
-  username: string,
-  email: string,
-  password: string,
-  confirmPassword: string,
-}
-
-
-const AuthForm: React.FC<Props> = ({toggle, btnText, authFormHeader, inputFields, authType, schema}) => {
-  const { register, handleSubmit, errors, reset } = useForm<SignUpValues>({
-    resolver: yupResolver(schema),
-  });
-
-  const logValues = (values: SignUpValues): void => {
-    console.log('hello')
-    console.log(values);
-  }
+  // @TODO: fix to isSignUp
+  const authForm = !isSignUp ? <SignUp toggle={toggleIsSignUp} /> : <SignIn toggle={toggleIsSignUp} />;
 
   return (
     <Container>
       <Paper>
-        <Card>
-          <AuthSubContainer>
-            {authFormHeader}
-          </AuthSubContainer>
-          <AuthFormWrapper>
-            {Object.entries(inputFields).map(([id, {label, error, ...props}]) => (
-              <AuthItemWrapper>
-                {/*
-                // @ts-ignore */}
-                <MyInputField
-                  key={id}
-                  label={label}
-                  inputProps={{
-                    name: id,
-                    ref: register,
-                    ...props,
-                  }}
-                />
-                {error && (
-                  <AuthErrorWrapper>
-                    {error}
-                  </AuthErrorWrapper>
-                )}
-              </AuthItemWrapper>
-            ))}
-          </AuthFormWrapper>
-          <AuthSubContainer>
-            {/*
-                // @ts-ignore */}
-            <MyButton onClick={handleSubmit(logValues)}>{btnText}</MyButton>
-          </AuthSubContainer>
-          
-          <div style={{height: 0, borderBottom: '1px solid white', margin: '1rem auto', padding: '1rem 0', width: '90%'}} />
-          <AuthSubContainer>
-            <div>
-              {authType.text}
-              <AuthToggleText onClick={toggle}>
-                {authType.action}
-              </AuthToggleText>
-            </div>
-          </AuthSubContainer>
-        </Card>
+        {authForm}
       </Paper>
     </Container>
   );

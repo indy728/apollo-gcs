@@ -69,6 +69,24 @@ exports.Track = gql`
   }
 `;
 
+exports.Auth = gql`
+  type AuthError {
+    code: String,
+    message: String,
+  }
+
+  type Auth {
+    email: String,
+    password: String,
+    displayName: String,
+    error: AuthError,
+  }
+
+  extend type Mutation {
+    createUserWithEmailAndPassword(email: String, password: String, username: String): Auth,
+  }
+`;
+
 exports.User = gql`
   type User {
     username: String!,

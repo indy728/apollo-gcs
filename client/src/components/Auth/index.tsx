@@ -4,18 +4,10 @@ import {ToggleState} from 'types';
 import AuthForm from './auth-form';
 import {AuthWrapper, AuthContainerWrapper, AuthHeaderWrapper, AuthVideo} from './auth.styles';
 import { InlineBrand } from 'components/ui';
-import {signUpProps, signInProps} from './components';
 
 interface Props {};
 
 const AuthPage: React.FC<Props> = () => {
-  const [isSignUp, setIsSignUp] = useState<boolean>(false);
-  const toggleIsSignUp: ToggleState = () => setIsSignUp(!isSignUp);
-
-  // @TODO: fix to isSignUp
-  // const authForm = !isSignUp ? <SignUp toggle={toggleIsSignUp} /> : <SignIn toggle={toggleIsSignUp} />;
-  const formProps = isSignUp ? signUpProps : signInProps;
-  const btnText = isSignUp ? 'sign up' : 'sign in';
 
   return (
     <AuthWrapper>
@@ -35,7 +27,7 @@ const AuthPage: React.FC<Props> = () => {
         </AuthHeaderWrapper>
       </AuthContainerWrapper>
       <AuthContainerWrapper>
-        <AuthForm toggle={toggleIsSignUp} {...formProps} btnText={btnText} />
+        <AuthForm />
       </AuthContainerWrapper>
     </AuthWrapper>
   )
