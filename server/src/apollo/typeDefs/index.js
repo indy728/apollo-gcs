@@ -98,7 +98,7 @@ exports.User = gql`
     username: String!,
     uploads: [String],
     downloads: [String],
-    roles: [String],
+    role: [String],
   }
 
   input UserInput {

@@ -19,6 +19,7 @@ const fireStoreCreateUser = ({username = '', email = ''}) => {
   const userObj = {
     username,
     email,
+    role: 'VIEW_ONLY',
     name: '',
     tracks: [],
     bio: {
