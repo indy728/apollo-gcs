@@ -8,7 +8,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Typography from '@material-ui/core/Typography'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu';
-import { FlexSpacer } from 'components/ui';
+import { FlexSpacer, InlineBrand } from 'components/ui';
 import { useMutation } from '@apollo/client';
 import { FB_LOGOUT_USER, CHECK_AUTH } from 'components/apollo';
 
@@ -25,17 +25,20 @@ const links = [
   },
 ]
 
-const StyledToolbar = styled(Toolbar)`
+const HeaderItems = styled.div`
   background-color: ${({theme: {primary}}) => primary[0]};
   height: 10rem;
-  
-  && {
-    * {
-      font-size: 2.8rem;
-      font-family: 'Gugi', serif !important;
-    }
-  }
+  display: flex;
+  align-items: center;
 `
+
+const HeaderItem = styled.div`
+  padding: 0 1rem;
+  border: 1px solid white;
+`;
+
+const HeaderNav = styled.header`
+`;
 
 const TopNav = () => {
   const [menuAnchor, setMenuAnchor] = useState()
@@ -72,24 +75,33 @@ const TopNav = () => {
   )
 
   return (
-    <AppBar position="static">
-      <StyledToolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleMenuToggle}>
-          <MenuIcon />
-          {menu}
-        </IconButton>
-        <Typography variant="h6">
-          meatport
-        </Typography>
+    <HeaderNav>
+      <HeaderItems>
+        <HeaderItem>
+          <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleMenuToggle}>
+            <MenuIcon />
+            {menu}
+          </IconButton>
+        </HeaderItem>
+        <HeaderItem>
+          <Typography variant="h6">
+            <InlineBrand />
+          </Typography>
+        </HeaderItem>
         <FlexSpacer />
         {/* @TODO: User / Logout */}
-        <div onClick={signOut}>
-          <Typography>
-            logout
-          </Typography>
-        </div>
-      </StyledToolbar>
-    </AppBar>
+        <HeaderItem>
+          
+        </HeaderItem>
+        <HeaderItem>
+          <div onClick={signOut}>
+            <Typography>
+              logout
+            </Typography>
+          </div>
+        </HeaderItem>
+      </HeaderItems>
+    </HeaderNav>
   )
 }
 export default TopNav;

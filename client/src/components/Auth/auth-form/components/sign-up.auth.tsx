@@ -46,9 +46,21 @@ const SignUp: React.FC<Props> = ({toggle}) => {
   const onSubmit = async (values: SignUpValues): Promise<void> => {
     const {email, password, username} = values;
     const {data: {createUserWithEmailAndPassword}} = await fbCreateUser({variables: {email, password, username}});
-    
-    if (createUserWithEmailAndPassword.error) {
-      setError("email", {message: 'A user with this email already exists!'})
+    const authErr = createUserWithEmailAndPassword.error
+
+    if (authErr) {
+      const [_, name] = authErr.code.split('/');
+
+      switch(name) {
+        case 'email':
+          break;
+          setError("email", {message: authErr.message})
+        default:
+          setError("username", {message: authErr.message})
+          break;
+      }
+
+      
     }
   }
 
