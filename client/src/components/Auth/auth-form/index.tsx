@@ -25,7 +25,7 @@ const AuthForm: React.FC = () => {
   const toggleIsSignUp: ToggleState = () => setIsSignUp(!isSignUp);
 
   // @TODO: fix to isSignUp
-  const authForm = !isSignUp ? <SignUp toggle={toggleIsSignUp} /> : <SignIn toggle={toggleIsSignUp} />;
+  const authForm = isSignUp ? <SignUp toggle={toggleIsSignUp} /> : <SignIn toggle={toggleIsSignUp} />;
 
   return (
     <Container>

@@ -13,7 +13,11 @@ const {Query, Mutation, Track, User, Genre, Auth} = require('./apollo/typeDefs')
 existsSync(path.join(__dirname, "tmp-music")) || mkdirSync(path.join(__dirname, "tmp-music"));
 existsSync(path.join(__dirname, "new-music")) || mkdirSync(path.join(__dirname, "new-music"));
 
-const server = new ApolloServer({typeDefs: [Query, Mutation, Track, User, Genre, Auth], resolvers});
+const server = new ApolloServer({
+  typeDefs: [Query, Mutation, Track, User, Genre, Auth],
+  resolvers,
+  context: ({req, res}) => ({req, res})
+});
 const app = express();
 
 app.use(cors())

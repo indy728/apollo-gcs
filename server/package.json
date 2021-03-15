@@ -19,6 +19,7 @@
     "firebase": "^8.2.2",
     "firebase-admin": "^9.4.2",
     "graphql": "^15.4.0",
+    "jsonwebtoken": "^8.5.1",
     "music-metadata": "^7.6.2",
     "node-fetch": "^2.6.1"
   },

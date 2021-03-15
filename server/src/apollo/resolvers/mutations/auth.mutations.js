@@ -1,10 +1,20 @@
 const {auth, firestore_db} = require('../../firebase-config');
+const {sign} = require('jsonwebtoken');
 
 const setError = (code, message) => {
   return ({
     code,
     message
   })
+}
+
+const signNewJWT = ({username}) => {
+  const accessToken = sign({username}, process.env.JWT_SECRET, {expiresIn: "15m"})
+}
+
+const getNewRefreshToken = ({username}) => {
+  const accessToken = sign({username}, process.env.REFRESH_SECRET, {expiresIn: "7d"})
+  return accessToken;
 }
 
 const firestoreGetUserRef = async({username = ''}) => {
@@ -45,7 +55,7 @@ const firebaseUpdateNewUserDetail = async({authenticatedUser}) => {
   }
 }
 
-exports.createUserWithEmailAndPassword = async (_, {email, password, username}) => {
+exports.createUserWithEmailAndPassword = async (_, {email, password, username}, context) => {
   const authenticatedUser = {
     email,
     password,
@@ -88,8 +98,13 @@ exports.createUserWithEmailAndPassword = async (_, {email, password, username}) 
   // });
 }
 
-exports.signInWithEmailAndPassword = async (_, {email, password, username}) => {
+exports.signInWithEmailAndPassword = async (_, {email, password, username}, {res}) => {
   const authenticatedUser = {}
+
+  res.cookie('meatid', getNewRefreshToken({username}), {
+    httpOnly: true,
+    expires: 0,
+  })
 
   try {
     const {user} = await auth().signInWithEmailAndPassword(email, password)
