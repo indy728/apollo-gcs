@@ -95,7 +95,7 @@ const SignUp: React.FC<Props> = ({toggle}) => {
     <Card>
       <AuthSubContainer>
         <Typography tag="h1">Sign Up for <InlineBrand /></Typography>
-        <Typography fontSize="5rem" mt=".5rem">It's free to view our music library!</Typography>
+        <Typography mt=".5rem">It's free to view our music library!</Typography>
       </AuthSubContainer>
       <AuthFormWrapper>
         {Object.entries(inputFields).map(([id, {label, error, ...props}]) => (

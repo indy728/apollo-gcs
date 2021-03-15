@@ -29,6 +29,7 @@ const HeaderItems = styled.div`
   /* background-color: ${({theme: {primary}}) => primary[0]}; */
   height: 10rem;
   margin: 0 auto;
+  padding: 0 1rem;
   display: flex;
   align-items: center;
   max-width: 1232px;
@@ -95,7 +96,7 @@ const TopNav = () => {
     <HeaderNav>
       <HeaderItems>
         <HeaderItem>
-          <Typography fontSize="2.8rem" ml="2rem">
+          <Typography fontSize="2.8rem">
             <InlineBrand />
           </Typography>
         </HeaderItem>
