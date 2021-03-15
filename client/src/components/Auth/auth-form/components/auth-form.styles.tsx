@@ -9,6 +9,10 @@ export const AuthSubContainer = styled.div`
   flex-direction: column;
   width: 100%;
   align-items: center;
+
+  &.auth-button {
+    margin-bottom: 2.4rem;
+  }
 `;
 
 export const AuthItemWrapper = styled.div`

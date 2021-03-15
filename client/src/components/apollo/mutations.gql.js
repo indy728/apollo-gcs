@@ -23,3 +23,36 @@ export const UNSTAGE_TRACKS = gql`
     unstageTracks(files: $files)
   }
 `;
+
+export const FB_CREATE_USER = gql`
+  mutation CreateUserWithEmailAndPassword($email: String, $password: String, $username: String) {
+    createUserWithEmailAndPassword(email: $email, password: $password, username: $username) {
+      email
+      password
+      username
+      error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const FB_LOGIN_USER = gql`
+  mutation SignInWithEmailAndPassword($email: String, $password: String) {
+    signInWithEmailAndPassword(email: $email, password: $password) {
+      email
+      username
+      error {
+        code
+        message
+      }
+    }
+  }
+`;
+
+export const FB_LOGOUT_USER = gql`
+  mutation SignOut {
+    signOut
+  }
+`;

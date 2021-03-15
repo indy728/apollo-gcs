@@ -15,7 +15,5 @@ export const TypographyWrapper = styled.div<TagProps>`
     `${mt || 0} ${mr || 0} ${mb || 0} ${ml || 0} ` ||
     '0')};
 
-  /* div {
-    font-size: ${({fontSize}) => fontSize || 'inherit'};
-  } */
+  font-size: ${({fontSize}) => fontSize || 'inherit'};
 `

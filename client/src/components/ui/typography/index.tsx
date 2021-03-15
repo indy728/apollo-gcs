@@ -36,6 +36,8 @@ export const Typography: React.FC<Props> = ({tag = 'p', children, fontSize, m, m
     m, mt, mr, mb, ml, fontSize
   }
 
+  console.log('[index] m: ', m)
+
   return (
     <TypographyWrapper className="typography" {...styleProps}>
       <TypographyTag className="typography__tag">

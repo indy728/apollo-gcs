@@ -69,12 +69,36 @@ exports.Track = gql`
   }
 `;
 
+exports.Auth = gql`
+  type AuthError {
+    code: String,
+    message: String,
+  }
+
+  type Auth {
+    email: String,
+    password: String,
+    username: String,
+    error: AuthError,
+  }
+
+  extend type Query {
+    checkAuth: Auth, 
+  }
+
+  extend type Mutation {
+    createUserWithEmailAndPassword(email: String, password: String, username: String): Auth,
+    signInWithEmailAndPassword(email: String, password: String): Auth,
+    signOut: Boolean,
+  }
+`;
+
 exports.User = gql`
   type User {
     username: String!,
     uploads: [String],
     downloads: [String],
-    roles: [String],
+    role: [String],
   }
 
   input UserInput {

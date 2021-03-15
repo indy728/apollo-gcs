@@ -1,83 +1,110 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {Link, withRouter} from 'react-router-dom';
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
-import Typography from '@material-ui/core/Typography'
-import IconButton from '@material-ui/core/IconButton'
-import MenuIcon from '@material-ui/icons/Menu';
+import {Link, withRouter, NavLink} from 'react-router-dom';
+import { FlexSpacer, InlineBrand, Typography } from 'components/ui';
+import { useMutation, useQuery } from '@apollo/client';
+import { FB_LOGOUT_USER, CHECK_AUTH } from 'components/apollo';
+import {RolesEnum} from 'global';
 
-const links = [
-  {
-    key: 'search',
+const links = (user) => ({
+  'search': {
     to: '/search',
     text: 'Track Search'
   },
-  {
-    key: 'upload',
+  'upload': {
     to: '/upload',
     text: 'Upload Tracks'
   },
-]
+  'logout': {
+    to: '/logout',
+    text: 'Sign out'
+  },
+  'user': {
+    to: '/user',
+    text: `Hi, ${user}!`
+  },
+});
 
-const StyledToolbar = styled(Toolbar)`
-  background-color: ${({theme: {primary}}) => primary[0]};
+const HeaderItems = styled.div`
+  /* background-color: ${({theme: {primary}}) => primary[0]}; */
   height: 10rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  max-width: 1232px;
+`
+
+const HeaderItem = styled.div`
+  padding: 0 1rem;
+  /* border: 1px solid white; */
   
-  && {
-    * {
-      font-size: 2.8rem;
-      font-family: 'Gugi', serif !important;
+  a {
+    text-decoration: none;
+    transition: all .1s linear;
+
+
+    &.navlink-active p {
+      color: ${({theme: {primary}}) => primary[3]};
+    }
+
+    &:not(.navlink-active) div:hover {
+      cursor: pointer;
     }
   }
-`
+
+`;
+
+const HeaderNav = styled.header`
+`;
 
 const TopNav = () => {
   const [menuAnchor, setMenuAnchor] = useState()
+  const {loading, data, error} = useQuery(CHECK_AUTH);
+  console.log('[index] data: ', data)
+  const [signOut, {}] = useMutation(FB_LOGOUT_USER, {
+    refetchQueries: [{query: CHECK_AUTH}]
+  });
+  let menu = null
 
-  const handleMenuToggle = (e) => {
-    setMenuAnchor(menuAnchor ? null : e.currentTarget)
-  }
+  if (loading) {
+    menu = loading
+  } else if (error || (!loading && (!data.checkAuth))) {
+    signOut()
+  } else {
+    const {username, email} = data.checkAuth;
 
-  const handleMenuClose = () => setMenuAnchor(null);
 
-  const menu = (
-    // To handle position of menu opening see:
-    // https://material-ui.com/components/menus/#menulist-composition
-    <Menu
-        id="simple-menu"
-        anchorEl={menuAnchor}
-        keepMounted
-        open={Boolean(menuAnchor)}
-        onClose={handleMenuClose}
-      >
-        {links.map(({key, to, text}) => (
-          <MenuItem key={key}>
-            <Link to={to}>
+    menu = (
+      <ul style={{display: 'flex', listStyleType: 'none'}}>
+        {Object.entries(links(username)).map(([key, {to, text}]) => (
+          <li>
+          <HeaderItem key={key}>
+            <NavLink to={to} activeClassName="navlink-active">
               <Typography>
                 {text}
               </Typography>
-            </Link>
-          </MenuItem>
+            </NavLink>
+          </HeaderItem>
+          </li>
         ))}
-      </Menu>
-  )
+      </ul>
+    )
+  }
 
   return (
-    <AppBar position="static">
-      <StyledToolbar>
-        <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleMenuToggle}>
-          <MenuIcon />
-          {menu}
-        </IconButton>
-        <Typography variant="h6">
-          meatport
-        </Typography>
+    <HeaderNav>
+      <HeaderItems>
+        <HeaderItem>
+          <Typography fontSize="2.8rem">
+            <InlineBrand />
+          </Typography>
+        </HeaderItem>
+        <FlexSpacer />
         {/* @TODO: User / Logout */}
-      </StyledToolbar>
-    </AppBar>
+        {menu}
+      </HeaderItems>
+    </HeaderNav>
   )
 }
 export default TopNav;

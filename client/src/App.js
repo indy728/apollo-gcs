@@ -6,7 +6,8 @@ import Upload from './components/Upload';
 import Search from './components/Search'
 import AuthPage from './components/Auth'
 import {TopNav} from './components/navigation';
-import { ApolloProvider } from "@apollo/client";
+import { ApolloProvider, useQuery } from "@apollo/client";
+import {CHECK_AUTH} from './components/apollo';
 import { client } from "./apollo";
 
 
@@ -132,6 +133,9 @@ const GlobalStyle = createGlobalStyle`
 
 
 const App = () => {
+  const {loading, error, data} = useQuery(CHECK_AUTH);
+
+  console.log(loading, error, data)
 
   let routes = (
     <Switch>
@@ -140,7 +144,7 @@ const App = () => {
     </Switch>
   )
 
-  if (0 === 1) {
+  if (!loading && data?.checkAuth?.username) {
     routes = (
       <>
       <TopNav />
