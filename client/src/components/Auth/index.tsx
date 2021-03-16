@@ -1,13 +1,9 @@
-import React, {useState} from 'react';
-import {ToggleState} from 'types';
-// import {SignUp, SignIn} from './components';
+import React from 'react';
 import AuthForm from './auth-form';
 import {AuthWrapper, AuthContainerWrapper, AuthHeaderWrapper, AuthVideo} from './auth.styles';
 import { InlineBrand } from 'components/ui';
 
-interface Props {};
-
-const AuthPage: React.FC<Props> = () => {
+const AuthPage: React.FC = () => {
 
   return (
     <AuthWrapper>

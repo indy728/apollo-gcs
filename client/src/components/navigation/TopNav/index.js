@@ -5,6 +5,7 @@ import { FlexSpacer, InlineBrand, Typography } from 'components/ui';
 import { useMutation, useQuery } from '@apollo/client';
 import { FB_LOGOUT_USER, CHECK_AUTH } from 'components/apollo';
 import {RolesEnum} from 'global';
+import {useCheckAuthQuery} from 'generated/graphql';
 
 const links = (user) => ({
   'search': {
@@ -60,7 +61,7 @@ const HeaderNav = styled.header`
 
 const TopNav = () => {
   const [menuAnchor, setMenuAnchor] = useState()
-  const {loading, data, error} = useQuery(CHECK_AUTH);
+  const {loading, data, error} = useCheckAuthQuery();
   console.log('[index] data: ', data)
   const [signOut, {}] = useMutation(FB_LOGOUT_USER, {
     refetchQueries: [{query: CHECK_AUTH}]

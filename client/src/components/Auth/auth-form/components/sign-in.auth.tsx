@@ -22,7 +22,7 @@ const schema = yup.object().shape({
 
 interface Props {
   toggle: ToggleState;
-};
+}
 
 const SignIn: React.FC<Props> = ({toggle}) => {
   const { register, handleSubmit, errors, reset, setError } = useForm<SignUpValues>({
@@ -80,8 +80,6 @@ const SignIn: React.FC<Props> = ({toggle}) => {
       <AuthFormWrapper>
         {Object.entries(inputFields).map(([id, {label, error, ...props}]) => (
           <AuthItemWrapper key={id}>
-            {/*
-            // @ts-ignore */}
             <MyInputField
               label={label}
               inputProps={{
@@ -99,8 +97,6 @@ const SignIn: React.FC<Props> = ({toggle}) => {
         ))}
       </AuthFormWrapper>
       <AuthSubContainer className="auth-button">
-        {/*
-            // @ts-ignore */}
         <MyButton onClick={handleSubmit(onSubmit)}>sign in</MyButton>
       </AuthSubContainer>
       

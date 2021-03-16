@@ -11,7 +11,7 @@ import {CHECK_AUTH, FB_LOGOUT_USER} from './components/apollo';
 import { client } from "./apollo";
 
 const Logout = () => {
-  const [logout] = useMutation(FB_LOGOUT_USER, {refetchQueries: [CHECK_AUTH]});
+  const [logout] = useMutation(FB_LOGOUT_USER, {refetchQueries: [{query: CHECK_AUTH}]});
 
   useEffect(() => {
     logout();

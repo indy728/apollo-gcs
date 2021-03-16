@@ -1,0 +1,27 @@
+
+mutation CreateUserWithEmailAndPassword($email: String, $password: String, $username: String) {
+  createUserWithEmailAndPassword(email: $email, password: $password, username: $username) {
+    email
+    password
+    username
+    error {
+      code
+      message
+    }
+  }
+}
+
+mutation SignInWithEmailAndPassword($email: String, $password: String) {
+  signInWithEmailAndPassword(email: $email, password: $password) {
+    email
+    username
+    error {
+      code
+      message
+    }
+  }
+}
+
+mutation SignOut {
+  signOut
+}

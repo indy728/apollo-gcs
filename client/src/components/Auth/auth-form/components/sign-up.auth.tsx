@@ -14,7 +14,7 @@ import {
 import {ToggleState, SignUpValues, IInputFields} from 'types';
 import {FB_CREATE_USER, CHECK_AUTH} from 'components/apollo';
 
-const pwLength: string = 'Password must be between 8 and 26 characters in length'
+const pwLength = 'Password must be between 8 and 26 characters in length';
 
 const schema = yup.object().shape({
   username: yup.string().required(),
@@ -30,7 +30,7 @@ const schema = yup.object().shape({
 
 interface Props {
   toggle: ToggleState;
-};
+}
 
 const SignUp: React.FC<Props> = ({toggle}) => {
   const { register, handleSubmit, errors, reset, setError } = useForm<SignUpValues>({
@@ -100,8 +100,6 @@ const SignUp: React.FC<Props> = ({toggle}) => {
       <AuthFormWrapper>
         {Object.entries(inputFields).map(([id, {label, error, ...props}]) => (
           <AuthItemWrapper key={id}>
-            {/*
-            // @ts-ignore */}
             <MyInputField
               label={label}
               inputProps={{
@@ -119,8 +117,6 @@ const SignUp: React.FC<Props> = ({toggle}) => {
         ))}
       </AuthFormWrapper>
       <AuthSubContainer className="auth-button">
-        {/*
-            // @ts-ignore */}
         <MyButton onClick={handleSubmit(onSubmit)}>sign up</MyButton>
       </AuthSubContainer>
       

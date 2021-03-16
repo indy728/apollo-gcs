@@ -1,0 +1,10 @@
+query CheckAuth {
+  checkAuth {
+    email
+    username
+    error {
+      code
+      message
+    }
+  }
+}

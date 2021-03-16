@@ -3,4 +3,4 @@ export enum RolesEnum {
   CONTRIBUTOR,
   ADMIN,
   OWNER,
-};
+}

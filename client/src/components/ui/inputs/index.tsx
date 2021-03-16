@@ -1,7 +1,12 @@
 import React from 'react';
 import styled from 'styled-components'
 
-const Wrapper = styled.div`
+
+interface InputWrapperProps {
+  readonly width?: string
+}
+
+const Wrapper = styled.div<InputWrapperProps>`
   border-bottom: 1px solid ${({theme: {primary}}) => primary[3]};
 
   .flex {
@@ -29,11 +34,33 @@ const Wrapper = styled.div`
   }
 `
 
-const MyInput = styled.input`
+const MyInput = styled.input<InputProps>`
 `
 
-export const MyInputField = ({label, inputProps = {}, prefix = null, suffix = null, render, select, selectProps, width}) => {
-  const {value = '', placeholder = '', name = '', onChange = null} = inputProps;
+interface InputProps {
+  id?: string
+  type?: string
+  name?: string
+  ref?: React.LegacyRef<HTMLInputElement> | any
+  required?: boolean
+  accept?: string
+  autocomplete?: string
+  autofocus?: string
+  value?: string | number
+}
+
+interface Props {
+  label?: string
+  inputProps?: InputProps
+  prefix?: string
+  suffix?: string
+  width?: string
+  select?: any
+  selectProps?: any
+  render?: React.FC
+}
+
+export const MyInputField: React.FC<Props> = ({label, inputProps = {}, prefix = null, suffix = null, render, select, selectProps, width}) => {
 
   return (
     <Wrapper width={width}>
