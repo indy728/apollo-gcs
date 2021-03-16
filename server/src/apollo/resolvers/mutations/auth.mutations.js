@@ -9,7 +9,8 @@ const setError = (code, message) => {
 }
 
 const signNewJWT = ({username}) => {
-  const accessToken = sign({username}, process.env.JWT_SECRET, {expiresIn: "15m"})
+  const accessToken = sign({username}, process.env.JWT_SECRET, {expiresIn: "15m"});
+  return accessToken;
 }
 
 const getNewRefreshToken = ({username}) => {

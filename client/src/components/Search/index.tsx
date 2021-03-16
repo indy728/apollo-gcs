@@ -1,8 +1,10 @@
 import React from 'react';
-import SearchTracks from './components/Search'
+import SearchTracks from './components/Search';
+import {RouteComponentProps} from 'react-router-dom';
 
 
-const LookupTracks = () => {
+const LookupTracks: React.FC<RouteComponentProps> = () => {
+
   return (
     <>
       <main style={{margin: '2rem'}}>

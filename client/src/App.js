@@ -3,12 +3,13 @@ import React, {useEffect} from "react";
 import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom';
 import {createGlobalStyle, ThemeProvider} from 'styled-components'
 import Upload from './components/Upload';
-import Search from './components/Search'
+import Search from './components/Search';
 import AuthPage from './components/Auth'
 import {TopNav} from './components/navigation';
 import { ApolloProvider, useMutation, useQuery } from "@apollo/client";
 import {CHECK_AUTH, FB_LOGOUT_USER} from './components/apollo';
 import { client } from "./apollo";
+import authCert from 'accessToken';
 
 const Logout = () => {
   const [logout] = useMutation(FB_LOGOUT_USER, {refetchQueries: [{query: CHECK_AUTH}]});
@@ -144,7 +145,7 @@ const GlobalStyle = createGlobalStyle`
 const App = () => {
   const {loading, error, data} = useQuery(CHECK_AUTH);
 
-  console.log(loading, error, data)
+  console.log(loading, error, data);
 
   let routes = (
     <Switch>

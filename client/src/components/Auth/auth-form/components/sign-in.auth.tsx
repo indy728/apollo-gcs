@@ -25,11 +25,11 @@ interface Props {
 }
 
 const SignIn: React.FC<Props> = ({toggle}) => {
-  const { register, handleSubmit, errors, reset, setError } = useForm<SignUpValues>({
+  const { register, handleSubmit, errors, setError } = useForm<SignUpValues>({
     resolver: yupResolver(schema),
   });
 
-  const [fbCreateUser, {loading, error: fbError, data: fbData}] = useMutation(FB_LOGIN_USER, {
+  const [fbCreateUser] = useMutation(FB_LOGIN_USER, {
     refetchQueries: (x) => {
       if (x?.signInWithEmailAndPassword?.error) return [];
       return [{query: CHECK_AUTH}]
