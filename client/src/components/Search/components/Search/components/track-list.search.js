@@ -18,7 +18,9 @@ import fileDownload from 'js-file-download'
 const QuerySection = styled(Container)`
   && {
     padding: 40px 0;
-    background-color: ${({theme: {primary}}) => primary[0]};
+    * {
+      color: white;
+    }
 
     /* &:first-of-type {
       border-top: 1px solid grey;
@@ -45,11 +47,13 @@ const StyledTableCell = styled(TableCell)`
 `
 
 const TracksTable = styled(Table)`
-  background-color: ${({theme: {black}}) => black};
+  && {
+    background-color: ${({theme: {black}}) => black};
   
   & th, td {
     color: ${({theme: {text}}) => text.white};
     font-family: 'Barlow Condensed', sans-serif;
+  }
   }
 `
 
@@ -96,12 +100,12 @@ const DataRow = ({data: {title, artist, bpm, key, filename}, idx}) => {
       </StyledTableCell>
       <StyledTableCell align="right">{artist}</StyledTableCell>
       <StyledTableCell align="right">{bpm}</StyledTableCell>
-      <StyledTableCell align="right">{key}</StyledTableCell>
+      {/* <StyledTableCell align="right">{key}</StyledTableCell> */}
       <StyledTableCell align="right">{filename}</StyledTableCell>
       <StyledTableCell align="right">
         {loading ? <div>...retrieving...</div> : (
           <>
-          <div onClick={() => retrieveTrackFromStorage({variables: {filename}})}>
+          <div style={{cursor: 'pointer'}} onClick={() => retrieveTrackFromStorage({variables: {filename}})}>
             Select
             
           </div>
@@ -137,7 +141,7 @@ const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
   if (error) return <div>...error...</div>
 
   return (
-    <QuerySection key={key}>
+    <QuerySection key={key} className="bbg-here">
       <Typography variant="h5">
         {text}
       </Typography>
@@ -149,7 +153,7 @@ const TrackList = ({query = '', list: {key, text, queryType = 'artist'}}) => {
             <TableCell>Song Title</TableCell>
             <TableCell align="right">Artist</TableCell>
             <TableCell align="right">BPM</TableCell>
-            <TableCell align="right">Key</TableCell>
+            {/* <TableCell align="right">Key</TableCell> */}
             <TableCell align="right">Filename</TableCell>
             <TableCell align="right">
               Download

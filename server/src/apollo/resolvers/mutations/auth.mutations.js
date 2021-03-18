@@ -8,7 +8,7 @@ const setError = (code, message) => {
   })
 }
 
-const signNewJWT = ({username}) => {
+const getNewAccessToken = ({username}) => {
   const accessToken = sign({username}, process.env.JWT_SECRET, {expiresIn: "15m"});
   return accessToken;
 }
@@ -124,6 +124,45 @@ exports.signInWithEmailAndPassword = async (_, {email, password, username}, {res
   }
 
   return authenticatedUser;
+}
+
+
+exports.login = async (_, {email, password}, {res}) => {
+  /**
+   * Returns a new accessToken if authentication is successful or and empty string if not.
+   *
+   * @remarks
+   * This method is part of the {@link core-library#Statistics | Statistics subsystem}.
+   *
+   * @param x - The first input number
+   * @param y - The second input number
+   * @returns The arithmetic mean of `x` and `y`
+   *
+   * @beta
+   */
+
+  
+
+  try {
+    const {user} = await auth().signInWithEmailAndPassword(email, password)
+
+    if (user) {
+      res.cookie('meatid', getNewRefreshToken({username: user.displayName}), {
+        httpOnly: true,
+        expires: 0,
+      });
+
+      return {
+        accessToken: getNewAccessToken({username: user.displayName})
+      }
+    } else {
+      return {accessToken: ""}
+    }
+  } catch({code, message}) {
+    console.error(code, message)
+  }
+
+  return {accessToken: ""}
 }
 
 exports.signOut = async () => {

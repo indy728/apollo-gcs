@@ -1,7 +1,7 @@
 const {readdirSync} = require('fs');
 // const {firestoreTrackUpload, uploadToServer, deleteFile} = require('./resolvers/mutations')
 const {trackMutations, authMutations} = require('./resolvers/mutations')
-const { trackQueries, authQueries } = require('./resolvers/queries');
+const { trackQueries, authQueries, userQueries } = require('./resolvers/queries');
 
 const {
   stagedTracks, searchTracks, getAllGenres, retrieveTrackFromStorage
@@ -12,12 +12,18 @@ const {
 } = authQueries
 
 const {
+  getUserID,
+  getUserInfo,
+} = userQueries
+
+const {
   stageTracks, trackUpload, unstageTracks 
 } = trackMutations
 
 const {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  login,
   signOut,
 } = authMutations;
 
@@ -28,6 +34,8 @@ const resolvers = {
     searchTracks,
     getAllGenres,
     retrieveTrackFromStorage,
+    getUserID,
+    getUserInfo,
   },
   Mutation: {
     stageTracks,
@@ -35,6 +43,7 @@ const resolvers = {
     unstageTracks,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    login,
     signOut,
   }
 }

@@ -39,4 +39,7 @@ export const FUFValue = styled.div`
   line-height: 3rem;
   width: ${({width}) => width || '100%'};
   padding: 0 .5rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;

@@ -145,7 +145,7 @@ const GlobalStyle = createGlobalStyle`
 const App = () => {
   const {loading, error, data} = useQuery(CHECK_AUTH);
 
-  console.log(loading, error, data);
+  // console.log(loading, error, data);
 
   let routes = (
     <Switch>
@@ -154,7 +154,10 @@ const App = () => {
     </Switch>
   )
 
+  console.log('[App] authCert.accessToken: ', authCert.accessToken)
+
   if (!loading && data?.checkAuth?.username) {
+  // if (authCert.accessToken.length) {
     routes = (
       <>
       <TopNav />

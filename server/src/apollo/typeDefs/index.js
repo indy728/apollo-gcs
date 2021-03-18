@@ -82,6 +82,10 @@ exports.Auth = gql`
     error: AuthError,
   }
 
+  type AccessToken {
+    accessToken: String,
+  }
+
   extend type Query {
     checkAuth: Auth, 
   }
@@ -89,6 +93,7 @@ exports.Auth = gql`
   extend type Mutation {
     createUserWithEmailAndPassword(email: String, password: String, username: String): Auth,
     signInWithEmailAndPassword(email: String, password: String): Auth,
+    login(email: String, password: String): AccessToken,
     signOut: Boolean,
   }
 `;
@@ -98,7 +103,7 @@ exports.User = gql`
     username: String!,
     uploads: [String],
     downloads: [String],
-    role: [String],
+    role: String,
   }
 
   input UserInput {
@@ -106,12 +111,17 @@ exports.User = gql`
     _username: String,
     uploads: [String],
     downloads: [String],
-    roles: [String],
+    roles: String,
   }
 
   extend type Mutation {
     updateUser(user: UserInput): User,
     addUser(user: UserInput): User,
+  }
+
+  extend type Query {
+    getUserID: String,
+    getUserInfo: User
   }
 `;
 
