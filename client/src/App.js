@@ -9,16 +9,17 @@ import {TopNav} from './components/navigation';
 import { ApolloProvider, useMutation, useQuery } from "@apollo/client";
 import {CHECK_AUTH, FB_LOGOUT_USER} from './components/apollo';
 import { client } from "./apollo";
-import authCert from 'accessToken';
 import {useSelector, useDispatch} from 'react-redux';
-import {increment, decrement} from 'store/slices'
+import {actions} from 'store/slices';
+
+const {setAccessToken} = actions
 
 const Logout = () => {
-  const [logout] = useMutation(FB_LOGOUT_USER, {refetchQueries: [{query: CHECK_AUTH}]});
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    logout();
-  }, [logout]);
+    dispatch(setAccessToken(""))
+  }, []);
 
   return <div>...logging out</div>
 }
@@ -158,9 +159,9 @@ const GlobalStyle = createGlobalStyle`
 
 
 const App = () => {
-  const {loading, error, data} = useQuery(CHECK_AUTH);
-
-  // console.log(loading, error, data);
+  // const {loading, error, data} = useQuery(CHECK_AUTH);
+  const jwt = useSelector(state => state.accessToken.value)
+  console.log('[App] jwt: ', jwt)
 
   let routes = (
     <Switch>
@@ -169,10 +170,8 @@ const App = () => {
     </Switch>
   )
 
-  console.log('[App] authCert.accessToken: ', authCert.accessToken)
-
-  if (!loading && data?.checkAuth?.username) {
-  // if (authCert.accessToken.length) {
+  // if (!loading && data?.checkAuth?.username) {
+  if (jwt.length) {
     routes = (
       <>
       <TopNav />

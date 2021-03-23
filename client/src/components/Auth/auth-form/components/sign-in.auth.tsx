@@ -14,9 +14,10 @@ import {
 import {ToggleState, SignUpValues, IInputFields} from 'types';
 import {CHECK_AUTH, FB_LOGIN_USER} from 'components/apollo';
 import {useLoginMutation} from 'generated/graphql';
+import {useDispatch} from 'react-redux';
+import {actions} from 'store/slices';
 
-import authCert from 'accessToken';
-
+const {setAccessToken} = actions
 
 const schema = yup.object().shape({
   email: yup.string().required().email(),
@@ -28,6 +29,7 @@ interface Props {
 }
 
 const SignIn: React.FC<Props> = ({toggle}) => {
+  const dispatch = useDispatch();
   const { register, handleSubmit, errors, setError } = useForm<SignUpValues>({
     resolver: yupResolver(schema),
   });
@@ -39,7 +41,12 @@ const SignIn: React.FC<Props> = ({toggle}) => {
     }
   })
 
-  const [login] = useLoginMutation({refetchQueries: [{query: CHECK_AUTH}]});
+  const [login] = useLoginMutation({
+    refetchQueries: [{query: CHECK_AUTH}], 
+    onCompleted: (x) => {
+      dispatch(setAccessToken(x.login?.accessToken || ""))
+    }
+  });
 
 
 
@@ -51,8 +58,8 @@ const SignIn: React.FC<Props> = ({toggle}) => {
     if (!data) return
     // const {error} = signInWithEmailAndPassword;
     console.log(data)
-    authCert.accessToken = data.login?.accessToken || ""
-    console.log('[sign-in.auth] authCert.accessToken: ', authCert.accessToken)
+    // authCert.accessToken = data.login?.accessToken || ""
+    // console.log('[sign-in.auth] authCert.accessToken: ', authCert.accessToken)
     // if (error) {
     //   console.log('[sign-in.auth] error: ', error)
     //   switch(error.code) {
