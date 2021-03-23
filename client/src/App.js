@@ -10,6 +10,8 @@ import { ApolloProvider, useMutation, useQuery } from "@apollo/client";
 import {CHECK_AUTH, FB_LOGOUT_USER} from './components/apollo';
 import { client } from "./apollo";
 import authCert from 'accessToken';
+import {useSelector, useDispatch} from 'react-redux';
+import {increment, decrement} from 'store/slices'
 
 const Logout = () => {
   const [logout] = useMutation(FB_LOGOUT_USER, {refetchQueries: [{query: CHECK_AUTH}]});
@@ -20,6 +22,19 @@ const Logout = () => {
 
   return <div>...logging out</div>
 }
+
+// const TestCount = () => {
+//   const count = useSelector(state => state.counter.value)
+//   const dispatch = useDispatch()
+
+//   return (
+//     <div style={{width: '400px', height: '400px', background: 'white', color: 'black'}}>
+//        current count is: {count}
+//        <button onClick={() => dispatch(increment())}>Increment</button>
+//        <button onClick={() => dispatch(decrement())}>decrement</button>
+//     </div>
+//   )
+// }
 
 const theme = {
   primary: ['#0c0032', '#190061', '#240090', '#3500d3', '#282828'],
@@ -177,6 +192,7 @@ const App = () => {
         <GlobalStyle />
           {routes}
         {/* Bottom Nav */}
+        {/* <TestCount /> */}
       </ThemeProvider>
     </BrowserRouter>
   );
