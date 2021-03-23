@@ -163,8 +163,9 @@ exports.trackUpload = async (_, {entry}) => {
   // const fileExists = await checkBucketForFile(entry.filename);
 
   // @TODO: upload to new music bucket
-  // const {errors} = await uploadTrackToBucket(entry._filename);
+  const bres = await uploadTrackToBucket(entry._filename);
   const errors = [];
+  console.log(bres)
   if (errors.length) {
     return errors
   }
