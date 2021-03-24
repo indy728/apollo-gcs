@@ -111,7 +111,7 @@ exports.User = gql`
     _username: String,
     uploads: [String],
     downloads: [String],
-    roles: String,
+    role: String,
   }
 
   extend type Mutation {

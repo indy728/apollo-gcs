@@ -44,7 +44,9 @@ const SignIn: React.FC<Props> = ({toggle}) => {
   const [login] = useLoginMutation({
     refetchQueries: [{query: CHECK_AUTH}], 
     onCompleted: (x) => {
-      dispatch(setAccessToken(x.login?.accessToken || ""))
+      const token = x.login?.accessToken || ""
+      localStorage.setItem('token', token);
+      dispatch(setAccessToken(token));
     }
   });
 
@@ -52,28 +54,10 @@ const SignIn: React.FC<Props> = ({toggle}) => {
 
   const onSubmit = async (values: SignUpValues): Promise<void> => {
     const {email, password} = values;
-    // const {data: {signInWithEmailAndPassword}} = await fbCreateUser({variables: {email, password, username}});
     const {data} = await login({variables: {email, password}});
     
     if (!data) return
-    // const {error} = signInWithEmailAndPassword;
     console.log(data)
-    // authCert.accessToken = data.login?.accessToken || ""
-    // console.log('[sign-in.auth] authCert.accessToken: ', authCert.accessToken)
-    // if (error) {
-    //   console.log('[sign-in.auth] error: ', error)
-    //   switch(error.code) {
-    //     case 'auth/user-not-found':
-    //       setError("email", {message: error.message});
-    //       break;
-    //     case 'auth/wrong-password':
-    //       setError("password", {message: error.message});
-    //       break;
-    //     default:
-    //       setError("email", {message: error.message});
-    //       break;
-    //   }
-    // }
   }
 
   const inputFields: IInputFields = {
