@@ -13,6 +13,11 @@ import {
 } from './auth-form.styles';
 import {ToggleState, SignUpValues, IInputFields} from 'types';
 import {FB_CREATE_USER, CHECK_AUTH} from 'components/apollo';
+import {useCreateNewUserMutation} from 'generated/graphql';
+import {useDispatch} from 'react-redux';
+import {actions} from 'store/slices';
+
+const {setAccessToken} = actions
 
 const pwLength = 'Password must be between 8 and 26 characters in length';
 
@@ -33,6 +38,7 @@ interface Props {
 }
 
 const SignUp: React.FC<Props> = ({toggle}) => {
+  const dispatch = useDispatch();
   const { register, handleSubmit, errors, reset, setError } = useForm<SignUpValues>({
     resolver: yupResolver(schema),
   });
@@ -43,25 +49,39 @@ const SignUp: React.FC<Props> = ({toggle}) => {
     }
   })
 
+  const [createNewUser] = useCreateNewUserMutation({
+    refetchQueries: [{query: CHECK_AUTH}], 
+    onCompleted: (x) => {
+      const token = x.createNewUser?.accessToken || ""
+      localStorage.setItem('token', token);
+      dispatch(setAccessToken(token));
+    }
+  });
+
   const onSubmit = async (values: SignUpValues): Promise<void> => {
     const {email, password, username} = values;
-    const {data: {createUserWithEmailAndPassword}} = await fbCreateUser({variables: {email, password, username}});
-    const authErr = createUserWithEmailAndPassword.error
+    // const {data: {createUserWithEmailAndPassword}} = await fbCreateUser({variables: {email, password, username}});
+    try {
+      const {data} = await createNewUser({variables: {email, password, username}});
+    // const authErr = createUserWithEmailAndPassword.error
+      const authErr = data?.createNewUser?.error
 
-    if (authErr) {
-      const [_, name] = authErr.code.split('/');
+      if (authErr && authErr.code) {
+        const [_, name] = authErr.code.split('/');
 
-      switch(name) {
-        case 'email':
-          break;
-          setError("email", {message: authErr.message})
-        default:
-          setError("username", {message: authErr.message})
-          break;
-      }
-
-      
+        switch(name) {
+          case 'email':
+            setError("email", {message: authErr.message || "unknown email error"})
+            break;
+          default:
+            setError("username", {message: authErr.message || "unknown username error"})
+            break;
+        }
+      } 
+    } catch(err) {
+      // do something if createNewUser throws an error
     }
+    
   }
 
   const inputFields: IInputFields = {

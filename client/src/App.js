@@ -1,5 +1,5 @@
 
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom';
 import {createGlobalStyle, ThemeProvider} from 'styled-components'
 import Upload from './components/Upload';
@@ -11,14 +11,19 @@ import {CHECK_AUTH, FB_LOGOUT_USER} from './components/apollo';
 import { client } from "./apollo";
 import {useSelector, useDispatch} from 'react-redux';
 import {actions} from 'store/slices';
+import {useLogoutMutation} from 'generated/graphql';
 
 const {setAccessToken} = actions
 
 const Logout = () => {
   const dispatch = useDispatch();
+  const [signOut] = useLogoutMutation();
 
   useEffect(() => {
+    signOut();
+    localStorage.setItem('token', '')
     dispatch(setAccessToken(""))
+    client.resetStore();
   }, []);
 
   return <div>...logging out</div>
@@ -160,8 +165,31 @@ const GlobalStyle = createGlobalStyle`
 
 const App = () => {
   // const {loading, error, data} = useQuery(CHECK_AUTH);
+  const [{loading, error}, setLoading] = useState({
+    loading: true,
+    error: false,
+  })
+  const dispatch = useDispatch();
   const jwt = useSelector(state => state.accessToken.value)
-  console.log('[App] jwt: ', jwt)
+
+  useEffect(() => {
+    // @TODO: change from localhost
+    fetch('http://localhost:4000/refresh_token', {
+      method: 'POST',
+      credentials: 'include'
+    }).then(async x => {
+      const {accessToken} = await x.json();
+      setLoading({
+        loading: false, error: false
+      })
+      dispatch(setAccessToken(accessToken))
+    }).catch((e) => {
+      console.log('[App] e: ', e)
+      setLoading({
+        loading: false, error: true
+      })
+    });
+  }, []);
 
   let routes = (
     <Switch>
@@ -169,6 +197,8 @@ const App = () => {
       <Redirect to="/auth" />
     </Switch>
   )
+
+  if (loading) return <div>...loading</div>
 
   // if (!loading && data?.checkAuth?.username) {
   if (jwt.length) {

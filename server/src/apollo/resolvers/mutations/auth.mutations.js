@@ -1,21 +1,11 @@
 const {auth, firestore_db} = require('../../firebase-config');
-const {sign} = require('jsonwebtoken');
+const {createAccessToken, createRefreshToken, sendRefreshToken} = require('../../../util');
 
 const setError = (code, message) => {
   return ({
     code,
     message
   })
-}
-
-const getNewAccessToken = ({username}) => {
-  const accessToken = sign({username}, process.env.JWT_SECRET, {expiresIn: "15m"});
-  return accessToken;
-}
-
-const getNewRefreshToken = ({username}) => {
-  const accessToken = sign({username}, process.env.REFRESH_SECRET, {expiresIn: "7d"})
-  return accessToken;
 }
 
 const firestoreGetUserRef = async({username = ''}) => {
@@ -42,6 +32,8 @@ const fireStoreCreateUser = ({username = '', email = ''}) => {
   firestore_db.collection('users').doc(username).set(userObj)
 }
 
+// We've created a user with email and password, now we update that
+// user in firebase with their username
 const firebaseUpdateNewUserDetail = async({authenticatedUser}) => {
   const user = await auth().currentUser;
   
@@ -99,79 +91,90 @@ exports.createUserWithEmailAndPassword = async (_, {email, password, username}, 
   // });
 }
 
-exports.signInWithEmailAndPassword = async (_, {email, password, username}, {res}) => {
-  const authenticatedUser = {}
-
-  res.cookie('meatid', getNewRefreshToken({username}), {
-    httpOnly: true,
-    expires: 0,
-  })
-
-  try {
-    const {user} = await auth().signInWithEmailAndPassword(email, password)
-
-    if (user) {
-      authenticatedUser.username = user.displayName;
-      authenticatedUser.email = user.email;
-    } else {
-      authenticatedUser.error = {
-        code: 'auth/unexpected-login-error',
-        message: 'An unexpected error occured on login'
-      }
-    }
-  } catch({code, message}) {
-    authenticatedUser.error = setError(code, message)
+// We've created a user with email and password, now we update that
+// user in firebase with their username
+const updateUsername = async({username}) => {
+  const user = await auth().currentUser;
+  
+  if (user) {
+    await user.updateProfile({
+      displayName: username,
+    }).then()
+      .catch(({code, message}) => {
+      authenticatedUser.error = setError(code, message)
+      throw new Error(message)
+    });
+  } else {
+    throw new Error("user created with email but unable to update with username")
   }
-
-  return authenticatedUser;
 }
 
+exports.createNewUser = async (_, {email, password, username}, context) => {
+  const userRef = await firestoreGetUserRef({username});
+  if (userRef) {
+    return {
+      accessToken: createAccessToken(""),
+      error: setError('auth/username', 'That username is taken! Please choose a unique username.')
+    }
+  }
+
+  // Create the user in the database (easy to remove if there's a create-user fail);
+  try {
+    await fireStoreCreateUser({username, email});
+    console.log('[auth.mutations] user created in Firestore')
+    
+    // Create user with authentication management by firebase.
+    // If this fails, delete the recently created user in firestore
+    await auth().createUserWithEmailAndPassword(email, password);
+    console.log('[auth.mutations] user created in Firebase')
+    await updateUsername({username});
+    console.log('[auth.mutations] username updated in Firebase')
+    return {
+      accessToken: createAccessToken({username})
+    }
+  } catch(error) {
+    console.log('[auth.mutations] user creation error: ', error)
+    await firestore_db.collection('users').doc(username).delete();
+    return ({
+      accessToken: "",
+      error: setError(error.code || 'email', error.message || error)
+    })
+  }
+}
 
 exports.login = async (_, {email, password}, {res}) => {
-  /**
-   * Returns a new accessToken if authentication is successful or and empty string if not.
-   *
-   * @remarks
-   * This method is part of the {@link core-library#Statistics | Statistics subsystem}.
-   *
-   * @param x - The first input number
-   * @param y - The second input number
-   * @returns The arithmetic mean of `x` and `y`
-   *
-   * @beta
-   */
-
-  
-
   try {
     const {user} = await auth().signInWithEmailAndPassword(email, password)
 
     if (user) {
-      res.cookie('meatid', getNewRefreshToken({username: user.displayName}), {
-        httpOnly: true,
-        expires: 0,
-      });
+      sendRefreshToken(res, createRefreshToken({username: user.displayName}));
 
       return {
-        accessToken: getNewAccessToken({username: user.displayName})
+        accessToken: createAccessToken({username: user.displayName})
       }
     } else {
-      return {accessToken: ""}
+      return {
+        accessToken: "",
+        error: setError(
+          'auth/unexpected-login-error',
+          'An unexpected error occured on login'
+        )
+      }
     }
   } catch({code, message}) {
-    console.error(code, message)
+    console.error('[auth.mutations] code, message: ', code, message)
+    return {
+      accessToken: "",
+      error: setError(code, message)
+    }
   }
 
-  return {accessToken: ""}
 }
 
-exports.signOut = async () => {
-  try {
-    await auth().signOut();
-
-    return true
-  } catch {
-    return false
-  }
+exports.logout = async (_, {}, {res}) => {
+  sendRefreshToken(res, '')
+  console.log('[auth.mutations] here: ')
+  // res.send({ok: true, accessToken: ''})
+  return true
 }
 

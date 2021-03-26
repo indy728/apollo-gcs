@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from "@apollo/client";
@@ -30,16 +30,10 @@ interface Props {
 
 const SignIn: React.FC<Props> = ({toggle}) => {
   const dispatch = useDispatch();
+  const [errorMessage, setErrorMessage] = useState("");
   const { register, handleSubmit, errors, setError } = useForm<SignUpValues>({
     resolver: yupResolver(schema),
   });
-
-  const [fbCreateUser] = useMutation(FB_LOGIN_USER, {
-    refetchQueries: (x) => {
-      if (x?.signInWithEmailAndPassword?.error) return [];
-      return [{query: CHECK_AUTH}]
-    }
-  })
 
   const [login] = useLoginMutation({
     refetchQueries: [{query: CHECK_AUTH}], 
@@ -50,14 +44,13 @@ const SignIn: React.FC<Props> = ({toggle}) => {
     }
   });
 
-
-
   const onSubmit = async (values: SignUpValues): Promise<void> => {
     const {email, password} = values;
     const {data} = await login({variables: {email, password}});
-    
-    if (!data) return
-    console.log(data)
+
+    if (data?.login?.error) {
+      setErrorMessage(data.login.error.message || "There was an error loggin in");
+    }
   }
 
   const inputFields: IInputFields = {
@@ -99,6 +92,9 @@ const SignIn: React.FC<Props> = ({toggle}) => {
           </AuthItemWrapper>
         ))}
       </AuthFormWrapper>
+      {
+        errorMessage.length > 0 && (<div style={{flex: 1, padding: '.5rem', color: 'red', marginBottom: '2rem'}}>{errorMessage}</div>)
+      }
       <AuthSubContainer className="auth-button">
         <MyButton onClick={handleSubmit(onSubmit)}>sign in</MyButton>
       </AuthSubContainer>

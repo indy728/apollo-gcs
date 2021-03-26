@@ -22,9 +22,9 @@ const {
 
 const {
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
+  createNewUser,
   login,
-  signOut,
+  logout,
 } = authMutations;
 
 const resolvers = {
@@ -42,9 +42,9 @@ const resolvers = {
     trackUpload,
     unstageTracks,
     createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
+    createNewUser,
     login,
-    signOut,
+    logout,
   }
 }
 

@@ -1,3 +1,10 @@
 query GetUserID {
   getUserID
 }
+
+query GetUserInfo {
+	getUserInfo {
+		username
+    role
+  }
+}

@@ -29,7 +29,9 @@ const firestoreGetUserRef = async ({username = ''}) => {
 exports.getUserInfo = async (_, {}, {req, res}) => {
   const authorization = req.headers["authorization"];
 
-  if (!authorization) return null;
+  if (!authorization) {
+    throw new Error("not authenticated");
+  }
 
   try {
     const token = authorization.split(' ')[1];
@@ -43,7 +45,7 @@ exports.getUserInfo = async (_, {}, {req, res}) => {
       role
     }
   } catch(err) {
-    console.log(err);
+    console.log('[user.queries] err: ', err);
     return null
   }
 }

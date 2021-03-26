@@ -82,8 +82,9 @@ exports.Auth = gql`
     error: AuthError,
   }
 
-  type AccessToken {
+  type Login {
     accessToken: String,
+    error: AuthError
   }
 
   extend type Query {
@@ -93,8 +94,9 @@ exports.Auth = gql`
   extend type Mutation {
     createUserWithEmailAndPassword(email: String, password: String, username: String): Auth,
     signInWithEmailAndPassword(email: String, password: String): Auth,
-    login(email: String, password: String): AccessToken,
-    signOut: Boolean,
+    createNewUser(email: String, password: String, username: String): Login,
+    login(email: String, password: String): Login,
+    logout: Boolean,
   }
 `;
 

@@ -14,6 +14,7 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 exports.database = firebase.database();
 exports.auth = firebase.auth;
+// firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 
 // INCLUDE SERVICE ACCOUNT CREDENTIALS, INITIALIZE CLOUD FIRESTORE
 const admin = require('firebase-admin')
