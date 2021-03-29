@@ -209,8 +209,8 @@ const App = () => {
   // @TODO: Create Loading Screen
   if (loading) return <div>...loading</div>
 
-  if (data && data.getUserInfo !== null) {
-  // if (jwt.length) {
+  // if (data && data.getUserInfo !== null) {
+  if (jwt.length) {
     routes = (
       <>
       <TopNav />

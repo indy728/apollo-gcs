@@ -36,11 +36,11 @@ const SignIn: React.FC<Props> = ({toggle}) => {
   });
 
   const [login] = useLoginMutation({
-    refetchQueries: [{query: GetUserInfoDocument}], 
+    // refetchQueries: [{query: GetUserInfoDocument}], 
     onCompleted: (x) => {
       const token = x.login?.accessToken || ""
       localStorage.setItem('token', token);
-      // dispatch(setAccessToken(token));
+      dispatch(setAccessToken(token));
     }
   });
 
