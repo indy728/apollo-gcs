@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {Link, withRouter, NavLink} from 'react-router-dom';
+import {Link, withRouter, NavLink, useHistory} from 'react-router-dom';
 import { FlexSpacer, InlineBrand, Typography } from 'components/ui';
 import { useMutation, useQuery } from '@apollo/client';
 import { FB_LOGOUT_USER, CHECK_AUTH } from 'components/apollo';
@@ -63,35 +63,36 @@ const HeaderItem = styled.div`
 
 `;
 
+
+
 const HeaderNav = styled.header`
 `;
 
-const TopNav = () => {
-  const dispatch = useDispatch();
-  const userInfo = useGetUserInfoQuery();
-  const {loading, data, error} = useCheckAuthQuery();
-  console.log('[index] data: ', data)
-  const [signOut, {}] = useMutation(FB_LOGOUT_USER, {
-    refetchQueries: [{query: CHECK_AUTH}]
-  });
-  let menu = loading
+const HeaderLinks = () => {
+  const history = useHistory();
 
-  console.log('[index] userInfo: ', userInfo)
-
-  // This doesn't re-set the state
-  if (error) {
-    //@TODO create error page
-    dispatch(setAccessToken(""))
+  const {loading, data, error} = useGetUserInfoQuery({
+    fetchPolicy: "network-only"
+});
+  
+  if (loading) {
+    return <div>...loading</div>
+  }
+  if (error || !data || !data.getUserInfo) {
+    history.push('/logout')
+    console.log('[index] error: ', error)
+    console.log('[index] data: ', data)
+    return <div>error</div>
   }
 
-  if (!loading) {
+  const {username, role} = data.getUserInfo;
 
-    const {username, email} = data.checkAuth;
-
-    menu = (
-      <ul style={{display: 'flex', listStyleType: 'none'}}>
-        {Object.entries(links(username)).map(([key, {to, text}]) => (
-          <li>
+  return (
+    <ul style={{display: 'flex', listStyleType: 'none'}}>
+      {Object.entries(links(username))
+        .filter(([key]) => key !== 'upload' || RolesEnum[role] >= RolesEnum['CONTRIBUTOR'] )
+        .map(([key, {to, text}]) => (
+        <li>
           <HeaderItem key={key}>
             <NavLink to={to} activeClassName="navlink-active">
               <Typography>
@@ -99,11 +100,14 @@ const TopNav = () => {
               </Typography>
             </NavLink>
           </HeaderItem>
-          </li>
-        ))}
-      </ul>
-    )
-  }
+        </li>
+      ))}
+    </ul>
+  )
+
+}
+
+const TopNav = () => {
 
   return (
     <HeaderNav>
@@ -115,7 +119,7 @@ const TopNav = () => {
         </HeaderItem>
         <FlexSpacer />
         {/* @TODO: User / Logout */}
-        {menu}
+        <HeaderLinks />
       </HeaderItems>
     </HeaderNav>
   )

@@ -301,11 +301,21 @@ export type GetUserInfoQuery = (
   { __typename?: 'Query' }
   & { getUserInfo?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'username' | 'role'>
+    & AuthUserFragment
   )> }
 );
 
+export type AuthUserFragment = (
+  { __typename?: 'User' }
+  & Pick<User, 'username' | 'role'>
+);
 
+export const AuthUserFragmentDoc = gql`
+    fragment AuthUser on User {
+  username
+  role
+}
+    `;
 export const CreateUserWithEmailAndPasswordDocument = gql`
     mutation CreateUserWithEmailAndPassword($email: String, $password: String, $username: String) {
   createUserWithEmailAndPassword(
@@ -571,11 +581,10 @@ export type GetUserIdQueryResult = Apollo.QueryResult<GetUserIdQuery, GetUserIdQ
 export const GetUserInfoDocument = gql`
     query GetUserInfo {
   getUserInfo {
-    username
-    role
+    ...AuthUser
   }
 }
-    `;
+    ${AuthUserFragmentDoc}`;
 
 /**
  * __useGetUserInfoQuery__

@@ -6,12 +6,12 @@ import Upload from './components/Upload';
 import Search from './components/Search';
 import AuthPage from './components/Auth'
 import {TopNav} from './components/navigation';
-import { ApolloProvider, useMutation, useQuery } from "@apollo/client";
-import {CHECK_AUTH, FB_LOGOUT_USER} from './components/apollo';
+import { ApolloProvider } from "@apollo/client";
 import { client } from "./apollo";
 import {useSelector, useDispatch} from 'react-redux';
 import {actions} from 'store/slices';
-import {useLogoutMutation} from 'generated/graphql';
+import {useLogoutMutation, useGetUserInfoQuery} from 'generated/graphql';
+import {RolesEnum} from 'global';
 
 const {setAccessToken} = actions
 
@@ -170,7 +170,15 @@ const App = () => {
     error: false,
   })
   const dispatch = useDispatch();
-  const jwt = useSelector(state => state.accessToken.value)
+  const {loading: userLoading, data, error: userError} = useGetUserInfoQuery();
+  let jwt = useSelector(state => state.accessToken.value)
+  if (!jwt.length) jwt = localStorage.getItem('token') || ''
+
+  if (loading) {
+    console.log('[App] loading: ', loading)
+  } else {
+    console.log('[App] data: ', data)
+  }
 
   useEffect(() => {
     // @TODO: change from localhost
@@ -198,16 +206,20 @@ const App = () => {
     </Switch>
   )
 
+  // @TODO: Create Loading Screen
   if (loading) return <div>...loading</div>
 
-  // if (!loading && data?.checkAuth?.username) {
-  if (jwt.length) {
+  if (data && data.getUserInfo !== null) {
+  // if (jwt.length) {
     routes = (
       <>
       <TopNav />
       <Switch>
         <Route path="/search" component={Search} /> 
-        <Route path="/upload" component={Upload} />
+        {
+          data?.getUserInfo && RolesEnum[data?.getUserInfo?.role] >= RolesEnum['CONTRIBUTOR'] &&
+            <Route path="/upload" component={Upload} />
+        }
         <Route path="/logout" component={Logout} />
         <Redirect to="/search" />
       </Switch>

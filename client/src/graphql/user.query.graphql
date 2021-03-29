@@ -4,7 +4,11 @@ query GetUserID {
 
 query GetUserInfo {
 	getUserInfo {
-		username
-    role
+		...AuthUser
   }
+}
+
+fragment AuthUser on User {
+  username
+  role
 }

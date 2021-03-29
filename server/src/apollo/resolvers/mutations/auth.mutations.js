@@ -173,7 +173,6 @@ exports.login = async (_, {email, password}, {res}) => {
 
 exports.logout = async (_, {}, {res}) => {
   sendRefreshToken(res, '')
-  console.log('[auth.mutations] here: ')
   // res.send({ok: true, accessToken: ''})
   return true
 }
