@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {useHistory} from 'react-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from "@apollo/client";
@@ -12,8 +13,7 @@ import {
   AuthToggleText
 } from './auth-form.styles';
 import {ToggleState, SignUpValues, IInputFields} from 'types';
-import {CHECK_AUTH, FB_LOGIN_USER} from 'components/apollo';
-import {useLoginMutation} from 'generated/graphql';
+import {useLoginMutation, GetUserInfoDocument} from 'generated/graphql';
 import {useDispatch} from 'react-redux';
 import {actions} from 'store/slices';
 
@@ -36,11 +36,11 @@ const SignIn: React.FC<Props> = ({toggle}) => {
   });
 
   const [login] = useLoginMutation({
-    refetchQueries: [{query: CHECK_AUTH}], 
+    refetchQueries: [{query: GetUserInfoDocument}], 
     onCompleted: (x) => {
       const token = x.login?.accessToken || ""
       localStorage.setItem('token', token);
-      dispatch(setAccessToken(token));
+      // dispatch(setAccessToken(token));
     }
   });
 
