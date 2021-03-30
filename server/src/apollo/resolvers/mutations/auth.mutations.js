@@ -1,5 +1,5 @@
-const {auth, firestore_db} = require('../../firebase-config');
-const {createAccessToken, createRefreshToken, sendRefreshToken} = require('../../../util');
+const {auth, firestore_db} = require('../../firebase-config/index.old');
+const {createAccessToken, createRefreshToken, sendRefreshToken} = require('../../../util/index.old');
 
 const setError = (code, message) => {
   return ({
