@@ -7,7 +7,7 @@ exports.isAuth = ({context}, next) => {
 
   try {
     const token = authorization.split(' ')[1];
-    const payload = verify(token, process.env.JWT_SECRET);
+    const payload = verify(token, process.env.ACCESS_TOKEN_SECRET);
     context.payload = payload;
   } catch(err) {
     console.log(err);

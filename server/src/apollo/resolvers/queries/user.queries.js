@@ -10,7 +10,7 @@ exports.getUserID = async (_, {}, {req, res}) => {
 
   try {
     const token = authorization.split(' ')[1];
-    const payload = verify(token, process.env.JWT_SECRET);
+    const payload = verify(token, process.env.ACCESS_TOKEN_SECRET);
     return payload.username
   } catch(err) {
     console.log(err);
@@ -35,7 +35,7 @@ exports.getUserInfo = async (_, {}, {req, res}) => {
 
   try {
     const token = authorization.split(' ')[1];
-    const {username} = verify(token, process.env.JWT_SECRET);
+    const {username} = verify(token, process.env.ACCESS_TOKEN_SECRET);
     const userRef = await firestoreGetUserRef({username});
 
     if (!userRef) return null;

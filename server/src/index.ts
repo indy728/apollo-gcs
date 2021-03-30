@@ -12,6 +12,7 @@ const cookieParser = require('cookie-parser');
 // const { Query, Mutation, Track, User, Genre, Auth } = require('./apollo/typeDefs');
 // const { createAccessToken, createRefreshToken, sendRefreshToken } = require('./util');
 import { buildSchema, Resolver, Query } from 'type-graphql';
+import { MyContext } from './resolvers/MyContext';
 import { UserResolver } from './resolvers/UserResolver';
 
 
@@ -88,16 +89,24 @@ class HelloResolver {
   }
 }
 
+// var whitelist = ['http://localhost:3000', 'http://localhost:4000'/** other domains if any */]
 (async () => {
   const app = express();
   app.use(
     cors({
       origin: "http://localhost:3000",
+      // origin: function (origin: any, callback: any) {
+      //   if (whitelist.indexOf(origin) !== -1) {
+      //     callback(null, true)
+      //   } else {
+      //     callback(new Error('Not allowed by CORS'))
+      //   }
+      // },
       credentials: true
     })
   );
   app.use(cookieParser());
-  app.get("/", (_req: any, res: any) => res.send("hello"));
+  // app.get("/", (_req: any, res: any) => res.send("hello"));
   // app.post("/refresh_token", async (req, res) => {
   //   const token = req.cookies.jid;
   //   if (!token) {
@@ -133,7 +142,7 @@ class HelloResolver {
     schema: await buildSchema({
       resolvers: [HelloResolver, UserResolver]
     }),
-    context: (data: { req: any, res: any }) => (data)
+    context: ({ req, res }: MyContext) => ({ req, res })
     // context: ({ req, res }) => ({ req, res })
   });
 

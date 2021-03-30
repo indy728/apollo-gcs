@@ -2,7 +2,7 @@ import { Response } from "express";
 import { sign } from 'jsonwebtoken';
 
 export const createAccessToken = ({ username }: { username: string }) => {
-  const accessToken = sign({ username }, process.env.JWT_SECRET!, { expiresIn: "15m" });
+  const accessToken = sign({ username }, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "15m" });
   return accessToken;
 }
 
@@ -15,7 +15,7 @@ export const sendRefreshToken = (res: Response, token: string) => {
   res.cookie('meatid', token, {
     httpOnly: true,
     path: '/refresh_token',
-    sameSite: 'lax'
+    sameSite: false
   })
 }
 

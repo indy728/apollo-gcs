@@ -14,8 +14,6 @@ import { auth } from '../apollo/firebase-config';
 import { MiddlewareFn } from "type-graphql";
 import { verify } from "jsonwebtoken";
 
-// bearer 102930ajslkdaoq01
-
 export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
   const authorization = context.req.headers["authorization"];
 
@@ -25,7 +23,7 @@ export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
 
   try {
     const token = authorization.split(" ")[1];
-    const payload = verify(token, process.env.ACCESS_TOKEN_SECRET!);
+    const payload = verify(token, process.env.REFRESH_SECRET!);
     context.payload = payload as any;
   } catch (err) {
     console.log(err);
@@ -48,14 +46,17 @@ export class UserResolver {
     return "hi!";
   }
 
+  // for testing
   @Query(() => String)
   @UseMiddleware(isAuth)
   bye(@Ctx() { payload }: MyContext) {
     console.log(payload);
-    return `your user id is: ${payload!.userId}`;
+    return `your user id is: ${payload!.username}`;
   }
 
-  @Mutation(() => String)
+  // Original declaration:
+  // async (_, {email, password}, {res}) => {
+  @Mutation(() => LoginResponse)
   async login(
     @Arg('email') email: string,
     @Arg('password') password: string,
@@ -78,5 +79,12 @@ export class UserResolver {
     } catch ({ code, message }) {
       throw new Error(message)
     }
+  }
+
+  @Mutation(() => Boolean)
+  async logout(@Ctx() { res }: MyContext) {
+    sendRefreshToken(res, '')
+
+    return true
   }
 }
