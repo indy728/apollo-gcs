@@ -23,17 +23,16 @@ const server = new ApolloServer({
 });
 const app = express();
 
-var whitelist = ['http://localhost:3000',/** other domains if any */ ]
+var whitelist = ['http://localhost:3000', 'http://localhost:4000'/** other domains if any */ ]
 var corsOptions = {
   credentials: true,
-  origin: true
-  // origin: function(origin, callback) {
-  //   if (whitelist.indexOf(origin) !== -1) {
-  //     callback(null, true)
-  //   } else {
-  //     callback(new Error('Not allowed by CORS'))
-  //   }
-  // }
+  origin: function(origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
 }
 app.use(cors(corsOptions))
 // app.use(cors())
@@ -74,7 +73,7 @@ app.post('/refresh_token', (req, res) => {
   return res.send({ ok: true, accessToken: createAccessToken({username})});
 })
 
-server.applyMiddleware({app});
+server.applyMiddleware({app, cors: false});
 
 app.listen(4000, () => {
   console.log(`🚀  Server ready at http://localhost:4000/`);
