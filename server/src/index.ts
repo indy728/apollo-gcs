@@ -12,8 +12,8 @@ const cookieParser = require('cookie-parser');
 // const { Query, Mutation, Track, User, Genre, Auth } = require('./apollo/typeDefs');
 // const { createAccessToken, createRefreshToken, sendRefreshToken } = require('./util');
 import { buildSchema, Resolver, Query } from 'type-graphql';
-import { MyContext } from './resolvers/MyContext';
-import { UserResolver } from './resolvers/UserResolver';
+import { MyContext } from './ContextType';
+import { TracksResolver, UserResolver } from './resolvers';
 
 
 existsSync(path.join(__dirname, "tmp-music")) || mkdirSync(path.join(__dirname, "tmp-music"));
@@ -106,7 +106,11 @@ class HelloResolver {
     })
   );
   app.use(cookieParser());
-  // app.get("/", (_req: any, res: any) => res.send("hello"));
+  // @TODO: app.post?
+  // app.all('/download', function (req: Request, res: Response) {
+  //   const file = `${__dirname}/new-music/${req.body.filename}`;
+  //   res.download(file); // Set disposition and send it.
+  // });
   // app.post("/refresh_token", async (req, res) => {
   //   const token = req.cookies.jid;
   //   if (!token) {
@@ -140,7 +144,7 @@ class HelloResolver {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver]
+      resolvers: [HelloResolver, UserResolver, TracksResolver]
     }),
     context: ({ req, res }: MyContext) => ({ req, res })
     // context: ({ req, res }) => ({ req, res })
