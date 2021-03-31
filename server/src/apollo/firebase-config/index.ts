@@ -40,12 +40,11 @@ interface UserAuth {
   email?: string,
 }
 
-export const fsGetUserRef = async ({ username }: UserAuth) => {
+export const fsGetUserDoc = async ({ username }: UserAuth) => {
   const userRef = await firestore_db.collection('users').doc(username);
-  const { exists } = await userRef.get();
+  const doc = await userRef.get();
 
-  if (!exists) return null;
-  return userRef;
+  return doc;
 }
 
 export const fsCreateUserDoc = async ({ username, email }: UserAuth) => {

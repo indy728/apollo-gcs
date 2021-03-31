@@ -11,7 +11,7 @@ import {
 } from "type-graphql";
 import { MyContext } from './MyContext';
 import { createAccessToken, createRefreshToken, sendRefreshToken } from '../util';
-import { auth, fbUpdateUserDisplayName, fsCreateUserDoc, fsDeleteUserDoc, fsGetUserRef } from '../apollo/firebase-config';
+import { auth, fbUpdateUserDisplayName, fsCreateUserDoc, fsDeleteUserDoc, fsGetUserDoc } from '../apollo/firebase-config';
 import { MiddlewareFn } from "type-graphql";
 import { verify } from "jsonwebtoken";
 
@@ -28,6 +28,7 @@ export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
     context.payload = payload as any;
   } catch (err) {
     console.log(err);
+    console.log(authorization)
     throw new Error("not authenticated");
   }
 
@@ -38,6 +39,38 @@ export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
 class AuthResponse {
   @Field()
   accessToken: string;
+}
+
+
+// type User {
+//   username: String!,
+//   uploads: [String],
+//   downloads: [String],
+//   role: String,
+// }
+
+// input UserInput {
+//   username: String!,
+//   _username: String,
+//   uploads: [String],
+//   downloads: [String],
+//   role: String,
+// }
+
+@ObjectType()
+class User {
+
+  @Field()
+  username: string;
+
+  @Field()
+  uploads?: string;
+
+  @Field()
+  downloads?: string;
+
+  @Field()
+  role: string;
 }
 
 @ArgsType()
@@ -62,12 +95,33 @@ export class UserResolver {
     return `your user id is: ${payload!.username}`;
   }
 
+  @Query(() => User)
+  @UseMiddleware(isAuth)
+  async me(@Ctx() { payload }: MyContext) {
+    const { username } = payload!;
+
+    try {
+      const user = await fsGetUserDoc({ username });
+
+      if (!user) throw new Error('Token contains invalid user information');
+      const { role } = user.data()
+
+      return {
+        username,
+        role
+      }
+    } catch (err) {
+      console.error('[user.queries] err: ', err);
+      throw new Error('Unable to find user');
+    }
+  }
+
   @Mutation(() => AuthResponse)
   async register(
     @Args() { email, password, username }: AuthArgs
   ): Promise<AuthResponse> {
-    const userRef = await fsGetUserRef({ username });
-    if (userRef) {
+    const userRef = await fsGetUserDoc({ username });
+    if (userRef.exists) {
       throw new Error('That username is taken! Please choose a unique username.')
     }
 
