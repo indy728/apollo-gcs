@@ -12,12 +12,13 @@ const authLink = setContext((_, { headers }) => {
       headers: {
         ...headers,
         authorization: token ? `Bearer ${token}` : "",
-      }
+      },
+      credentials: "include"
     }
   }
 });
 
-const link = createUploadLink({ uri: "http://localhost:4000/graphql" });
+const link = createUploadLink({ uri: "http://localhost:4000/graphql", credentials: "same-origin" });
 
 export const client = new ApolloClient({
   link: authLink.concat(link),
@@ -26,5 +27,4 @@ export const client = new ApolloClient({
     console.log('graphQLErrors', graphQLErrors)
     console.log('networkError', networkError)
   },
-  credentials: "include",
 });

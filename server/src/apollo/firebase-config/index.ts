@@ -34,3 +34,62 @@ const gcsClient = new Storage({
 })
 
 export const musicBucket = gcsClient.bucket(bucketName)
+
+interface UserAuth {
+  username: string,
+  email?: string,
+}
+
+export const fsGetUserRef = async ({ username }: UserAuth) => {
+  const userRef = await firestore_db.collection('users').doc(username);
+  const { exists } = await userRef.get();
+
+  if (!exists) return null;
+  return userRef;
+}
+
+export const fsCreateUserDoc = async ({ username, email }: UserAuth) => {
+  const userObj = {
+    username,
+    email,
+    role: 'VIEW_ONLY',
+    name: '',
+    tracks: [],
+    bio: {
+      about: '',
+      picture: '',
+    }
+  }
+
+  try {
+    await firestore_db
+      .collection('users')
+      .doc(username)
+      .set(userObj)
+  } catch {
+    throw new Error(`Failed to create user ${username} \
+                      with email ${email} in database.`)
+  }
+}
+
+// We've created a user with email and password, now we update that
+// user in firebase with their username
+export const fbUpdateUserDisplayName = async ({ username }: UserAuth) => {
+  const user = auth().currentUser;
+
+  if (!user) throw new Error("User created with email but unable to \
+                              update with username")
+
+  try {
+    await user.updateProfile({ displayName: username })
+  } catch ({ code, message }) {
+    throw new Error(message)
+  }
+}
+
+export const fsDeleteUserDoc = async ({ username }: UserAuth) => {
+  await firestore_db
+    .collection('users')
+    .doc(username)
+    .delete();
+}

@@ -2,7 +2,8 @@ import {
   Resolver,
   Query,
   Mutation,
-  Arg,
+  Args,
+  ArgsType,
   ObjectType,
   Field,
   Ctx,
@@ -10,7 +11,7 @@ import {
 } from "type-graphql";
 import { MyContext } from './MyContext';
 import { createAccessToken, createRefreshToken, sendRefreshToken } from '../util';
-import { auth } from '../apollo/firebase-config';
+import { auth, fbUpdateUserDisplayName, fsCreateUserDoc, fsDeleteUserDoc, fsGetUserRef } from '../apollo/firebase-config';
 import { MiddlewareFn } from "type-graphql";
 import { verify } from "jsonwebtoken";
 
@@ -34,18 +35,25 @@ export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
 };
 
 @ObjectType()
-class LoginResponse {
+class AuthResponse {
   @Field()
   accessToken: string;
 }
 
+@ArgsType()
+class AuthArgs {
+  @Field(() => String)
+  email: string;
+
+  @Field(() => String)
+  password: string;
+
+  @Field(() => String, { nullable: true })
+  username: string;
+}
+
 @Resolver()
 export class UserResolver {
-  @Query(() => String)
-  hello() {
-    return "hi!";
-  }
-
   // for testing
   @Query(() => String)
   @UseMiddleware(isAuth)
@@ -54,14 +62,48 @@ export class UserResolver {
     return `your user id is: ${payload!.username}`;
   }
 
+  @Mutation(() => AuthResponse)
+  async register(
+    @Args() { email, password, username }: AuthArgs
+  ): Promise<AuthResponse> {
+    const userRef = await fsGetUserRef({ username });
+    if (userRef) {
+      throw new Error('That username is taken! Please choose a unique username.')
+    }
+
+    // Create the user in the database (easy to remove if there's a create-user fail);
+    try {
+      // Create user document in Cloud Firestore
+      await fsCreateUserDoc({ username, email });
+      // Create user with authentication management by firebase.
+      await auth().createUserWithEmailAndPassword(email, password);
+      // Update firebase user with a display name that to hold the username
+      await fbUpdateUserDisplayName({ username });
+
+      return {
+        accessToken: createAccessToken({ username })
+      }
+    } catch (error) {
+      // If this fails, delete the recently created user in firestore
+      await fsDeleteUserDoc({ username });
+      if (typeof error === 'string') {
+        throw new Error(error);
+      } else if (error.message) {
+        throw new Error(error.message)
+      }
+      throw new Error('Unexpected user creation error')
+    }
+  }
+
   // Original declaration:
   // async (_, {email, password}, {res}) => {
-  @Mutation(() => LoginResponse)
+  @Mutation(() => AuthResponse)
   async login(
-    @Arg('email') email: string,
-    @Arg('password') password: string,
+    // @Arg('email') email: string,
+    // @Arg('password') password: string,
+    @Args() { email, password }: AuthArgs,
     @Ctx() { res }: MyContext
-  ): Promise<LoginResponse> {
+  ): Promise<AuthResponse> {
     try {
       // Firebase returns a user after supplying credentials
       const { user } = await auth().signInWithEmailAndPassword(email, password)
