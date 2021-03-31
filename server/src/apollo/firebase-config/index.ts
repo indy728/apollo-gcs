@@ -65,6 +65,7 @@ export const fsCreateUserDoc = async ({ username, email }: UserAuth) => {
       .collection('users')
       .doc(username)
       .set(userObj)
+    return true;
   } catch {
     throw new Error(`Failed to create user ${username} \
                       with email ${email} in database.`)
@@ -91,4 +92,5 @@ export const fsDeleteUserDoc = async ({ username }: UserAuth) => {
     .collection('users')
     .doc(username)
     .delete();
+  return true;
 }

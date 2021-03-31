@@ -9,53 +9,16 @@ import {
   Ctx,
   UseMiddleware,
 } from "type-graphql";
-import { MyContext } from './MyContext';
+import { MyContext } from '../ContextType';
+import { isAuth } from '../middleware';
 import { createAccessToken, createRefreshToken, sendRefreshToken } from '../util';
 import { auth, fbUpdateUserDisplayName, fsCreateUserDoc, fsDeleteUserDoc, fsGetUserDoc } from '../apollo/firebase-config';
-import { MiddlewareFn } from "type-graphql";
-import { verify } from "jsonwebtoken";
-
-export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
-  const authorization = context.req.headers["authorization"];
-
-  if (!authorization) {
-    throw new Error("not authenticated");
-  }
-
-  try {
-    const token = authorization.split(" ")[1];
-    const payload = verify(token, process.env.REFRESH_SECRET!);
-    context.payload = payload as any;
-  } catch (err) {
-    console.log(err);
-    console.log(authorization)
-    throw new Error("not authenticated");
-  }
-
-  return next();
-};
 
 @ObjectType()
 class AuthResponse {
   @Field()
   accessToken: string;
 }
-
-
-// type User {
-//   username: String!,
-//   uploads: [String],
-//   downloads: [String],
-//   role: String,
-// }
-
-// input UserInput {
-//   username: String!,
-//   _username: String,
-//   uploads: [String],
-//   downloads: [String],
-//   role: String,
-// }
 
 @ObjectType()
 class User {
