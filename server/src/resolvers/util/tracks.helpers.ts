@@ -1,9 +1,8 @@
-import { InterfaceType, Field, Int, InputType, ObjectType } from 'type-graphql';
+import { InterfaceType, Field, Int, InputType } from 'type-graphql';
 import { firestore_db, admin, musicBucket } from '../../apollo/firebase-config';
 import path = require('path');
 
 const pathToTmpMusic = path.join(__dirname, '..', '..', 'tmp-music');
-
 
 const fsCreateDoc = async (collection: string, docname: string, data: any) => {
   return await firestore_db.collection(collection).doc(docname).set(data);
@@ -11,10 +10,6 @@ const fsCreateDoc = async (collection: string, docname: string, data: any) => {
 
 const fsGetRef = async (collection: string, docname: string) => {
   return await firestore_db.collection(collection).doc(docname);
-}
-
-const fsGetDoc = async (collection: string, docname: string) => {
-  return fsGetRef(collection, docname).then(async (doc) => await doc.get())
 }
 
 const toAlnumID = (str: string) => {
@@ -98,7 +93,7 @@ const fsUpdateUser = async (username = '', id = '') => {
     const doc = await ref.get();
 
     if (!doc.exists) {
-      await fsAddGenre(username, id)
+      await fsAddUser(username, id)
     } else {
       await ref.update({
         uploads: admin.firestore.FieldValue.arrayUnion(id),
