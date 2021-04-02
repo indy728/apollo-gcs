@@ -1,19 +1,20 @@
-const dotenv = require('dotenv');
+import dotenv = require('dotenv');
 require('reflect-metadata');
 dotenv.config();
-const { ApolloServer } = require('apollo-server-express');
-const { existsSync, mkdirSync } = require('fs');
-const path = require('path');
-const express = require('express');
-const cors = require('cors');
+import { ApolloServer } from 'apollo-server-express';
+import { existsSync, mkdirSync } from 'fs';
+import path = require('path');
+import express = require('express');
+import cors = require('cors');
 const cookieParser = require('cookie-parser');
-// const { verify } = require('jsonwebtoken');
+const { verify } = require('jsonwebtoken');
 // const { resolvers } = require('./apollo/schema');
 // const { Query, Mutation, Track, User, Genre, Auth } = require('./apollo/typeDefs');
-// const { createAccessToken, createRefreshToken, sendRefreshToken } = require('./util');
+import { createAccessToken, createRefreshToken, sendRefreshToken } from './util';
 import { buildSchema, Resolver, Query } from 'type-graphql';
 import { MyContext } from './ContextType';
 import { TracksResolver, UserResolver } from './resolvers';
+import { Request, Response } from "express";
 
 
 existsSync(path.join(__dirname, "tmp-music")) || mkdirSync(path.join(__dirname, "tmp-music"));
@@ -80,7 +81,6 @@ existsSync(path.join(__dirname, "new-music")) || mkdirSync(path.join(__dirname, 
 //////////////////////////////////////////////////////////////////
 
 
-
 @Resolver()
 class HelloResolver {
   @Query(() => String)
@@ -111,36 +111,39 @@ class HelloResolver {
   //   const file = `${__dirname}/new-music/${req.body.filename}`;
   //   res.download(file); // Set disposition and send it.
   // });
-  // app.post("/refresh_token", async (req, res) => {
-  //   const token = req.cookies.jid;
-  //   if (!token) {
-  //     return res.send({ ok: false, accessToken: "" });
-  //   }: any
+  app.post('/refresh_token', (req: Request, res: Response) => {
+    const token = req.cookies.meatid
+    if (!token) {
+      return res.send({ ok: false, accessToken: '' })
+    }
 
-  //   let payload: any = null;
-  //   try {
-  //     payload = verify(token, process.env.REFRESH_TOKEN_SECRET!);
-  //   } catch (err) {
-  //     console.log(err);
-  //     return res.send({ ok: false, accessToken: "" });
-  //   }
+    let payload = null;
+    try {
+      payload = verify(token, process.env.REFRESH_SECRET!)
+    } catch (err) {
+      console.error('[index] err.message: ', err.message)
+      return res.send({ ok: false, accessToken: '' })
+    }
 
-  //   // token is valid and
-  //   // we can send back an access token
-  //   const user = await User.findOne({ id: payload.userId });
+    // Payload is valid; can return access token
+    const { username } = payload;
+    // *Logic to make sure username exists in db*
+    // if (![*username in db]) {
+    //   return res.send({ ok: false, accessToken: '' })
+    // }
 
-  //   if (!user) {
-  //     return res.send({ ok: false, accessToken: "" });
-  //   }
+    console.log('[index] payload: ', payload)
 
-  //   if (user.tokenVersion !== payload.tokenVersion) {
-  //     return res.send({ ok: false, accessToken: "" });
-  //   }
+    sendRefreshToken(res, createRefreshToken({
+      username
+    }));
 
-  //   sendRefreshToken(res, createRefreshToken(user));
-
-  //   return res.send({ ok: true, accessToken: createAccessToken(user) });
-  // });
+    return res.send({
+      ok: true, accessToken: createAccessToken({
+        username
+      })
+    });
+  })
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({

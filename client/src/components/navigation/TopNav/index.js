@@ -1,17 +1,11 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {Link, withRouter, NavLink, useHistory} from 'react-router-dom';
+import {NavLink, useHistory} from 'react-router-dom';
 import { FlexSpacer, InlineBrand, Typography } from 'components/ui';
-import { useMutation, useQuery } from '@apollo/client';
-import { FB_LOGOUT_USER, CHECK_AUTH } from 'components/apollo';
 import {RolesEnum} from 'global';
-import {useCheckAuthQuery, useGetUserInfoQuery} from 'generated/graphql';
-
-import {useDispatch} from 'react-redux';
+import {useMeQuery} from 'generated/graphql';
 
 import {actions} from 'store/slices';
-
-const {setAccessToken} = actions
 
 
 const links = (user) => ({
@@ -71,14 +65,14 @@ const HeaderNav = styled.header`
 const HeaderLinks = () => {
   const history = useHistory();
 
-  const {loading, data, error} = useGetUserInfoQuery({
+  const {loading, data, error} = useMeQuery({
     fetchPolicy: "network-only"
 });
   
   if (loading) {
     return <div>...loading</div>
   }
-  if (error || !data || !data.getUserInfo) {
+  if (error || !data?.me) {
     history.push('/logout')
     console.log('[index] error: ', error)
     console.log('[index] data: ', data)

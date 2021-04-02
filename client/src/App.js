@@ -10,17 +10,17 @@ import { ApolloProvider } from "@apollo/client";
 import { client } from "./apollo";
 import {useSelector, useDispatch} from 'react-redux';
 import {actions} from 'store/slices';
-import {useLogoutMutation, useGetUserInfoQuery} from 'generated/graphql';
+import {useLogoutMutation, useMeQuery} from 'generated/graphql';
 import {RolesEnum} from 'global';
 
 const {setAccessToken} = actions
 
 const Logout = () => {
   const dispatch = useDispatch();
-  const [signOut] = useLogoutMutation();
+  const [logout] = useLogoutMutation();
 
   useEffect(() => {
-    signOut();
+    logout();
     localStorage.setItem('token', '')
     dispatch(setAccessToken(""))
     client.resetStore();
@@ -165,19 +165,23 @@ const GlobalStyle = createGlobalStyle`
 
 const App = () => {
   // const {loading, error, data} = useQuery(CHECK_AUTH);
-  const [{loading, error}, setLoading] = useState({
+  const [pageLoading, setPageLoading] = useState({
     loading: true,
     error: false,
   })
   const dispatch = useDispatch();
-  const {loading: userLoading, data, error: userError} = useGetUserInfoQuery();
+  const {loading, data, error} = useMeQuery();
   let jwt = useSelector(state => state.accessToken.value)
   if (!jwt.length) jwt = localStorage.getItem('token') || ''
 
-  if (loading) {
-    console.log('[App] loading: ', loading)
-  } else {
-    console.log('[App] data: ', data)
+  // if (loading) {
+  //   console.log('[App] loading: ', loading)
+  // } else {
+  //   console.log('[App] data: ', data)
+  // }
+
+  if (error) {
+    console.log('[App] error: ', error.message)
   }
 
   useEffect(() => {
@@ -187,13 +191,13 @@ const App = () => {
       credentials: 'include'
     }).then(async x => {
       const {accessToken} = await x.json();
-      setLoading({
+      setPageLoading({
         loading: false, error: false
       })
       dispatch(setAccessToken(accessToken))
     }).catch((e) => {
       console.log('[App] e: ', e)
-      setLoading({
+      setPageLoading({
         loading: false, error: true
       })
     });
@@ -207,25 +211,25 @@ const App = () => {
   )
 
   // @TODO: Create Loading Screen
-  if (loading) return <div>...loading</div>
+  if (pageLoading.loading) return <div>...loading</div>
 
   // if (data && data.getUserInfo !== null) {
-  if (jwt.length) {
-    routes = (
-      <>
-      <TopNav />
-      <Switch>
-        <Route path="/search" component={Search} /> 
-        {
-          data?.getUserInfo && RolesEnum[data?.getUserInfo?.role] >= RolesEnum['CONTRIBUTOR'] &&
-            <Route path="/upload" component={Upload} />
-        }
-        <Route path="/logout" component={Logout} />
-        <Redirect to="/search" />
-      </Switch>
-    </>
-  )
-}
+  // if (jwt.length) {
+  //   routes = (
+  //     <>
+  //     <TopNav />
+  //     <Switch>
+  //       <Route path="/search" component={Search} /> 
+  //       {
+  //         data?.getUserInfo && RolesEnum[data?.getUserInfo?.role] >= RolesEnum['CONTRIBUTOR'] &&
+  //           <Route path="/upload" component={Upload} />
+  //       }
+  //       <Route path="/logout" component={Logout} />
+  //       <Redirect to="/search" />
+  //     </Switch>
+  //   </>
+  // )
+  // }
 
   return (
     <BrowserRouter>

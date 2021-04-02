@@ -17,6 +17,21 @@ import path = require('path');
 import mm = require('music-metadata');
 import { fsAddTrack, gsUploadTrack, TrackInput } from "./util";
 
+// vvv This should work vvv
+// import { FileUpload } from 'graphql-upload';
+// import { GraphQLScalarType } from "graphql";
+
+// import { ReadStream } from "fs-capacitor";
+
+// const GraphQLUpload: GraphQLScalarType;
+
+// interface FileUpload {
+//   filename: string;
+//   mimetype: string;
+//   encoding: string;
+//   createReadStream(): ReadStream;
+// }
+
 const pathToTmpMusic = path.join(__dirname, '..', 'tmp-music');
 
 @ObjectType()
@@ -106,10 +121,9 @@ class FileNames {
 
 // @ArgsType()
 // class Files {
-//   @Field(() => [File])
-//   files: File[]
+//   @Field(() => [FileUpload])
+//   files: FileUpload[]
 // }
-
 
 @Resolver()
 export class TracksResolver {
@@ -145,9 +159,7 @@ export class TracksResolver {
       }
     }).filter((x) => x !== null))
 
-    return {
-      tracks: mds
-    }
+    return mds
   }
 
   @Query(() => [Track])
@@ -205,24 +217,26 @@ export class TracksResolver {
     return true
   }
 
-  // @Mutation(() => Boolean)
-  // @UseMiddleware(isAuth)
-  // async stageTracks(
-  //   @Args() { files }: Files
-  // ) {
-  //   const len = readdirSync(pathToTmpMusic).length;
-  //   files = files.slice(0, 10 - len);
-  //   await Promise.all(files.map(async (file) => {
-  //     const { createReadStream, filename } = await file;
-  //     await new Promise(resolve =>
-  //       createReadStream()
-  //         .pipe(createWriteStream(path.join(pathToTmpMusic, filename)))
-  //         .on('close', resolve)
-  //     )
-  //   }))
+  // @TODO:I HATE IT HERE
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async stageTracks(
+    @Args() { filenames }: FileNames
+  ) {
+    const len = readdirSync(pathToTmpMusic).length;
+    filenames = filenames.slice(0, 10 - len);
+    await Promise.all(filenames.map(async (file) => {
+      // const { createReadStream, filename } = await file;
+      // await new Promise(resolve =>
+      //   createReadStream()
+      //     .pipe(createWriteStream(path.join(pathToTmpMusic, filename)))
+      //     .on('close', resolve)
+      // )
+      console.log('[TracksResolver] file: ', file)
+    }))
 
-  //   return true
-  // }
+    return true
+  }
 
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
