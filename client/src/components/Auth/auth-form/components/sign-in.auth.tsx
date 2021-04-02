@@ -1,8 +1,6 @@
 import React, {useState} from 'react';
-import {useHistory} from 'react-router';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMutation } from "@apollo/client";
 import * as yup from "yup";
 import {Card, Typography, InlineBrand, MyInputField, MyButton, DividerLine} from 'components/ui';
 import {
@@ -13,8 +11,9 @@ import {
   AuthToggleText
 } from './auth-form.styles';
 import {ToggleState, SignUpValues, IInputFields} from 'types';
-import {useMeQuery, useLoginMutation, MeDocument} from 'generated/graphql';
+import {useLoginMutation} from 'generated/graphql';
 import {useDispatch} from 'react-redux';
+import {Spinner} from 'components/ui';
 import {actions} from 'store/slices';
 
 const {setAccessToken} = actions
@@ -97,7 +96,7 @@ const SignIn: React.FC<Props> = ({toggle}) => {
         errorMessage.length > 0 && (<div style={{flex: 1, padding: '.5rem', color: 'red', marginBottom: '2rem'}}>{errorMessage}</div>)
       }
       <AuthSubContainer className="auth-button">
-        <MyButton onClick={handleSubmit(onSubmit)}>sign in</MyButton>
+        <MyButton onClick={handleSubmit(onSubmit)}>{loading ? <Spinner height='2.4rem' /> : 'sign in'}</MyButton>
       </AuthSubContainer>
       
       <DividerLine />

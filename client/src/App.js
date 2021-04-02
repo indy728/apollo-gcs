@@ -214,7 +214,7 @@ const App = () => {
   )
 
   // @TODO: Create Loading Screen
-  if (1 === 1) return <Loading />
+  if (pageLoading.loading) routes = <Loading />
 
   // if (data && data.getUserInfo !== null) {
   // if (jwt.length) {
