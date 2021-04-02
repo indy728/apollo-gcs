@@ -12,6 +12,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import {actions} from 'store/slices';
 import {useLogoutMutation, useMeQuery} from 'generated/graphql';
 import {RolesEnum} from 'global';
+import Loading from 'pages/Loading';
 
 const {setAccessToken} = actions
 
@@ -194,9 +195,11 @@ const App = () => {
       setPageLoading({
         loading: false, error: false
       })
+      localStorage.setItem('token', accessToken)
       dispatch(setAccessToken(accessToken))
     }).catch((e) => {
       console.log('[App] e: ', e)
+      localStorage.setItem(token, '');
       setPageLoading({
         loading: false, error: true
       })
@@ -211,7 +214,7 @@ const App = () => {
   )
 
   // @TODO: Create Loading Screen
-  if (pageLoading.loading) return <div>...loading</div>
+  if (1 === 1) return <Loading />
 
   // if (data && data.getUserInfo !== null) {
   // if (jwt.length) {

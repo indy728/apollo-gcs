@@ -11,7 +11,7 @@ exports.isAuth = ({context}, next) => {
     context.payload = payload;
     context.token = token
   } catch(err) {
-    console.log(err);
+    console.error('[errorerr: ', err)
   }
 
   return next();

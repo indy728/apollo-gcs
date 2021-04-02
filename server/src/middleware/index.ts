@@ -11,11 +11,12 @@ export const isAuth: MiddlewareFn<MyContext> = ({ context }, next) => {
 
   try {
     const token = authorization.split(" ")[1];
-    const payload = verify(token, process.env.REFRESH_SECRET!);
+    console.log('[index] token: ', token)
+    const payload = verify(token, process.env.ACCESS_TOKEN_SECRET!);
     context.payload = payload as any;
   } catch (err) {
-    console.log(err);
-    console.log(authorization)
+    console.error('[index] err.message: ', err.message)
+    console.log('[index] authorization: ', authorization)
     throw new Error("not authenticated");
   }
 

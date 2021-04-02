@@ -119,20 +119,17 @@ class HelloResolver {
 
     let payload = null;
     try {
-      payload = verify(token, process.env.REFRESH_SECRET!)
+      payload = verify(token, process.env.REFRESH_SECRET!);
     } catch (err) {
       console.error('[index] err.message: ', err.message)
-      return res.send({ ok: false, accessToken: '' })
+      return res.send({ ok: false, accessToken: '' });
     }
 
-    // Payload is valid; can return access token
     const { username } = payload;
     // *Logic to make sure username exists in db*
     // if (![*username in db]) {
     //   return res.send({ ok: false, accessToken: '' })
     // }
-
-    console.log('[index] payload: ', payload)
 
     sendRefreshToken(res, createRefreshToken({
       username
@@ -150,7 +147,6 @@ class HelloResolver {
       resolvers: [HelloResolver, UserResolver, TracksResolver]
     }),
     context: ({ req, res }: MyContext) => ({ req, res })
-    // context: ({ req, res }) => ({ req, res })
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
