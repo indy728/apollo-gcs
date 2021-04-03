@@ -1,9 +1,8 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMutation } from "@apollo/client";
 import * as yup from "yup";
-import {Card, Typography, InlineBrand, MyInputField, MyButton, DividerLine} from 'components/ui';
+import {Card, Typography, InlineBrand, MyInputField, MyButton, DividerLine, Spinner} from 'components/ui';
 import {
   AuthForm as AuthFormWrapper,
   AuthItemWrapper,
@@ -120,7 +119,7 @@ const SignUp: React.FC<Props> = ({toggle}) => {
         ))}
       </AuthFormWrapper>
       <AuthSubContainer className="auth-button">
-        <MyButton onClick={handleSubmit(onSubmit)}>sign up</MyButton>
+        <MyButton onClick={handleSubmit(onSubmit)}>{loading ? <Spinner height='2.4rem' /> : 'sign in'}</MyButton>
       </AuthSubContainer>
       
       <DividerLine />

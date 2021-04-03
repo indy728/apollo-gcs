@@ -30,19 +30,6 @@ const Logout = () => {
   return <div>...logging out</div>
 }
 
-// const TestCount = () => {
-//   const count = useSelector(state => state.counter.value)
-//   const dispatch = useDispatch()
-
-//   return (
-//     <div style={{width: '400px', height: '400px', background: 'white', color: 'black'}}>
-//        current count is: {count}
-//        <button onClick={() => dispatch(increment())}>Increment</button>
-//        <button onClick={() => dispatch(decrement())}>decrement</button>
-//     </div>
-//   )
-// }
-
 const theme = {
   primary: ['#0c0032', '#190061', '#240090', '#3500d3', '#282828'],
   secondary: ['#2E7358', '#11AB70', '#13BF7D', '#19F7A2', '#62F4BC'],
@@ -172,18 +159,17 @@ const App = () => {
   })
   const dispatch = useDispatch();
   const {loading, data, error} = useMeQuery();
+  const me = data?.me || null;
   let jwt = useSelector(state => state.accessToken.value)
   if (!jwt.length) jwt = localStorage.getItem('token') || ''
 
-  // if (loading) {
-  //   console.log('[App] loading: ', loading)
-  // } else {
-  //   console.log('[App] data: ', data)
-  // }
-
   if (error) {
-    console.log('[App] error: ', error.message)
+    console.log('[client/src/App.js] error.message: ', error.message)
   }
+
+  useEffect(() => {
+    console.log('[client/src/App.js] useEffect data: ', me);
+  }, [me])
 
   useEffect(() => {
     // @TODO: change from localhost
@@ -216,23 +202,24 @@ const App = () => {
   // @TODO: Create Loading Screen
   if (pageLoading.loading) routes = <Loading />
 
-  // if (data && data.getUserInfo !== null) {
-  // if (jwt.length) {
-  //   routes = (
-  //     <>
-  //     <TopNav />
-  //     <Switch>
-  //       <Route path="/search" component={Search} /> 
-  //       {
-  //         data?.getUserInfo && RolesEnum[data?.getUserInfo?.role] >= RolesEnum['CONTRIBUTOR'] &&
-  //           <Route path="/upload" component={Upload} />
-  //       }
-  //       <Route path="/logout" component={Logout} />
-  //       <Redirect to="/search" />
-  //     </Switch>
-  //   </>
-  // )
-  // }
+  if (me) {
+
+
+    routes = (
+      <>
+      <TopNav />
+      <Switch>
+        <Route path="/search" component={Search} /> 
+        {
+          RolesEnum[me.role] >= RolesEnum['CONTRIBUTOR'] &&
+            <Route path="/upload" component={Upload} />
+        }
+        <Route path="/logout" component={Logout} />
+        <Redirect to="/search" />
+      </Switch>
+    </>
+    )
+  }
 
   return (
     <BrowserRouter>
