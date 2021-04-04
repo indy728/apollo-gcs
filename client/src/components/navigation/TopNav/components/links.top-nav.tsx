@@ -59,6 +59,7 @@ const HeaderLinks: React.FC = () => {
   return (
     <HeaderItemsListContainer>
       {Object.entries(links(username))
+        // ts thinks of RolesEnum as an array, can't access with string 
         // @ts-ignore
         .filter(([, {gateway}]) => !gateway || RolesEnum[role] >= RolesEnum[gateway] )
         .map(([key, {to, text}]) => (
