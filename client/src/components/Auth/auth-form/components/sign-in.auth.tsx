@@ -11,7 +11,7 @@ import {
   AuthToggleText
 } from './auth-form.styles';
 import {ToggleState, SignUpValues, IInputFields} from 'types';
-import {useLoginMutation} from 'generated/graphql';
+import {useLoginMutation, MeDocument} from 'generated/graphql';
 import {useDispatch} from 'react-redux';
 import {Spinner} from 'components/ui';
 import {actions} from 'store/slices';
@@ -34,18 +34,23 @@ const SignIn: React.FC<Props> = ({toggle}) => {
     resolver: yupResolver(schema),
   });
 
-  const [login, {loading, data, error}] = useLoginMutation({
-    // refetchQueries: [{query: MeDocument}], 
+  const [login, {loading, error}] = useLoginMutation({
     onCompleted: (x) => {
       const token = x.login?.accessToken || ""
       localStorage.setItem('token', token);
       dispatch(setAccessToken(token));
+      // history.push("/")
     }
   });
 
   const onSubmit = async (values: SignUpValues): Promise<void> => {
     const {email, password} = values;
-    await login({variables: {email, password}});
+
+    try {
+      await login({variables: {email, password}});
+    } catch(err) {
+      console.log('[client/src/components/Auth/auth-form/components/sign-in.auth.tsx] err: ', err)
+    }
 
     if (error) {
       console.log('[sign-in.auth] error: ', error)

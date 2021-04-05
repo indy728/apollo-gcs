@@ -17,14 +17,26 @@ import Loading from 'pages/Loading';
 const {setAccessToken} = actions
 
 const Logout = () => {
-  const dispatch = useDispatch();
   const [logout] = useLogoutMutation();
 
   useEffect(() => {
-    logout();
-    localStorage.setItem('token', '')
-    dispatch(setAccessToken(""))
-    client.resetStore();
+
+    const handleLogout = async() => {
+
+      try {
+        await logout();
+        // setAccessToken('');
+        localStorage.setItem('token', '')
+        await client.resetStore();
+      } catch (err) {
+        console.log(err.message)
+      }
+    }
+
+    handleLogout();
+    // logout();
+    // dispatch(setAccessToken(""))
+    // client.resetStore();
   }, []);
 
   return <div>...logging out</div>
@@ -158,10 +170,15 @@ const App = () => {
     error: false,
   })
   const dispatch = useDispatch();
-  const {loading, data, error} = useMeQuery();
+  const {loading, data, error} = useMeQuery({
+    fetchPolicy: 'network-only'
+  });
   const me = data?.me || null;
-  let jwt = useSelector(state => state.accessToken.value)
+  // let jwt = useSelector(state => state.accessToken.value)
+  let jwt = ''
   if (!jwt.length) jwt = localStorage.getItem('token') || ''
+
+  console.log('[client/src/App.js] jwt: ', jwt)
 
   if (error) {
     console.log('[client/src/App.js] error.message: ', error.message)
@@ -185,7 +202,7 @@ const App = () => {
       dispatch(setAccessToken(accessToken))
     }).catch((e) => {
       console.log('[App] e: ', e)
-      localStorage.setItem(token, '');
+      localStorage.setItem('token', '');
       setPageLoading({
         loading: false, error: true
       })
@@ -203,8 +220,6 @@ const App = () => {
   if (pageLoading.loading) routes = <Loading />
 
   if (me) {
-
-
     routes = (
       <>
       <TopNav />
