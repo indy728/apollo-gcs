@@ -9,8 +9,9 @@ exports.isAuth = ({context}, next) => {
     const token = authorization.split(' ')[1];
     const payload = verify(token, process.env.ACCESS_TOKEN_SECRET);
     context.payload = payload;
+    context.token = token
   } catch(err) {
-    console.log(err);
+    console.error('[errorerr: ', err)
   }
 
   return next();

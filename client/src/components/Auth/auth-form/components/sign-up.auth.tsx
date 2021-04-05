@@ -1,9 +1,8 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMutation } from "@apollo/client";
 import * as yup from "yup";
-import {Card, Typography, InlineBrand, MyInputField, MyButton, DividerLine} from 'components/ui';
+import {Card, Typography, InlineBrand, MyInputField, MyButton, DividerLine, Spinner} from 'components/ui';
 import {
   AuthForm as AuthFormWrapper,
   AuthItemWrapper,
@@ -12,8 +11,7 @@ import {
   AuthToggleText
 } from './auth-form.styles';
 import {ToggleState, SignUpValues, IInputFields} from 'types';
-import {FB_CREATE_USER, CHECK_AUTH} from 'components/apollo';
-import {useCreateNewUserMutation} from 'generated/graphql';
+import {useRegisterMutation} from 'generated/graphql';
 import {useDispatch} from 'react-redux';
 import {actions} from 'store/slices';
 
@@ -42,17 +40,10 @@ const SignUp: React.FC<Props> = ({toggle}) => {
   const { register, handleSubmit, errors, reset, setError } = useForm<SignUpValues>({
     resolver: yupResolver(schema),
   });
-  const [fbCreateUser, {loading, error: fbError, data: fbData}] = useMutation(FB_CREATE_USER, {
-    refetchQueries: (x) => {
-      if (x?.signInWithEmailAndPassword?.error) return [];
-      return [{query: CHECK_AUTH}]
-    }
-  })
 
-  const [createNewUser] = useCreateNewUserMutation({
-    refetchQueries: [{query: CHECK_AUTH}], 
+  const [registerUser, {loading, data, error}] = useRegisterMutation({
     onCompleted: (x) => {
-      const token = x.createNewUser?.accessToken || ""
+      const token = x.register?.accessToken || ""
       localStorage.setItem('token', token);
       dispatch(setAccessToken(token));
     }
@@ -62,24 +53,15 @@ const SignUp: React.FC<Props> = ({toggle}) => {
     const {email, password, username} = values;
     // const {data: {createUserWithEmailAndPassword}} = await fbCreateUser({variables: {email, password, username}});
     try {
-      const {data} = await createNewUser({variables: {email, password, username}});
+      await registerUser({variables: {email, password, username}});
     // const authErr = createUserWithEmailAndPassword.error
-      const authErr = data?.createNewUser?.error
 
-      if (authErr && authErr.code) {
-        const [_, name] = authErr.code.split('/');
-
-        switch(name) {
-          case 'email':
-            setError("email", {message: authErr.message || "unknown email error"})
-            break;
-          default:
-            setError("username", {message: authErr.message || "unknown username error"})
-            break;
-        }
+      if (error) {
+       console.log('[sign-up.auth] error: ', error)
       } 
     } catch(err) {
       // do something if createNewUser throws an error
+      console.log('[sign-up.auth] err: ', err)
     }
     
   }
@@ -137,7 +119,7 @@ const SignUp: React.FC<Props> = ({toggle}) => {
         ))}
       </AuthFormWrapper>
       <AuthSubContainer className="auth-button">
-        <MyButton onClick={handleSubmit(onSubmit)}>sign up</MyButton>
+        <MyButton onClick={handleSubmit(onSubmit)}>{loading ? <Spinner height='2.4rem' /> : 'sign in'}</MyButton>
       </AuthSubContainer>
       
       <DividerLine />

@@ -1,5 +1,5 @@
-const {auth, firestore_db} = require('../../firebase-config');
-const {createAccessToken, createRefreshToken, sendRefreshToken} = require('../../../util');
+const {auth, firestore_db} = require('../../firebase-config/index.old');
+const {createAccessToken, createRefreshToken, sendRefreshToken} = require('../../../util/index.old');
 
 const setError = (code, message) => {
   return ({
@@ -173,8 +173,6 @@ exports.login = async (_, {email, password}, {res}) => {
 
 exports.logout = async (_, {}, {res}) => {
   sendRefreshToken(res, '')
-  console.log('[auth.mutations] hello: ')
-  res.clearCookie('meatid')
   // res.send({ok: true, accessToken: ''})
   return true
 }

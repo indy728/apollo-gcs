@@ -10,37 +10,37 @@ import { ApolloProvider } from "@apollo/client";
 import { client } from "./apollo";
 import {useSelector, useDispatch} from 'react-redux';
 import {actions} from 'store/slices';
-import {useLogoutMutation, useGetUserInfoQuery} from 'generated/graphql';
+import {useLogoutMutation, useMeQuery} from 'generated/graphql';
 import {RolesEnum} from 'global';
+import Loading from 'pages/Loading';
 
 const {setAccessToken} = actions
 
 const Logout = () => {
-  const dispatch = useDispatch();
-  const [signOut] = useLogoutMutation();
+  const [logout] = useLogoutMutation();
 
   useEffect(() => {
-    signOut();
-    localStorage.setItem('token', '')
-    dispatch(setAccessToken(""))
-    client.resetStore();
+
+    const handleLogout = async() => {
+
+      try {
+        await logout();
+        // setAccessToken('');
+        localStorage.setItem('token', '')
+        await client.resetStore();
+      } catch (err) {
+        console.log(err.message)
+      }
+    }
+
+    handleLogout();
+    // logout();
+    // dispatch(setAccessToken(""))
+    // client.resetStore();
   }, []);
 
   return <div>...logging out</div>
 }
-
-// const TestCount = () => {
-//   const count = useSelector(state => state.counter.value)
-//   const dispatch = useDispatch()
-
-//   return (
-//     <div style={{width: '400px', height: '400px', background: 'white', color: 'black'}}>
-//        current count is: {count}
-//        <button onClick={() => dispatch(increment())}>Increment</button>
-//        <button onClick={() => dispatch(decrement())}>decrement</button>
-//     </div>
-//   )
-// }
 
 const theme = {
   primary: ['#0c0032', '#190061', '#240090', '#3500d3', '#282828'],
@@ -165,20 +165,28 @@ const GlobalStyle = createGlobalStyle`
 
 const App = () => {
   // const {loading, error, data} = useQuery(CHECK_AUTH);
-  const [{loading, error}, setLoading] = useState({
+  const [pageLoading, setPageLoading] = useState({
     loading: true,
     error: false,
   })
   const dispatch = useDispatch();
-  const {loading: userLoading, data, error: userError} = useGetUserInfoQuery();
-  let jwt = useSelector(state => state.accessToken.value)
+  const {loading, data, error} = useMeQuery({
+    fetchPolicy: 'network-only'
+  });
+  const me = data?.me || null;
+  // let jwt = useSelector(state => state.accessToken.value)
+  let jwt = ''
   if (!jwt.length) jwt = localStorage.getItem('token') || ''
 
-  if (loading) {
-    console.log('[App] loading: ', loading)
-  } else {
-    console.log('[App] data: ', data)
+  console.log('[client/src/App.js] jwt: ', jwt)
+
+  if (error) {
+    console.log('[client/src/App.js] error.message: ', error.message)
   }
+
+  useEffect(() => {
+    console.log('[client/src/App.js] useEffect data: ', me);
+  }, [me])
 
   useEffect(() => {
     // @TODO: change from localhost
@@ -187,13 +195,15 @@ const App = () => {
       credentials: 'include'
     }).then(async x => {
       const {accessToken} = await x.json();
-      setLoading({
+      setPageLoading({
         loading: false, error: false
       })
+      localStorage.setItem('token', accessToken)
       dispatch(setAccessToken(accessToken))
     }).catch((e) => {
       console.log('[App] e: ', e)
-      setLoading({
+      localStorage.setItem('token', '');
+      setPageLoading({
         loading: false, error: true
       })
     });
@@ -207,25 +217,24 @@ const App = () => {
   )
 
   // @TODO: Create Loading Screen
-  if (loading) return <div>...loading</div>
+  if (pageLoading.loading) routes = <Loading />
 
-  // if (data && data.getUserInfo !== null) {
-  if (jwt.length) {
+  if (me) {
     routes = (
       <>
       <TopNav />
       <Switch>
         <Route path="/search" component={Search} /> 
         {
-          data?.getUserInfo && RolesEnum[data?.getUserInfo?.role] >= RolesEnum['CONTRIBUTOR'] &&
+          RolesEnum[me.role] >= RolesEnum['CONTRIBUTOR'] &&
             <Route path="/upload" component={Upload} />
         }
         <Route path="/logout" component={Logout} />
         <Redirect to="/search" />
       </Switch>
     </>
-  )
-}
+    )
+  }
 
   return (
     <BrowserRouter>

@@ -12,21 +12,16 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** The `Upload` scalar type represents a file upload. */
-  Upload: any;
 };
-
 
 export type Query = {
   __typename?: 'Query';
-  _empty?: Maybe<Scalars['String']>;
-  stagedTracks?: Maybe<Array<Maybe<Track>>>;
-  searchTracks?: Maybe<Array<Maybe<Track>>>;
-  retrieveTrackFromStorage?: Maybe<Scalars['String']>;
-  getUserID?: Maybe<Scalars['String']>;
-  getUserInfo?: Maybe<User>;
-  getAllGenres?: Maybe<Array<Maybe<Genre>>>;
-  checkAuth?: Maybe<Auth>;
+  bye: Scalars['String'];
+  me: User;
+  getStagedTracks: Array<StagedTrack>;
+  searchTracks: Array<Track>;
+  downloadTrack: Scalars['Boolean'];
+  hello2: Scalars['String'];
 };
 
 
@@ -36,74 +31,28 @@ export type QuerySearchTracksArgs = {
 };
 
 
-export type QueryRetrieveTrackFromStorageArgs = {
-  filename?: Maybe<Scalars['String']>;
+export type QueryDownloadTrackArgs = {
+  filename: Scalars['String'];
 };
 
-export type Mutation = {
-  __typename?: 'Mutation';
-  _empty?: Maybe<Scalars['String']>;
-  stageTracks?: Maybe<Scalars['Boolean']>;
-  trackUpload?: Maybe<Array<Maybe<Scalars['String']>>>;
-  unstageTracks?: Maybe<Scalars['Boolean']>;
-  updateUser?: Maybe<User>;
-  addUser?: Maybe<User>;
-  createUserWithEmailAndPassword?: Maybe<Auth>;
-  signInWithEmailAndPassword?: Maybe<Auth>;
-  createNewUser?: Maybe<Login>;
-  login?: Maybe<Login>;
-  logout?: Maybe<Scalars['Boolean']>;
+export type User = {
+  __typename?: 'User';
+  username: Scalars['String'];
+  uploads: Scalars['String'];
+  downloads: Scalars['String'];
+  role: Scalars['String'];
 };
 
-
-export type MutationStageTracksArgs = {
-  files?: Maybe<Array<Scalars['Upload']>>;
-};
-
-
-export type MutationTrackUploadArgs = {
-  entry?: Maybe<TrackInput>;
-};
-
-
-export type MutationUnstageTracksArgs = {
-  files?: Maybe<Array<Scalars['String']>>;
-};
-
-
-export type MutationUpdateUserArgs = {
-  user?: Maybe<UserInput>;
-};
-
-
-export type MutationAddUserArgs = {
-  user?: Maybe<UserInput>;
-};
-
-
-export type MutationCreateUserWithEmailAndPasswordArgs = {
-  email?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
-  username?: Maybe<Scalars['String']>;
-};
-
-
-export type MutationSignInWithEmailAndPasswordArgs = {
-  email?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
-};
-
-
-export type MutationCreateNewUserArgs = {
-  email?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
-  username?: Maybe<Scalars['String']>;
-};
-
-
-export type MutationLoginArgs = {
-  email?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
+export type StagedTrack = {
+  __typename?: 'StagedTrack';
+  format: Scalars['String'];
+  title: Scalars['String'];
+  duration: Scalars['Int'];
+  artist: Scalars['String'];
+  key: Scalars['String'];
+  genre: Scalars['String'];
+  filename: Scalars['String'];
+  bpm?: Maybe<Scalars['String']>;
 };
 
 export type Track = {
@@ -112,118 +61,168 @@ export type Track = {
   uploader?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   artist?: Maybe<Scalars['String']>;
-  artists?: Maybe<Array<Maybe<Scalars['String']>>>;
-  duration?: Maybe<Scalars['Int']>;
+  artists: Array<Scalars['String']>;
+  duration: Scalars['Int'];
   key?: Maybe<Scalars['String']>;
   bpm?: Maybe<Scalars['String']>;
-  genre?: Maybe<Array<Maybe<Scalars['String']>>>;
-  keywords?: Maybe<Array<Maybe<Scalars['String']>>>;
+  genre: Array<Scalars['String']>;
+  keywords: Array<Scalars['String']>;
   storageBucket?: Maybe<Scalars['String']>;
   filename?: Maybe<Scalars['String']>;
   format?: Maybe<Scalars['String']>;
 };
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  register: AuthResponse;
+  login: AuthResponse;
+  logout: Scalars['Boolean'];
+  deleteFiles: Scalars['Boolean'];
+  stageTracks: Scalars['Boolean'];
+  uploadTrack: Scalars['Boolean'];
+};
+
+
+export type MutationRegisterArgs = {
+  email: Scalars['String'];
+  password: Scalars['String'];
+  username?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationLoginArgs = {
+  email: Scalars['String'];
+  password: Scalars['String'];
+  username?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationDeleteFilesArgs = {
+  filenames: Array<Scalars['String']>;
+};
+
+
+export type MutationStageTracksArgs = {
+  filenames: Array<Scalars['String']>;
+};
+
+
+export type MutationUploadTrackArgs = {
+  entry: TrackInput;
+};
+
+export type AuthResponse = {
+  __typename?: 'AuthResponse';
+  accessToken: Scalars['String'];
+};
+
 export type TrackInput = {
-  uploader?: Maybe<Scalars['String']>;
-  _uploader?: Maybe<Scalars['String']>;
+  uploader: Scalars['String'];
+  _uploader: Scalars['String'];
   title: Scalars['String'];
-  _title?: Maybe<Scalars['String']>;
-  artist?: Maybe<Scalars['String']>;
-  _artist?: Maybe<Scalars['String']>;
-  artists?: Maybe<Array<Maybe<Scalars['String']>>>;
-  duration?: Maybe<Scalars['Int']>;
-  key?: Maybe<Scalars['String']>;
-  bpm?: Maybe<Scalars['String']>;
-  genre?: Maybe<Scalars['String']>;
-  keywords?: Maybe<Array<Maybe<Scalars['String']>>>;
-  storageBucket?: Maybe<Scalars['String']>;
+  _title: Scalars['String'];
+  artist: Scalars['String'];
+  _artist: Scalars['String'];
+  artists?: Maybe<Scalars['String']>;
+  duration: Scalars['Int'];
+  key: Scalars['String'];
+  keywords: Array<Scalars['String']>;
+  bpm: Scalars['String'];
+  genre: Scalars['String'];
+  storageBucket: Scalars['String'];
   filename: Scalars['String'];
   _filename: Scalars['String'];
-  format?: Maybe<Scalars['String']>;
+  format: Scalars['String'];
 };
 
-export type User = {
-  __typename?: 'User';
-  username: Scalars['String'];
-  uploads?: Maybe<Array<Maybe<Scalars['String']>>>;
-  downloads?: Maybe<Array<Maybe<Scalars['String']>>>;
-  role?: Maybe<Scalars['String']>;
-};
-
-export type UserInput = {
-  username: Scalars['String'];
-  _username?: Maybe<Scalars['String']>;
-  uploads?: Maybe<Array<Maybe<Scalars['String']>>>;
-  downloads?: Maybe<Array<Maybe<Scalars['String']>>>;
-  role?: Maybe<Scalars['String']>;
-};
-
-export type Genre = {
-  __typename?: 'Genre';
-  name?: Maybe<Scalars['String']>;
-};
-
-export type AuthError = {
-  __typename?: 'AuthError';
-  code?: Maybe<Scalars['String']>;
-  message?: Maybe<Scalars['String']>;
-};
-
-export type Auth = {
-  __typename?: 'Auth';
-  email?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
-  username?: Maybe<Scalars['String']>;
-  error?: Maybe<AuthError>;
-};
-
-export type Login = {
-  __typename?: 'Login';
-  accessToken?: Maybe<Scalars['String']>;
-  error?: Maybe<AuthError>;
-};
-
-export enum CacheControlScope {
-  Public = 'PUBLIC',
-  Private = 'PRIVATE'
-}
+export type GetStagedTracksQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CreateUserWithEmailAndPasswordMutationVariables = Exact<{
-  email?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
-  username?: Maybe<Scalars['String']>;
-}>;
-
-
-export type CreateUserWithEmailAndPasswordMutation = (
-  { __typename?: 'Mutation' }
-  & { createUserWithEmailAndPassword?: Maybe<(
-    { __typename?: 'Auth' }
-    & Pick<Auth, 'email' | 'password' | 'username'>
-    & { error?: Maybe<(
-      { __typename?: 'AuthError' }
-      & Pick<AuthError, 'code' | 'message'>
-    )> }
+export type GetStagedTracksQuery = (
+  { __typename?: 'Query' }
+  & { getStagedTracks: Array<(
+    { __typename?: 'StagedTrack' }
+    & Pick<StagedTrack, 'format' | 'title' | 'duration' | 'artist' | 'key' | 'genre' | 'filename' | 'bpm'>
   )> }
 );
 
-export type SignInWithEmailAndPasswordMutationVariables = Exact<{
-  email?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
+export type SearchTracksQueryVariables = Exact<{
+  query: Scalars['String'];
+  queryType: Scalars['String'];
 }>;
 
 
-export type SignInWithEmailAndPasswordMutation = (
-  { __typename?: 'Mutation' }
-  & { signInWithEmailAndPassword?: Maybe<(
-    { __typename?: 'Auth' }
-    & Pick<Auth, 'email' | 'username'>
-    & { error?: Maybe<(
-      { __typename?: 'AuthError' }
-      & Pick<AuthError, 'code' | 'message'>
-    )> }
+export type SearchTracksQuery = (
+  { __typename?: 'Query' }
+  & { searchTracks: Array<(
+    { __typename?: 'Track' }
+    & Pick<Track, 'uploader' | 'title' | 'artist' | 'duration' | 'key' | 'bpm' | 'genre' | 'keywords' | 'filename' | 'format'>
   )> }
+);
+
+export type DownloadTracksQueryVariables = Exact<{
+  filename: Scalars['String'];
+}>;
+
+
+export type DownloadTracksQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'downloadTrack'>
+);
+
+export type UploadTrackMutationVariables = Exact<{
+  entry: TrackInput;
+}>;
+
+
+export type UploadTrackMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'uploadTrack'>
+);
+
+export type AuthUserFragment = (
+  { __typename?: 'User' }
+  & Pick<User, 'username' | 'role'>
+);
+
+export type MeQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeQuery = (
+  { __typename?: 'Query' }
+  & { me: (
+    { __typename?: 'User' }
+    & AuthUserFragment
+  ) }
+);
+
+export type RegisterMutationVariables = Exact<{
+  email: Scalars['String'];
+  password: Scalars['String'];
+  username: Scalars['String'];
+}>;
+
+
+export type RegisterMutation = (
+  { __typename?: 'Mutation' }
+  & { register: (
+    { __typename?: 'AuthResponse' }
+    & Pick<AuthResponse, 'accessToken'>
+  ) }
+);
+
+export type LoginMutationVariables = Exact<{
+  email: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+
+export type LoginMutation = (
+  { __typename?: 'Mutation' }
+  & { login: (
+    { __typename?: 'AuthResponse' }
+    & Pick<AuthResponse, 'accessToken'>
+  ) }
 );
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
@@ -234,227 +233,217 @@ export type LogoutMutation = (
   & Pick<Mutation, 'logout'>
 );
 
-export type CreateNewUserMutationVariables = Exact<{
-  email?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
-  username?: Maybe<Scalars['String']>;
-}>;
-
-
-export type CreateNewUserMutation = (
-  { __typename?: 'Mutation' }
-  & { createNewUser?: Maybe<(
-    { __typename?: 'Login' }
-    & Pick<Login, 'accessToken'>
-    & { error?: Maybe<(
-      { __typename?: 'AuthError' }
-      & Pick<AuthError, 'code' | 'message'>
-    )> }
-  )> }
-);
-
-export type LoginMutationVariables = Exact<{
-  email?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
-}>;
-
-
-export type LoginMutation = (
-  { __typename?: 'Mutation' }
-  & { login?: Maybe<(
-    { __typename?: 'Login' }
-    & Pick<Login, 'accessToken'>
-    & { error?: Maybe<(
-      { __typename?: 'AuthError' }
-      & Pick<AuthError, 'code' | 'message'>
-    )> }
-  )> }
-);
-
-export type CheckAuthQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type CheckAuthQuery = (
-  { __typename?: 'Query' }
-  & { checkAuth?: Maybe<(
-    { __typename?: 'Auth' }
-    & Pick<Auth, 'email' | 'username'>
-    & { error?: Maybe<(
-      { __typename?: 'AuthError' }
-      & Pick<AuthError, 'code' | 'message'>
-    )> }
-  )> }
-);
-
-export type GetUserIdQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetUserIdQuery = (
-  { __typename?: 'Query' }
-  & Pick<Query, 'getUserID'>
-);
-
-export type GetUserInfoQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetUserInfoQuery = (
-  { __typename?: 'Query' }
-  & { getUserInfo?: Maybe<(
-    { __typename?: 'User' }
-    & AuthUserFragment
-  )> }
-);
-
-export type AuthUserFragment = (
-  { __typename?: 'User' }
-  & Pick<User, 'username' | 'role'>
-);
-
 export const AuthUserFragmentDoc = gql`
     fragment AuthUser on User {
   username
   role
 }
     `;
-export const CreateUserWithEmailAndPasswordDocument = gql`
-    mutation CreateUserWithEmailAndPassword($email: String, $password: String, $username: String) {
-  createUserWithEmailAndPassword(
-    email: $email
-    password: $password
-    username: $username
-  ) {
-    email
-    password
-    username
-    error {
-      code
-      message
-    }
+export const GetStagedTracksDocument = gql`
+    query GetStagedTracks {
+  getStagedTracks {
+    format
+    title
+    duration
+    artist
+    key
+    genre
+    filename
+    bpm
   }
 }
     `;
-export type CreateUserWithEmailAndPasswordMutationFn = Apollo.MutationFunction<CreateUserWithEmailAndPasswordMutation, CreateUserWithEmailAndPasswordMutationVariables>;
 
 /**
- * __useCreateUserWithEmailAndPasswordMutation__
+ * __useGetStagedTracksQuery__
  *
- * To run a mutation, you first call `useCreateUserWithEmailAndPasswordMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateUserWithEmailAndPasswordMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
+ * To run a query within a React component, call `useGetStagedTracksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetStagedTracksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const [createUserWithEmailAndPasswordMutation, { data, loading, error }] = useCreateUserWithEmailAndPasswordMutation({
+ * const { data, loading, error } = useGetStagedTracksQuery({
  *   variables: {
- *      email: // value for 'email'
- *      password: // value for 'password'
- *      username: // value for 'username'
  *   },
  * });
  */
-export function useCreateUserWithEmailAndPasswordMutation(baseOptions?: Apollo.MutationHookOptions<CreateUserWithEmailAndPasswordMutation, CreateUserWithEmailAndPasswordMutationVariables>) {
+export function useGetStagedTracksQuery(baseOptions?: Apollo.QueryHookOptions<GetStagedTracksQuery, GetStagedTracksQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateUserWithEmailAndPasswordMutation, CreateUserWithEmailAndPasswordMutationVariables>(CreateUserWithEmailAndPasswordDocument, options);
+        return Apollo.useQuery<GetStagedTracksQuery, GetStagedTracksQueryVariables>(GetStagedTracksDocument, options);
       }
-export type CreateUserWithEmailAndPasswordMutationHookResult = ReturnType<typeof useCreateUserWithEmailAndPasswordMutation>;
-export type CreateUserWithEmailAndPasswordMutationResult = Apollo.MutationResult<CreateUserWithEmailAndPasswordMutation>;
-export type CreateUserWithEmailAndPasswordMutationOptions = Apollo.BaseMutationOptions<CreateUserWithEmailAndPasswordMutation, CreateUserWithEmailAndPasswordMutationVariables>;
-export const SignInWithEmailAndPasswordDocument = gql`
-    mutation SignInWithEmailAndPassword($email: String, $password: String) {
-  signInWithEmailAndPassword(email: $email, password: $password) {
-    email
-    username
-    error {
-      code
-      message
-    }
+export function useGetStagedTracksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetStagedTracksQuery, GetStagedTracksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetStagedTracksQuery, GetStagedTracksQueryVariables>(GetStagedTracksDocument, options);
+        }
+export type GetStagedTracksQueryHookResult = ReturnType<typeof useGetStagedTracksQuery>;
+export type GetStagedTracksLazyQueryHookResult = ReturnType<typeof useGetStagedTracksLazyQuery>;
+export type GetStagedTracksQueryResult = Apollo.QueryResult<GetStagedTracksQuery, GetStagedTracksQueryVariables>;
+export const SearchTracksDocument = gql`
+    query SearchTracks($query: String!, $queryType: String!) {
+  searchTracks(query: $query, queryType: $queryType) {
+    uploader
+    title
+    artist
+    duration
+    key
+    bpm
+    genre
+    keywords
+    filename
+    format
   }
 }
     `;
-export type SignInWithEmailAndPasswordMutationFn = Apollo.MutationFunction<SignInWithEmailAndPasswordMutation, SignInWithEmailAndPasswordMutationVariables>;
 
 /**
- * __useSignInWithEmailAndPasswordMutation__
+ * __useSearchTracksQuery__
  *
- * To run a mutation, you first call `useSignInWithEmailAndPasswordMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSignInWithEmailAndPasswordMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
+ * To run a query within a React component, call `useSearchTracksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchTracksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const [signInWithEmailAndPasswordMutation, { data, loading, error }] = useSignInWithEmailAndPasswordMutation({
+ * const { data, loading, error } = useSearchTracksQuery({
  *   variables: {
- *      email: // value for 'email'
- *      password: // value for 'password'
+ *      query: // value for 'query'
+ *      queryType: // value for 'queryType'
  *   },
  * });
  */
-export function useSignInWithEmailAndPasswordMutation(baseOptions?: Apollo.MutationHookOptions<SignInWithEmailAndPasswordMutation, SignInWithEmailAndPasswordMutationVariables>) {
+export function useSearchTracksQuery(baseOptions: Apollo.QueryHookOptions<SearchTracksQuery, SearchTracksQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<SignInWithEmailAndPasswordMutation, SignInWithEmailAndPasswordMutationVariables>(SignInWithEmailAndPasswordDocument, options);
+        return Apollo.useQuery<SearchTracksQuery, SearchTracksQueryVariables>(SearchTracksDocument, options);
       }
-export type SignInWithEmailAndPasswordMutationHookResult = ReturnType<typeof useSignInWithEmailAndPasswordMutation>;
-export type SignInWithEmailAndPasswordMutationResult = Apollo.MutationResult<SignInWithEmailAndPasswordMutation>;
-export type SignInWithEmailAndPasswordMutationOptions = Apollo.BaseMutationOptions<SignInWithEmailAndPasswordMutation, SignInWithEmailAndPasswordMutationVariables>;
-export const LogoutDocument = gql`
-    mutation Logout {
-  logout
+export function useSearchTracksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchTracksQuery, SearchTracksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchTracksQuery, SearchTracksQueryVariables>(SearchTracksDocument, options);
+        }
+export type SearchTracksQueryHookResult = ReturnType<typeof useSearchTracksQuery>;
+export type SearchTracksLazyQueryHookResult = ReturnType<typeof useSearchTracksLazyQuery>;
+export type SearchTracksQueryResult = Apollo.QueryResult<SearchTracksQuery, SearchTracksQueryVariables>;
+export const DownloadTracksDocument = gql`
+    query DownloadTracks($filename: String!) {
+  downloadTrack(filename: $filename)
 }
     `;
-export type LogoutMutationFn = Apollo.MutationFunction<LogoutMutation, LogoutMutationVariables>;
 
 /**
- * __useLogoutMutation__
+ * __useDownloadTracksQuery__
  *
- * To run a mutation, you first call `useLogoutMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useLogoutMutation` returns a tuple that includes:
+ * To run a query within a React component, call `useDownloadTracksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDownloadTracksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useDownloadTracksQuery({
+ *   variables: {
+ *      filename: // value for 'filename'
+ *   },
+ * });
+ */
+export function useDownloadTracksQuery(baseOptions: Apollo.QueryHookOptions<DownloadTracksQuery, DownloadTracksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<DownloadTracksQuery, DownloadTracksQueryVariables>(DownloadTracksDocument, options);
+      }
+export function useDownloadTracksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DownloadTracksQuery, DownloadTracksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<DownloadTracksQuery, DownloadTracksQueryVariables>(DownloadTracksDocument, options);
+        }
+export type DownloadTracksQueryHookResult = ReturnType<typeof useDownloadTracksQuery>;
+export type DownloadTracksLazyQueryHookResult = ReturnType<typeof useDownloadTracksLazyQuery>;
+export type DownloadTracksQueryResult = Apollo.QueryResult<DownloadTracksQuery, DownloadTracksQueryVariables>;
+export const UploadTrackDocument = gql`
+    mutation UploadTrack($entry: TrackInput!) {
+  uploadTrack(entry: $entry)
+}
+    `;
+export type UploadTrackMutationFn = Apollo.MutationFunction<UploadTrackMutation, UploadTrackMutationVariables>;
+
+/**
+ * __useUploadTrackMutation__
+ *
+ * To run a mutation, you first call `useUploadTrackMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUploadTrackMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [logoutMutation, { data, loading, error }] = useLogoutMutation({
+ * const [uploadTrackMutation, { data, loading, error }] = useUploadTrackMutation({
+ *   variables: {
+ *      entry: // value for 'entry'
+ *   },
+ * });
+ */
+export function useUploadTrackMutation(baseOptions?: Apollo.MutationHookOptions<UploadTrackMutation, UploadTrackMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UploadTrackMutation, UploadTrackMutationVariables>(UploadTrackDocument, options);
+      }
+export type UploadTrackMutationHookResult = ReturnType<typeof useUploadTrackMutation>;
+export type UploadTrackMutationResult = Apollo.MutationResult<UploadTrackMutation>;
+export type UploadTrackMutationOptions = Apollo.BaseMutationOptions<UploadTrackMutation, UploadTrackMutationVariables>;
+export const MeDocument = gql`
+    query Me {
+  me {
+    ...AuthUser
+  }
+}
+    ${AuthUserFragmentDoc}`;
+
+/**
+ * __useMeQuery__
+ *
+ * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMeQuery({
  *   variables: {
  *   },
  * });
  */
-export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<LogoutMutation, LogoutMutationVariables>) {
+export function useMeQuery(baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, options);
+        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, options);
       }
-export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
-export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
-export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
-export const CreateNewUserDocument = gql`
-    mutation CreateNewUser($email: String, $password: String, $username: String) {
-  createNewUser(email: $email, password: $password, username: $username) {
+export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, options);
+        }
+export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
+export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
+export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const RegisterDocument = gql`
+    mutation Register($email: String!, $password: String!, $username: String!) {
+  register(email: $email, password: $password, username: $username) {
     accessToken
-    error {
-      code
-      message
-    }
   }
 }
     `;
-export type CreateNewUserMutationFn = Apollo.MutationFunction<CreateNewUserMutation, CreateNewUserMutationVariables>;
+export type RegisterMutationFn = Apollo.MutationFunction<RegisterMutation, RegisterMutationVariables>;
 
 /**
- * __useCreateNewUserMutation__
+ * __useRegisterMutation__
  *
- * To run a mutation, you first call `useCreateNewUserMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateNewUserMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useRegisterMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [createNewUserMutation, { data, loading, error }] = useCreateNewUserMutation({
+ * const [registerMutation, { data, loading, error }] = useRegisterMutation({
  *   variables: {
  *      email: // value for 'email'
  *      password: // value for 'password'
@@ -462,21 +451,17 @@ export type CreateNewUserMutationFn = Apollo.MutationFunction<CreateNewUserMutat
  *   },
  * });
  */
-export function useCreateNewUserMutation(baseOptions?: Apollo.MutationHookOptions<CreateNewUserMutation, CreateNewUserMutationVariables>) {
+export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<RegisterMutation, RegisterMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateNewUserMutation, CreateNewUserMutationVariables>(CreateNewUserDocument, options);
+        return Apollo.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument, options);
       }
-export type CreateNewUserMutationHookResult = ReturnType<typeof useCreateNewUserMutation>;
-export type CreateNewUserMutationResult = Apollo.MutationResult<CreateNewUserMutation>;
-export type CreateNewUserMutationOptions = Apollo.BaseMutationOptions<CreateNewUserMutation, CreateNewUserMutationVariables>;
+export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
+export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
+export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
 export const LoginDocument = gql`
-    mutation Login($email: String, $password: String) {
+    mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
     accessToken
-    error {
-      code
-      message
-    }
   }
 }
     `;
@@ -507,108 +492,33 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
-export const CheckAuthDocument = gql`
-    query CheckAuth {
-  checkAuth {
-    email
-    username
-    error {
-      code
-      message
-    }
-  }
+export const LogoutDocument = gql`
+    mutation Logout {
+  logout
 }
     `;
+export type LogoutMutationFn = Apollo.MutationFunction<LogoutMutation, LogoutMutationVariables>;
 
 /**
- * __useCheckAuthQuery__
+ * __useLogoutMutation__
  *
- * To run a query within a React component, call `useCheckAuthQuery` and pass it any options that fit your needs.
- * When your component renders, `useCheckAuthQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
+ * To run a mutation, you first call `useLogoutMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLogoutMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
  *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const { data, loading, error } = useCheckAuthQuery({
+ * const [logoutMutation, { data, loading, error }] = useLogoutMutation({
  *   variables: {
  *   },
  * });
  */
-export function useCheckAuthQuery(baseOptions?: Apollo.QueryHookOptions<CheckAuthQuery, CheckAuthQueryVariables>) {
+export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<LogoutMutation, LogoutMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<CheckAuthQuery, CheckAuthQueryVariables>(CheckAuthDocument, options);
+        return Apollo.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, options);
       }
-export function useCheckAuthLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<CheckAuthQuery, CheckAuthQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<CheckAuthQuery, CheckAuthQueryVariables>(CheckAuthDocument, options);
-        }
-export type CheckAuthQueryHookResult = ReturnType<typeof useCheckAuthQuery>;
-export type CheckAuthLazyQueryHookResult = ReturnType<typeof useCheckAuthLazyQuery>;
-export type CheckAuthQueryResult = Apollo.QueryResult<CheckAuthQuery, CheckAuthQueryVariables>;
-export const GetUserIdDocument = gql`
-    query GetUserID {
-  getUserID
-}
-    `;
-
-/**
- * __useGetUserIdQuery__
- *
- * To run a query within a React component, call `useGetUserIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUserIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUserIdQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetUserIdQuery(baseOptions?: Apollo.QueryHookOptions<GetUserIdQuery, GetUserIdQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserIdQuery, GetUserIdQueryVariables>(GetUserIdDocument, options);
-      }
-export function useGetUserIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserIdQuery, GetUserIdQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserIdQuery, GetUserIdQueryVariables>(GetUserIdDocument, options);
-        }
-export type GetUserIdQueryHookResult = ReturnType<typeof useGetUserIdQuery>;
-export type GetUserIdLazyQueryHookResult = ReturnType<typeof useGetUserIdLazyQuery>;
-export type GetUserIdQueryResult = Apollo.QueryResult<GetUserIdQuery, GetUserIdQueryVariables>;
-export const GetUserInfoDocument = gql`
-    query GetUserInfo {
-  getUserInfo {
-    ...AuthUser
-  }
-}
-    ${AuthUserFragmentDoc}`;
-
-/**
- * __useGetUserInfoQuery__
- *
- * To run a query within a React component, call `useGetUserInfoQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUserInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUserInfoQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetUserInfoQuery(baseOptions?: Apollo.QueryHookOptions<GetUserInfoQuery, GetUserInfoQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserInfoQuery, GetUserInfoQueryVariables>(GetUserInfoDocument, options);
-      }
-export function useGetUserInfoLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserInfoQuery, GetUserInfoQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserInfoQuery, GetUserInfoQueryVariables>(GetUserInfoDocument, options);
-        }
-export type GetUserInfoQueryHookResult = ReturnType<typeof useGetUserInfoQuery>;
-export type GetUserInfoLazyQueryHookResult = ReturnType<typeof useGetUserInfoLazyQuery>;
-export type GetUserInfoQueryResult = Apollo.QueryResult<GetUserInfoQuery, GetUserInfoQueryVariables>;
+export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
+export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
+export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;

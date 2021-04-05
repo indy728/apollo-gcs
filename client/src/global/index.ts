@@ -4,3 +4,5 @@ export enum RolesEnum {
   ADMIN,
   OWNER,
 }
+
+export type GateWayStringsType = keyof typeof RolesEnum;

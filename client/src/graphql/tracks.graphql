@@ -1,0 +1,39 @@
+query GetStagedTracks {
+  getStagedTracks {
+    format
+    title
+    duration
+    artist
+    key
+    genre
+    filename
+    bpm
+  }
+}
+
+query SearchTracks($query: String!, $queryType: String!){
+  searchTracks(query: $query, queryType: $queryType) {
+    uploader
+    title
+    artist
+    duration
+    key
+    bpm
+    genre
+    keywords
+    filename
+    format
+  }
+}
+
+query DownloadTracks($filename: String!){
+  downloadTrack(filename: $filename)
+}
+
+# mutation StageTracks($files: [Upload!]) {
+#   stageTracks(files: $files)
+# }
+
+mutation UploadTrack($entry: TrackInput!) {
+    uploadTrack(entry: $entry)
+  }
