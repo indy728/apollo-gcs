@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-const pwLength: string = 'Password must be between 8 and 26 characters in length';
+const pwLength = 'Password must be between 8 and 26 characters in length';
 
 export const signUpSchema = yup.object().shape({
   username: yup.string().required(),

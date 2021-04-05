@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
+import {useHistory} from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from "yup";
 import {Card, Typography, InlineBrand, MyInputField, MyButton, DividerLine} from 'components/ui';
 import {
   AuthForm as AuthFormWrapper,
@@ -11,17 +11,18 @@ import {
   AuthToggleText
 } from './auth-form.styles';
 import {ToggleState, SignUpValues, IInputFields} from 'types';
-import {useLoginMutation, MeDocument} from 'generated/graphql';
+import {useLoginMutation} from 'generated/graphql';
 import {useDispatch} from 'react-redux';
 import {Spinner} from 'components/ui';
 import {actions} from 'store/slices';
+import {signInSchema} from './yup.auth';
 
 const {setAccessToken} = actions
 
-const schema = yup.object().shape({
-  email: yup.string().required().email(),
-  password: yup.string().required(),
-});
+// const schema = yup.object().shape({
+//   email: yup.string().required().email(),
+//   password: yup.string().required(),
+// });
 
 interface Props {
   toggle: ToggleState;
@@ -29,9 +30,10 @@ interface Props {
 
 const SignIn: React.FC<Props> = ({toggle}) => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [errorMessage, setErrorMessage] = useState("");
   const { register, handleSubmit, errors, setError } = useForm<SignUpValues>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(signInSchema),
   });
 
   const [login, {loading, error}] = useLoginMutation({
@@ -39,7 +41,6 @@ const SignIn: React.FC<Props> = ({toggle}) => {
       const token = x.login?.accessToken || ""
       localStorage.setItem('token', token);
       dispatch(setAccessToken(token));
-      // history.push("/")
     }
   });
 
@@ -48,6 +49,7 @@ const SignIn: React.FC<Props> = ({toggle}) => {
 
     try {
       await login({variables: {email, password}});
+      history.push("/search");
     } catch(err) {
       console.log('[client/src/components/Auth/auth-form/components/sign-in.auth.tsx] err: ', err)
     }

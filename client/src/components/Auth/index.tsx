@@ -1,32 +1,38 @@
-import React from 'react';
-import AuthForm from './auth-form';
-import {AuthWrapper, AuthContainerWrapper, AuthHeaderWrapper, AuthVideo} from './auth.styles';
-import { InlineBrand } from 'components/ui';
 
-const AuthPage: React.FC = () => {
+import React, {useState} from 'react';
+import {Paper} from 'components/ui';
+import {
+  ToggleState,
+} from 'types';
+import styled from 'styled-components';
+import SignUp from './sign-up.auth';
+import SignIn from './sign-in.auth';
+
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: column;
+  background-color: ${({theme: {primary}}) => primary[0]};
+  padding: 1rem 1rem;
+  max-width: 960px;
+  margin: 0 auto;
+  border-radius: ${({theme: {borderRadius}}) => borderRadius};
+`
+
+const AuthForm: React.FC = () => {
+  const [isSignUp, setIsSignUp] = useState<boolean>(false);
+  const toggleIsSignUp: ToggleState = () => setIsSignUp(!isSignUp);
+
+  const authForm = isSignUp ? <SignUp toggle={toggleIsSignUp} /> : <SignIn toggle={toggleIsSignUp} />;
 
   return (
-    <AuthWrapper>
-      <AuthVideo className="bg-video">
-        <video className="bg-video__content" autoPlay muted loop>
-          <source src="assets/tunnel-bg.mp4" type="video/mp4" />
-        </video>
-      </AuthVideo>
-      <AuthContainerWrapper>
-        <AuthHeaderWrapper>
-          <InlineBrand fontSize="6.4rem"/>
-        </AuthHeaderWrapper>
-        <AuthHeaderWrapper>
-          <p>A digital</p>
-          <p>glass filing cabinet</p>
-          <p>for DJs</p> 
-        </AuthHeaderWrapper>
-      </AuthContainerWrapper>
-      <AuthContainerWrapper>
-        <AuthForm />
-      </AuthContainerWrapper>
-    </AuthWrapper>
-  )
+    <Container>
+      <Paper>
+        {authForm}
+      </Paper>
+    </Container>
+  );
 }
 
-export default AuthPage;
+export default AuthForm;

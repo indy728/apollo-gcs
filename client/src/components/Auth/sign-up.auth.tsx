@@ -14,22 +14,23 @@ import {ToggleState, SignUpValues, IInputFields} from 'types';
 import {useRegisterMutation} from 'generated/graphql';
 import {useDispatch} from 'react-redux';
 import {actions} from 'store/slices';
+import {signUpSchema} from './yup.auth';
 
 const {setAccessToken} = actions
 
 const pwLength = 'Password must be between 8 and 26 characters in length';
 
-const schema = yup.object().shape({
-  username: yup.string().required(),
-  email: yup.string().required().email(),
-  password: yup.string().required().min(8, pwLength).max(26, pwLength).matches(
-    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-    "Must contain at least 1 uppercase, 1 lowercase, 1 \
-    number and at least one special case character from @$!%*#?&"
-  ),
-  confirmPassword: yup.string()
-  .oneOf([yup.ref('password'), null], 'Passwords must match'),
-});
+// const schema = yup.object().shape({
+//   username: yup.string().required(),
+//   email: yup.string().required().email(),
+//   password: yup.string().required().min(8, pwLength).max(26, pwLength).matches(
+//     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+//     "Must contain at least 1 uppercase, 1 lowercase, 1 \
+//     number and at least one special case character from @$!%*#?&"
+//   ),
+//   confirmPassword: yup.string()
+//   .oneOf([yup.ref('password'), null], 'Passwords must match'),
+// });
 
 interface Props {
   toggle: ToggleState;
@@ -38,7 +39,7 @@ interface Props {
 const SignUp: React.FC<Props> = ({toggle}) => {
   const dispatch = useDispatch();
   const { register, handleSubmit, errors, reset, setError } = useForm<SignUpValues>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(signUpSchema),
   });
 
   const [registerUser, {loading, data, error}] = useRegisterMutation({

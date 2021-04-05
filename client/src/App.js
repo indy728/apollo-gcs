@@ -1,10 +1,10 @@
 
 import React, {useEffect, useState} from "react";
-import {BrowserRouter, Switch, Route, Redirect} from 'react-router-dom';
+import {BrowserRouter, Switch, Route, Redirect, useHistory} from 'react-router-dom';
 import {createGlobalStyle, ThemeProvider} from 'styled-components'
 import Upload from './components/Upload';
 import Search from './components/Search';
-import AuthPage from './components/Auth'
+import AuthPage from './pages/Auth'
 import {TopNav} from './components/navigation';
 import { ApolloProvider } from "@apollo/client";
 import { client } from "./apollo";
@@ -170,6 +170,7 @@ const App = () => {
     error: false,
   })
   const dispatch = useDispatch();
+  const history = useHistory();
   const {loading, data, error} = useMeQuery({
     fetchPolicy: 'network-only'
   });
@@ -185,8 +186,8 @@ const App = () => {
   }
 
   useEffect(() => {
-    console.log('[client/src/App.js] useEffect data: ', me);
-  }, [me])
+    console.log('[client/src/App.js] useEffect history: ', history);
+  }, [history])
 
   useEffect(() => {
     // @TODO: change from localhost
