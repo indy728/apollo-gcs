@@ -1,6 +1,6 @@
 import React from 'react';
 import AuthForm from 'components/Auth';
-import {AuthWrapper, AuthContainerWrapper, AuthHeaderWrapper, AuthVideo} from 'components/Auth/auth.styles';
+import {AuthWrapper, AuthContainerWrapper, AuthHeaderWrapper, AuthVideo} from 'components/Auth/styles.auth';
 import { InlineBrand } from 'components/ui';
 
 const AuthPage: React.FC = () => (

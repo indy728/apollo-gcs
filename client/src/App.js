@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {BrowserRouter, Switch, Route, Redirect, useHistory} from 'react-router-dom';
 import {createGlobalStyle, ThemeProvider} from 'styled-components'
 import Upload from './components/Upload';
-import Search from './components/Search';
+import Search from './pages/Search';
 import AuthPage from './pages/Auth'
 import {TopNav} from './components/navigation';
 import { ApolloProvider } from "@apollo/client";

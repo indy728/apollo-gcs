@@ -9,7 +9,7 @@ import {
   AuthErrorWrapper,
   AuthSubContainer,
   AuthToggleText
-} from './auth-form.styles';
+} from './styles.auth';
 import {ToggleState, SignUpValues, IInputFields} from 'types';
 import {useLoginMutation} from 'generated/graphql';
 import {useDispatch} from 'react-redux';
