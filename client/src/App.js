@@ -8,39 +8,41 @@ import AuthPage from './pages/Auth'
 import {TopNav} from './components/navigation';
 import { ApolloProvider } from "@apollo/client";
 import { client } from "./apollo";
-import {useSelector, useDispatch} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {actions} from 'store/slices';
-import {useLogoutMutation, useMeQuery} from 'generated/graphql';
+import {useMeQuery} from 'generated/graphql';
 import {RolesEnum} from 'global';
 import Loading from 'pages/Loading';
+import Logout from 'pages/Logout';
+import {Routes} from 'routes';
 
 const {setAccessToken} = actions
 
-const Logout = () => {
-  const [logout] = useLogoutMutation();
+// const Logout = () => {
+//   const [logout] = useLogoutMutation();
 
-  useEffect(() => {
+//   useEffect(() => {
 
-    const handleLogout = async() => {
+//     const handleLogout = async() => {
 
-      try {
-        await logout();
-        // setAccessToken('');
-        localStorage.setItem('token', '')
-        await client.resetStore();
-      } catch (err) {
-        console.log(err.message)
-      }
-    }
+//       try {
+//         await logout();
+//         // setAccessToken('');
+//         localStorage.setItem('token', '')
+//         await client.resetStore();
+//       } catch (err) {
+//         console.log(err.message)
+//       }
+//     }
 
-    handleLogout();
-    // logout();
-    // dispatch(setAccessToken(""))
-    // client.resetStore();
-  }, []);
+//     handleLogout();
+//     // logout();
+//     // dispatch(setAccessToken(""))
+//     // client.resetStore();
+//   }, []);
 
-  return <div>...logging out</div>
-}
+//   return <div>...logging out</div>
+// }
 
 const theme = {
   primary: ['#0c0032', '#190061', '#240090', '#3500d3', '#282828'],
@@ -241,7 +243,8 @@ const App = () => {
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-          {routes}
+          {/* {routes} */}\
+          <Routes />
         {/* Bottom Nav */}
         {/* <TestCount /> */}
       </ThemeProvider>

@@ -16,6 +16,7 @@ import {useDispatch} from 'react-redux';
 import {Spinner} from 'components/ui';
 import {actions} from 'store/slices';
 import {signInSchema} from './yup.auth';
+import {setAuth} from 'my-util';
 
 const {setAccessToken} = actions
 
@@ -36,11 +37,11 @@ const SignIn: React.FC<Props> = ({toggle}) => {
     resolver: yupResolver(signInSchema),
   });
 
-  const [login, {loading, error}] = useLoginMutation({
+  const [login, {loading, data, error}] = useLoginMutation({
     onCompleted: (x) => {
-      const token = x.login?.accessToken || ""
-      localStorage.setItem('token', token);
-      dispatch(setAccessToken(token));
+      // const token = x.login?.accessToken || ""
+      // localStorage.setItem('token', token);
+      // dispatch(setAccessToken(token));
     }
   });
 
@@ -49,6 +50,7 @@ const SignIn: React.FC<Props> = ({toggle}) => {
 
     try {
       await login({variables: {email, password}});
+      setAuth(data?.login.accessToken || '');
       history.push("/search");
     } catch(err) {
       console.log('[client/src/components/Auth/auth-form/components/sign-in.auth.tsx] err: ', err)

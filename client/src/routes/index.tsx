@@ -10,7 +10,7 @@ export const Routes: React.FC = () => {
     <BrowserRouter>
       <Switch>
         <ProtectedRoute exact isAuthenticated={!isAuth()} path="/auth" authenticationPath={"/app"} component={Public} /> 
-        <ProtectedRoute isAuthenticated={!isAuth()} path="/" authenticationPath={"/auth"} component={Main} /> 
+        <ProtectedRoute isAuthenticated={isAuth()} path="/" authenticationPath={"/auth"} component={Main} /> 
         <Redirect to="/" />
       </Switch>
     </BrowserRouter>
