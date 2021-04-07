@@ -19,7 +19,9 @@ const QuerySection = styled(Container)`
   && {
     padding: 40px 0;
     background-color: ${({theme: {primary}}) => primary[0]};
-
+    * {
+      color: white;
+    }
     /* &:first-of-type {
       border-top: 1px solid grey;
     } */
@@ -41,8 +43,7 @@ const StyledTableRow = styled(TableRow)`
   }
 `
 
-const StyledTableCell = styled(TableCell)`
-`
+const StyledTableCell = styled(TableCell)``
 
 const TracksTable = styled(Table)`
   background-color: ${({theme: {black}}) => black};
