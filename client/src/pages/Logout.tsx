@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 import {useLogoutMutation} from 'generated/graphql';
+import { clearAuth } from 'my-util';
 
 const Logout: React.FC = () => {
   const [logout, {client}] = useLogoutMutation();
@@ -10,8 +11,7 @@ const Logout: React.FC = () => {
 
       try {
         await logout();
-        // setAccessToken('');
-        localStorage.setItem('token', '')
+        clearAuth();
         await client.resetStore();
       } catch (err) {
         console.log(err.message)
