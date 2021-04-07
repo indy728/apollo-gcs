@@ -7,7 +7,13 @@ export type ProtectedRouteProps = {
 } & RouteProps;
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({isAuthenticated, authenticationPath, ...routeProps}: ProtectedRouteProps) => {
-  return isAuthenticated ? <Route {...routeProps} /> : <Redirect to={{ pathname: authenticationPath }} />;
+  // console.log('[client/src/hoc/ProtectedRoute.hoc.tsx] isAuthenticated: ', isAuthenticated)
+  // console.log('[client/src/hoc/ProtectedRoute.hoc.tsx] routeProps: ', routeProps)
+  // console.log('[client/src/hoc/ProtectedRoute.hoc.tsx] authenticationPath: ', authenticationPath)
+
+  return isAuthenticated ?
+    <Route {...routeProps} /> :
+    <Redirect to={{ pathname: authenticationPath }} />;
 };
 
 export default ProtectedRoute;

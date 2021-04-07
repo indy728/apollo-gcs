@@ -15,6 +15,7 @@ import {useRegisterMutation} from 'generated/graphql';
 import {useDispatch} from 'react-redux';
 import {actions} from 'store/slices';
 import {signUpSchema} from './yup.auth';
+import { setAuth } from 'my-util';
 
 const {setAccessToken} = actions
 
@@ -45,7 +46,7 @@ const SignUp: React.FC<Props> = ({toggle}) => {
   const [registerUser, {loading, data, error}] = useRegisterMutation({
     onCompleted: (x) => {
       const token = x.register?.accessToken || ""
-      localStorage.setItem('token', token);
+      setAuth(token)
       dispatch(setAccessToken(token));
     }
   });

@@ -47,10 +47,10 @@ const HeaderLinks: React.FC = () => {
 
   // logout if error or no user in cache
   if (error || !me) {
-    history.push('/logout');
     console.log('[client/src/components/navigation/TopNav/index.js] \
       error.message || "user not found, logging out": ',
       error?.message || "user not found, logging out");
+    history.push('/logout');
     return (<div>error</div>)
   }
 
@@ -73,6 +73,7 @@ const HeaderLinks: React.FC = () => {
           </HeaderItem>
         </li>
       ))}
+      {/* <li><div onClick={}</li> */}
     </HeaderItemsListContainer>
   )
 }

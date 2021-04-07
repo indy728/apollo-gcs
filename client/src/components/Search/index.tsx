@@ -22,6 +22,7 @@ const searchLists = [
 ]
 
 const SearchTracks: React.FC = () => {
+  console.log('[client/src/components/Search/index.tsx] here: ')
   const [searchTerm, setSearchTerm] = useState('')
   const onChange = (e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value.toLowerCase());
 

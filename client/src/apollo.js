@@ -2,10 +2,11 @@ import {ApolloClient, InMemoryCache} from "@apollo/client";
 import { createUploadLink } from "apollo-upload-client";
 
 import { setContext } from '@apollo/client/link/context';
+import { getAuth } from "my-util";
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
-  const token = localStorage.getItem('token')
+  const token = getAuth();
   // return the headers to the context so httpLink can read them
   if (token) {
     return {
@@ -18,7 +19,10 @@ const authLink = setContext((_, { headers }) => {
   }
 });
 
-const link = createUploadLink({ uri: "http://localhost:4000/graphql", credentials: "same-origin" });
+const link = createUploadLink({
+  uri: "http://localhost:4000/graphql",
+  credentials: "same-origin"
+});
 
 export const client = new ApolloClient({
   link: authLink.concat(link),

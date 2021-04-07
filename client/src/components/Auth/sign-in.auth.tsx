@@ -37,28 +37,20 @@ const SignIn: React.FC<Props> = ({toggle}) => {
     resolver: yupResolver(signInSchema),
   });
 
-  const [login, {loading, data, error}] = useLoginMutation({
-    onCompleted: (x) => {
-      // const token = x.login?.accessToken || ""
-      // localStorage.setItem('token', token);
-      // dispatch(setAccessToken(token));
-    }
-  });
+  const [login, {loading, data, error}] = useLoginMutation();
 
   const onSubmit = async (values: SignUpValues): Promise<void> => {
     const {email, password} = values;
 
     try {
-      await login({variables: {email, password}});
-      setAuth(data?.login.accessToken || '');
-      history.push("/search");
+      const {data} = await login({variables: {email, password}});
+
+      if (data) {
+        setAuth(data.login.accessToken);
+        history.push("/app/search");
+      }
     } catch(err) {
       console.log('[client/src/components/Auth/auth-form/components/sign-in.auth.tsx] err: ', err)
-    }
-
-    if (error) {
-      console.log('[sign-in.auth] error: ', error)
-      setErrorMessage(error?.message || "There was an error loggin in");
     }
   }
 

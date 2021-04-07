@@ -10,3 +10,5 @@ export const isAuth = (): boolean => {
   if (localStorage.getItem(ACCESS_TOKEN)) return true;
   return false;
 }
+
+export const getAuth = (): string | null => localStorage.getItem(ACCESS_TOKEN);

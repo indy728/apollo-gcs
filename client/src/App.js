@@ -1,22 +1,13 @@
 
 import React, {useEffect, useState} from "react";
-import {BrowserRouter, Switch, Route, Redirect, useHistory} from 'react-router-dom';
+import {BrowserRouter} from 'react-router-dom';
 import {createGlobalStyle, ThemeProvider} from 'styled-components'
-import Upload from './components/Upload';
-import Search from './pages/Search';
-import AuthPage from './pages/Auth'
-import {TopNav} from './components/navigation';
 import { ApolloProvider } from "@apollo/client";
 import { client } from "./apollo";
 import {useDispatch} from 'react-redux';
-import {actions} from 'store/slices';
-import {useMeQuery} from 'generated/graphql';
-import {RolesEnum} from 'global';
-import Loading from 'pages/Loading';
-import Logout from 'pages/Logout';
 import {Routes} from 'routes';
+import {isAuth, setAuth, clearAuth} from 'my-util';
 
-const {setAccessToken} = actions
 
 // const Logout = () => {
 //   const [logout] = useLogoutMutation();
@@ -171,79 +162,53 @@ const App = () => {
     loading: true,
     error: false,
   })
-  const dispatch = useDispatch();
-  const history = useHistory();
-  const {loading, data, error} = useMeQuery({
-    fetchPolicy: 'network-only'
-  });
-  const me = data?.me || null;
-  // let jwt = useSelector(state => state.accessToken.value)
-  let jwt = ''
-  if (!jwt.length) jwt = localStorage.getItem('token') || ''
-
-  console.log('[client/src/App.js] jwt: ', jwt)
-
-  if (error) {
-    console.log('[client/src/App.js] error.message: ', error.message)
-  }
-
-  useEffect(() => {
-    console.log('[client/src/App.js] useEffect history: ', history);
-  }, [history])
 
   useEffect(() => {
     // @TODO: change from localhost
     fetch('http://localhost:4000/refresh_token', {
       method: 'POST',
       credentials: 'include'
-    }).then(async x => {
-      const {accessToken} = await x.json();
+    }).then(async res => {
+      const {accessToken} = await res.json();
+      setAuth(accessToken);
       setPageLoading({
         loading: false, error: false
       })
-      localStorage.setItem('token', accessToken)
-      dispatch(setAccessToken(accessToken))
-    }).catch((e) => {
-      console.log('[App] e: ', e)
-      localStorage.setItem('token', '');
+      // dispatch(setAccessToken(accessToken))
+    }).catch((refreshError) => {
+      console.log('[client/src/App.js] refreshError: ', refreshError);
+      clearAuth();
       setPageLoading({
         loading: false, error: true
       })
     });
   }, []);
 
-  let routes = (
-    <Switch>
-      <Route path="/auth" component={AuthPage} />
-      <Redirect to="/auth" />
-    </Switch>
-  )
+  // @TODO: Create Loading Screen *** should be caught anyway
+  // if (pageLoading.loading) routes = <Loading />
 
-  // @TODO: Create Loading Screen
-  if (pageLoading.loading) routes = <Loading />
-
-  if (me) {
-    routes = (
-      <>
-      <TopNav />
-      <Switch>
-        <Route path="/search" component={Search} /> 
-        {
-          RolesEnum[me.role] >= RolesEnum['CONTRIBUTOR'] &&
-            <Route path="/upload" component={Upload} />
-        }
-        <Route path="/logout" component={Logout} />
-        <Redirect to="/search" />
-      </Switch>
-    </>
-    )
-  }
+  // if (me) {
+  //   routes = (
+  //     <>
+  //     <TopNav />
+  //     <Switch>
+  //       <Route path="/search" component={Search} /> 
+  //       {
+  //         RolesEnum[me.role] >= RolesEnum['CONTRIBUTOR'] &&
+  //           <Route path="/upload" component={Upload} />
+  //       }
+  //       <Route path="/logout" component={Logout} />
+  //       <Redirect to="/search" />
+  //     </Switch>
+  //   </>
+  //   )
+  // }
 
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-          {/* {routes} */}\
+          {/* {routes} */}
           <Routes />
         {/* Bottom Nav */}
         {/* <TestCount /> */}
