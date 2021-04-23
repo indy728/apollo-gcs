@@ -15,46 +15,67 @@ export const TracksPageContainer = styled(Container)``;
 
 /* Track List with matui */
 
-export const QuerySection = styled(Container)`
-  && {
-    padding: 40px 0;
-    * {
-      color: white;
-    }
-
-    /* &:first-of-type {
-      border-top: 1px solid grey;
-    } */
-    &:not(:last-of-type) {
-      border-bottom: 1px solid ${({theme: {primary}}) => primary[2]};
-    }
+export const QuerySection = styled.div`
+  padding: 40px 0;
+  &:not(:last-of-type) {
+    border-bottom: 1px solid ${({theme: {primary}}) => primary[2]};
   }
 `
 
-export const StyledTableRow = styled(TableRow)`
+export const StyledTableRow = styled.tr`
   background-color: ${({theme: {primary}}) => primary[1]};
+  th, td {
+    padding: 1rem;
+  }
 
   &:nth-of-type(odd) {
     background-color: ${({theme: {primary}}) => primary[2]};
   }
 
-  :hover {
-    background-color: ${({theme: {primary}}) => primary[3]};
-  }
-`
-
-export const StyledTableCell = styled(TableCell)`
-`
-
-export const TracksTable = styled(Table)`
-  && {
-    background-color: ${({theme: {black}}) => black};
   
-  & th, td {
-    color: ${({theme: {text}}) => text.white};
-    font-family: 'Barlow Condensed', sans-serif;
+`
+
+interface ITableCellProps {
+  align?: 'left' | 'right' | 'center'
+}
+
+export const StyledTableCell = styled.td<ITableCellProps>`
+  text-align: ${({align}) => align || 'left'};
+`
+
+export const StyledTableHead = styled.th<ITableCellProps>`
+  text-align: ${({align}) => align || 'left'};
+`;
+
+export const StyledTHead = styled.thead`
+  tr th, tr td{
+    padding: .6rem;
   }
+
+  && tr {
+    background-color: ${({theme: {primary}}) => primary[4]}
   }
+`
+
+export const StyledTBody = styled.tbody`
+  tr {
+    :hover {
+      background-color: ${({theme: {primary}}) => primary[3]};
+    }
+  }
+`
+
+export const TracksTable = styled.table`
+  background-color: ${({theme: {black}}) => black};
+  border-spacing: 0;
+  display: relative;
+  width: 100%;
+  
+  thead, tbody {
+    width: 100%;
+  }
+
+  cursor: default;
 `
 
 /* Search Field matui */

@@ -12,7 +12,6 @@ interface IStyleProps {
 
 interface Props {
   tag?: 'span' | 'div' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'pre',
-  // children: React.ReactChildren| React.ReactChild | JSX.Element | string,
   fontSize?: string,
   m?: string,
   mt?: string,

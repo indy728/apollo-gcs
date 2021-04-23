@@ -96,8 +96,8 @@ class Track {
   @Field({ nullable: true })
   bpm?: string;
 
-  @Field(() => [String])
-  genre?: string[];
+  @Field(() => String)
+  genre?: string;
 
   @Field(() => [String])
   keywords?: string[];
@@ -184,6 +184,7 @@ export class TracksResolver {
       const data = snapshot.data()
       tracks.push(data)
     })
+
     return tracks
   }
 

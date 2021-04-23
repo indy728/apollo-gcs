@@ -2,20 +2,30 @@ import React from 'react';
 // import { useQuery, useLazyQuery} from "@apollo/client";
 // import {TRACKS_QUERY, DOWNLOAD_TRACKS} from '../../../../apollo';
 
-import {QuerySection, StyledTableRow, StyledTableCell, TracksTable} from './styles.search';
+import {
+  QuerySection,
+  StyledTableRow,
+  StyledTableCell,
+  StyledTableHead,
+  StyledTBody,
+  StyledTHead,
+  TracksTable,
+} from './styles.search';
 
 //////////
 import Paper from '@material-ui/core/Paper';
 import TableBody from '@material-ui/core/TableBody';
-import TableContainer from '@material-ui/core/TableContainer';
+// import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import Typography from '@material-ui/core/Typography'
+// import TableRow from '@material-ui/core/TableRow';
+// import StyledTableCell from '@material-ui/core/StyledTableCell';
+// import Typography from '@material-ui/core/Typography'
 ///////////
 
 import axios, { AxiosPromise, AxiosRequestConfig } from 'axios';
 import fileDownload from 'js-file-download'
+import { useSearchTracksQuery, Track } from 'generated/graphql';
+import {Typography} from 'components/ui';
 
 interface ILocalAPI {
   url: string;
@@ -78,14 +88,12 @@ const DataRow = ({data: {title, artist, bpm, key, filename}, idx}: {data: IData,
 
   return (
     <StyledTableRow key={idx}>
-      <StyledTableCell component="th" scope="row">
-        {title}
-      </StyledTableCell>
-      <StyledTableCell align="right">{artist}</StyledTableCell>
-      <StyledTableCell align="right">{bpm}</StyledTableCell>
-      {/* <StyledTableCell align="right">{key}</StyledTableCell> */}
-      <StyledTableCell align="right">{filename}</StyledTableCell>
-      <StyledTableCell align="right">
+      <StyledTableCell>{title}</StyledTableCell>
+      <StyledTableCell>{artist}</StyledTableCell>
+      <StyledTableCell align="center">{bpm}</StyledTableCell>
+      {/* <StyledTableCell>{key}</StyledTableCell> */}
+      <StyledTableCell>{filename}</StyledTableCell>
+      <StyledTableCell align="center">
         {
         // loading ? <div>...retrieving...</div> : (
           <>
@@ -118,53 +126,43 @@ interface IProps {
 }
 
 const TrackList: React.FC<IProps> = ({query = '', list: {key, text, queryType = '_artist'}}) => {
-  // const {data, error, loading} = useQuery(TRACKS_QUERY, {
-  //   variables: {query, queryType}
-  // })
+  const {data, loading} = useSearchTracksQuery({variables: {query, queryType}});
+  const rows = data?.searchTracks || []
 
-  const rows = undefined
-  return <div>{query}</div>
+  if (!rows?.length) {
+    return null
+  }
+
+  return (
+    <QuerySection key={key} className="bbg-here">
+      <Typography tag="h2" fontSize="1.4rem" ml="1.4rem">
+        {text}
+      </Typography>
+      {rows && loading ? <div>...searching...</div> : (
+      // <TableContainer component={Paper}>
+      <TracksTable aria-label="simple table">
+        <StyledTHead>
+          <StyledTableRow>
+            <StyledTableHead>Song Title</StyledTableHead>
+            <StyledTableHead>Artist</StyledTableHead>
+            <StyledTableHead align="center">BPM</StyledTableHead>
+            {/* <StyledTableHead>Key</StyledTableHead> */}
+            <StyledTableHead>Filename</StyledTableHead>
+            <StyledTableHead align="center">
+              Download
+            </StyledTableHead>
+          </StyledTableRow>
+        </StyledTHead>
+        <StyledTBody>
+          {rows.map((row: any, idx: number) => (
+            <DataRow key={idx} idx={idx} data={row} />
+          ))}
+        </StyledTBody>
+      </TracksTable>
+    /* </TableContainer> */
+    )}
+    </QuerySection>
+  )
 }
-  // if (data) {
-  //   rows = data.searchTracks
-  // }
-
-  // if (!rows?.length) {
-  //   return null
-  // }
-
-  // if (loading) return <div>...searching...</div>
-  // if (error) return <div>...error...</div>
-
-  // return (
-  //   <QuerySection key={key} className="bbg-here">
-  //     <Typography variant="h5">
-  //       {text}
-  //     </Typography>
-  //     {rows && loading ? <div>...searching...</div> : (
-  //     <TableContainer component={Paper}>
-  //     <TracksTable aria-label="simple table">
-  //       <TableHead>
-  //         <TableRow>
-  //           <TableCell>Song Title</TableCell>
-  //           <TableCell align="right">Artist</TableCell>
-  //           <TableCell align="right">BPM</TableCell>
-  //           {/* <TableCell align="right">Key</TableCell> */}
-  //           <TableCell align="right">Filename</TableCell>
-  //           <TableCell align="right">
-  //             Download
-  //           </TableCell>
-  //         </TableRow>
-  //       </TableHead>
-  //       <TableBody>
-  //         {rows.map((row: Track, idx: number) => (
-  //           <DataRow key={idx} idx={idx} data={row} />
-  //         ))}
-  //       </TableBody>
-  //     </TracksTable>
-  //   </TableContainer>)}
-  //   </QuerySection>
-  // )
-// }
 
 export default TrackList;
