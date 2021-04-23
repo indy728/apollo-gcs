@@ -7,6 +7,8 @@ interface IStyleProps {
   mb?: string,
   ml?: string,
   mr?: string,
+  mv?: string,
+  mh?: string,
   fontSize?: string,
 }
 
@@ -18,6 +20,8 @@ interface Props {
   mb?: string,
   ml?: string,
   mr?: string,
+  mv?: string,
+  mh?: string,
 }
 
 const fetchJSXElement = (el: string) => {
@@ -29,10 +33,10 @@ const fetchJSXElement = (el: string) => {
   }
 } 
 
-export const Typography: React.FC<Props> = ({tag = 'p', children, fontSize, m, mt, mr, mb, ml}) => {
+export const Typography: React.FC<Props> = ({tag = 'p', children, fontSize, m, mt, mr, mb, ml, mv, mh}) => {
   const TypographyTag = tag;
   const styleProps: IStyleProps = {
-    m, mt, mr, mb, ml, fontSize
+    m, mt, mr, mb, ml, mv, mh, fontSize
   }
 
   return (

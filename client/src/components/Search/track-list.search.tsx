@@ -1,7 +1,8 @@
 import React from 'react';
-// import { useQuery, useLazyQuery} from "@apollo/client";
-// import {TRACKS_QUERY, DOWNLOAD_TRACKS} from '../../../../apollo';
-
+import axios, { AxiosPromise, AxiosRequestConfig } from 'axios';
+import fileDownload from 'js-file-download'
+import { useSearchTracksQuery } from 'generated/graphql';
+import {Typography} from 'components/ui';
 import {
   QuerySection,
   StyledTableRow,
@@ -10,22 +11,10 @@ import {
   StyledTBody,
   StyledTHead,
   TracksTable,
+  DownloadButton,
 } from './styles.search';
-
-//////////
-import Paper from '@material-ui/core/Paper';
-import TableBody from '@material-ui/core/TableBody';
-// import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-// import TableRow from '@material-ui/core/TableRow';
-// import StyledTableCell from '@material-ui/core/StyledTableCell';
-// import Typography from '@material-ui/core/Typography'
-///////////
-
-import axios, { AxiosPromise, AxiosRequestConfig } from 'axios';
-import fileDownload from 'js-file-download'
-import { useSearchTracksQuery, Track } from 'generated/graphql';
-import {Typography} from 'components/ui';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 
 interface ILocalAPI {
   url: string;
@@ -97,10 +86,9 @@ const DataRow = ({data: {title, artist, bpm, key, filename}, idx}: {data: IData,
         {
         // loading ? <div>...retrieving...</div> : (
           <>
-          <div style={{cursor: 'pointer'}} onClick={() => retrieveTrackFromStorage({variables: {filename}})}>
-            Select
-            
-          </div>
+          <DownloadButton style={{cursor: 'pointer'}} onClick={() => retrieveTrackFromStorage({variables: {filename}})}>
+            <FontAwesomeIcon icon={faDownload} />
+          </DownloadButton>
           {/* {data && data.retrieveTrackFromStorage === 'Success' && (
             <div onClick={() => localAPI({url: 'http://localhost:4000/download', filename})}>
               Download
@@ -135,7 +123,7 @@ const TrackList: React.FC<IProps> = ({query = '', list: {key, text, queryType = 
 
   return (
     <QuerySection key={key} className="bbg-here">
-      <Typography tag="h2" fontSize="1.4rem" ml="1.4rem">
+      <Typography tag="h2" fontSize="1.4rem" mh="1.4rem" mb=".8rem">
         {text}
       </Typography>
       {rows && loading ? <div>...searching...</div> : (
